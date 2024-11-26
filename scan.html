@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>QR Code Scanner</title>
+    
+    <!-- Add Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Add the HTML5 QR Scanner library with specific version -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8"></script>
+
+    <style>
+        /* Custom styles for the scanner */
+        #reader {
+            width: 100% !important;
+            border: none !important;
+        }
+        
+        #reader__scan_region {
+            min-height: 300px;
+        }
+        
+        #reader__dashboard_section_csr button {
+            background-color: #3B82F6 !important;
+            color: white !important;
+            padding: 8px 16px !important;
+            border-radius: 4px !important;
+        }
+        
+        #reader__camera_selection {
+            padding: 8px !important;
+            margin: 8px 0 !important;
+            border-radius: 4px !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 id="qr-code-scanner" class="text-2xl font-bold mb-4">QR Code Scanner</h1>
+
+        <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        </div>
+
+        <div id="status-message" class="hidden bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-4">
+            <div id="reader" class="relative w-full max-w-lg mx-auto"></div>
+
+            <div id="loadingIndicator" class="hidden absolute inset-0 flex items-center justify-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            </div>
+
+            <div id="manualEntry" class="mt-4 pt-4 border-t">
+                <h3 id="manual-code-entry" class="text-lg font-semibold mb-2">Manual Code Entry</h3>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/" class="text-blue-500 hover:text-blue-700"><button class="w-1/4 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+                Home
+            </button></a>
+        </div>
+    </div>
+
+    <!-- Add debug logging -->
+    <script>
+        console.log('Page loaded');
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
+            return false;
+        };
+    </script>
+
+    <!-- Load QR scanner script -->
+    <script src="{{ url_for('static', filename='js/qr-scanner.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel - Database Management{% endblock %}
+{% block content %}
+<div class="container mx-auto p-4">
+    <!-- Stats Cards -->
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Admin Panel</h1>
+                <p class="text-gray-600">Database Management</p>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="refreshStats()" class="px-4 py-2 bg-green-400 text-white rounded hover:bg-green-700">
+                    Refresh Status
+                </button>
+                <a href="/">
+                    <button class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+                        Home
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div class="text-sm text-gray-500">
+            Last Updated: <span id="lastUpdated">-</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <!-- Total Users Card -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-gray-700 font-medium">Total Users</h3>
+                <span id="totalUsers" class="text-2xl font-bold text-blue-600">-</span>
+            </div>
+        </div>
+
+        <!-- Active QR Codes Card -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-gray-700 font-medium">Total QR Codes</h3>
+                <span id="totalQRCodes" class="text-2xl font-bold text-green-600">-</span>
+            </div>
+        </div>
+
+        <!-- Active Rentals Card -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-gray-700 font-medium">Active Rentals</h3>
+                <span id="activeRentals" class="text-2xl font-bold text-purple-600">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Database Management Section -->
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800">Database Management</h2>
+        </div>
+        
+        <div class="p-6">
+            <div class="bg-orange-50 rounded-lg p-4 mb-4">
+                <div class="flex items-center text-orange-800">
+                    <span class="font-medium">⚠️ Warning: Database Operations</span>
+                </div>
+                <p class="mt-2 text-sm text-orange-700">
+                    The following operations are irreversible. Please proceed with caution.
+                </p>
+            </div>
+
+            <button onclick="showResetConfirmation()" 
+                    class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                Reset Database
+            </button>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg max-w-md mx-4">
+            <div class="bg-red-50 px-6 py-4 border-b border-red-100">
+                <h3 class="text-xl font-bold text-red-700">⚠️ WARNING: Database Reset</h3>
+            </div>
+            <div class="px-6 py-4">
+                <p>DROPPING THE DATABASE WILL DELETE ALL CLIENT INFO! ONLY DO THIS IF YOU ARE SURE YOU WANT TO START A NEW CLIENT DATABASE!</p>
+                <p class="mt-2 font-bold">This action CAN NOT be undone.</p>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-4">
+                <button onclick="hideResetConfirmation()" 
+                        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                    No I am scared cancel this request
+                </button>
+                <button onclick="resetDatabase()" 
+                        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    Ya I know what Im doing reset database
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Function to format date
+    function formatDateTime(date) {
+        return new Date(date).toLocaleString();
+    }
+
+    // Function to update stats
+    async function refreshStats() {
+        try {
+            const response = await fetch('/api/stats');
+            const data = await response.json();
+            
+            // Update stats
+            document.getElementById('totalUsers').textContent = data.total_users;
+            document.getElementById('totalQRCodes').textContent = data.total_qr_codes;
+            document.getElementById('activeRentals').textContent = data.active_rentals;
+            document.getElementById('lastUpdated').textContent = formatDateTime(new Date());
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+            alert('Failed to fetch statistics');
+        }
+    }
+
+    // Function to show reset confirmation modal
+    function showResetConfirmation() {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    // Function to hide reset confirmation modal
+    function hideResetConfirmation() {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    // Function to reset database
+    async function resetDatabase() {
+        try {
+            const response = await fetch('/api/reset-database', {
+                method: 'POST',
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to reset database');
+            }
+
+            // Hide modal
+            hideResetConfirmation();
+            
+            // Refresh stats
+            await refreshStats();
+            
+            alert('Database reset successful');
+        } catch (error) {
+            console.error('Error resetting database:', error);
+            alert('Failed to reset database');
+        }
+    }
+
+    // Refresh stats every 5 seconds
+    setInterval(refreshStats, 5000);
+
+    // Initial load
+    refreshStats();
+</script>
+{% endblock %}

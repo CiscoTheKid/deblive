@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}QR Code Lookup{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg my-8">
+    <div class="flex flex-col items-center mb-6">
+        <h1 class="text-2xl font-bold mb-4">QR Code Lookup</h1>
+        <a href="/" class="w-48">
+            <button class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+                Home
+            </button>
+        </a>
+    </div>
+   
+    {% if error %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/lookup" class="space-y-4">
+        <!-- Search Type Selector -->
+        <div>
+            <label for="search_type" class="block text-sm font-medium text-gray-700 mb-1">
+                Search By
+            </label>
+            <select id="search_type" 
+                    name="search_type" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onchange="updatePlaceholder()">
+                <option value="qr_code">QR Code</option>
+                <option value="first_name">First Name</option>
+                <option value="last_name">Last Name</option>
+            </select>
+        </div>
+
+        <!-- Search Input -->
+        <div>
+            <label id="search_label" for="search_term" class="block text-sm font-medium text-gray-700 mb-1">
+                Enter QR Code Number
+            </label>
+            <input type="text" 
+                   id="search_term" 
+                   name="search_term" 
+                   required 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   placeholder="Enter the 4-digit code">
+        </div>
+        
+        <button type="submit" 
+                class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+            Look Up
+        </button>
+    </form>
+    
+    <div class="mt-6 pt-6 border-t border-gray-200">
+        <a href="/scan" 
+           class="block w-full bg-gray-100 text-center py-2 px-4 rounded-md hover:bg-gray-200 transition duration-200">
+            Or Use Scanner
+        </a>
+    </div>
+</div>
+
+<script>
+    function updatePlaceholder() {
+        const searchType = document.getElementById('search_type').value;
+        const searchInput = document.getElementById('search_term');
+        const searchLabel = document.getElementById('search_label');
+        
+        switch(searchType) {
+            case 'qr_code':
+                searchInput.placeholder = 'Enter the 4-digit code';
+                searchLabel.textContent = 'Enter QR Code Number';
+                break;
+            case 'first_name':
+                searchInput.placeholder = 'Enter first name';
+                searchLabel.textContent = 'Enter First Name';
+                break;
+            case 'last_name':
+                searchInput.placeholder = 'Enter last name';
+                searchLabel.textContent = 'Enter Last Name';
+                break;
+        }
+    }
+</script>
+{% endblock %}
