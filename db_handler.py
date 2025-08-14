@@ -46,12 +46,20 @@ class DatabaseHandler:
             raise Exception(f"Database error: {err}")
 
     def get_database_stats(self) -> Dict:
-        """Get current database statistics"""
+        """
+        Get current database statistics including package inventory count
+        
+        Returns:
+            dict: Database statistics including user count, QR codes, active rentals, and total packages
+        """
         try:
             stats = {
                 'total_users': 0,
                 'total_qr_codes': 0,
-                'active_rentals': 0
+                'active_rentals': 0,
+                'total_packages': 0,          # NEW - total packages in inventory
+                'available_packages': 0,      # NEW - available packages
+                'rented_packages': 0          # NEW - rented out packages
             }
             
             # Get total users
@@ -62,9 +70,30 @@ class DatabaseHandler:
             self.cursor.execute("SELECT COUNT(*) as count FROM qr_codes")
             stats['total_qr_codes'] = self.cursor.fetchone()['count']
             
-            # Get active rentals (status = 1)
+            # Get active rentals (users with status = 1)
             self.cursor.execute("SELECT COUNT(*) as count FROM users WHERE rental_status = 1")
             stats['active_rentals'] = self.cursor.fetchone()['count']
+            
+            # Get package inventory statistics (NEW)
+            try:
+                # Total packages in inventory
+                self.cursor.execute("SELECT COUNT(*) as count FROM user_packages")
+                stats['total_packages'] = self.cursor.fetchone()['count']
+                
+                # Available packages
+                self.cursor.execute("SELECT COUNT(*) as count FROM user_packages WHERE status = 'available'")
+                stats['available_packages'] = self.cursor.fetchone()['count']
+                
+                # Rented out packages
+                self.cursor.execute("SELECT COUNT(*) as count FROM user_packages WHERE status = 'rented_out'")
+                stats['rented_packages'] = self.cursor.fetchone()['count']
+                
+            except mysql.connector.Error as pkg_error:
+                # If user_packages table doesn't exist (older schema), set package stats to 0
+                logger.warning(f"Could not get package statistics: {pkg_error}")
+                stats['total_packages'] = 0
+                stats['available_packages'] = 0
+                stats['rented_packages'] = 0
             
             return stats
             
@@ -73,31 +102,54 @@ class DatabaseHandler:
             raise Exception(f"Database error: {err}")
 
     def reset_database(self):
-        """Reset the database by dropping all client data"""
+        """
+        Reset the database by dropping all client data including package inventory
+        
+        This method truncates all tables that contain user and rental data,
+        including the new user_packages table for inventory management.
+        """
         try:
-            # Disable foreign key checks temporarily
+            # Disable foreign key checks temporarily to avoid constraint errors
             self.cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
             
-            # List of tables to truncate
-            tables = ['email_logs', 'rentals', 'qr_codes', 'users']
+            # List of tables to truncate in order
+            # Note: user_packages is included to clear package inventory
+            # Order matters due to foreign key relationships, even with checks disabled
+            tables = [
+                'email_logs',      # References users and qr_codes
+                'rentals',         # References users and qr_codes  
+                'user_packages',   # References users (NEW - for package inventory)
+                'qr_codes',        # References users
+                'users'            # Base user table
+            ]
             
             # Truncate all tables
             for table in tables:
-                self.cursor.execute(f"TRUNCATE TABLE {table}")
-                logger.info(f"Truncated table: {table}")
+                try:
+                    self.cursor.execute(f"TRUNCATE TABLE {table}")
+                    logger.info(f"Successfully truncated table: {table}")
+                except mysql.connector.Error as table_error:
+                    # Log warning but continue - table might not exist in older schemas
+                    logger.warning(f"Could not truncate table {table}: {table_error}")
             
             # Re-enable foreign key checks
             self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
             
+            # Commit the changes
             self.connection.commit()
-            logger.info("Database reset completed successfully")
+            logger.info("Database reset completed successfully - all user data and package inventory cleared")
             
         except mysql.connector.Error as err:
+            # Rollback on error
             self.connection.rollback()
             logger.error(f"Error resetting database: {err}")
-            raise Exception(f"Database error: {err}")
+            raise Exception(f"Database reset failed: {err}")
         finally:
-            self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+            # Ensure foreign key checks are always re-enabled
+            try:
+                self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+            except:
+                pass  # If connection is lost, this will fail but that's okay
 
     def update_rental_status(self, user_id: int, status: int) -> bool:
         """
@@ -416,6 +468,90 @@ class DatabaseHandler:
         except mysql.connector.Error as err:
             raise Exception(f"Database error: {err}")
 
+    def add_user_packages(self, user_id: int, package_type: str, quantity: int) -> bool:
+        """
+        Adds multiple package records for a given user.
+
+        Args:
+            user_id (int): The ID of the user purchasing the packages.
+            package_type (str): The type of package being purchased.
+            quantity (int): The number of packages to add.
+            
+        Returns:
+            bool: True if packages were added successfully.
+        """
+        try:
+            # We loop 'quantity' times to insert a separate row for each package
+            for _ in range(quantity):
+                self.cursor.execute("""
+                    INSERT INTO user_packages (user_id, package_type, status)
+                    VALUES (%s, %s, 'available')
+                """, (user_id, package_type))
+            
+            self.connection.commit()
+            logger.info(f"Added {quantity} of '{package_type}' packages for user_id {user_id}.")
+            return True
+
+        except mysql.connector.Error as err:
+            self.connection.rollback()
+            logger.error(f"Failed to add packages for user {user_id}: {err}")
+            raise Exception(f"Database error: {err}")
+    def get_user_packages(self, user_id: int) -> list:
+        """
+        Retrieves all packages owned by a specific user.
+
+        Args:
+            user_id (int): The user's ID.
+            
+        Returns:
+            list: A list of dictionaries, where each dictionary is a package.
+        """
+        try:
+            self.cursor.execute("""
+                SELECT id, package_type, status, last_activity_time
+                FROM user_packages
+                WHERE user_id = %s
+                ORDER BY package_type, status
+            """, (user_id,))
+            
+            packages = self.cursor.fetchall()
+            return packages if packages else []
+
+        except mysql.connector.Error as err:
+            logger.error(f"Failed to get packages for user {user_id}: {err}")
+            raise Exception(f"Database error: {err}")
+
+    def update_package_status(self, package_id: int, new_status: str) -> bool:
+        """
+        Updates the status of a single package item and its activity time.
+
+        Args:
+            package_id (int): The unique ID of the package from the user_packages table.
+            new_status (str): The new status ('available' or 'rented_out').
+            
+        Returns:
+            bool: True if the update was successful.
+        """
+        if new_status not in ['available', 'rented_out']:
+            raise ValueError("Invalid status. Must be 'available' or 'rented_out'.")
+
+        try:
+            self.cursor.execute("""
+                UPDATE user_packages
+                SET status = %s,
+                    last_activity_time = CURRENT_TIMESTAMP
+                WHERE id = %s
+            """, (new_status, package_id))
+            
+            self.connection.commit()
+            logger.info(f"Updated package {package_id} to status '{new_status}'.")
+            return True
+
+        except mysql.connector.Error as err:
+            self.connection.rollback()
+            logger.error(f"Failed to update status for package {package_id}: {err}")
+            raise Exception(f"Database error: {err}")
+        
     def close(self):
         """Safely close database connections"""
         try:

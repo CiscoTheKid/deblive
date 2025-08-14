@@ -16,59 +16,109 @@
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
             <div class="border-b border-gray-200">
                 <div class="p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Customer Information</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Package Inventory</h2>
+                        <span class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
+                            Total Packages: {{ packages|length }}
+                        </span>
+                    </div>
+
+                    <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Activity</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for package in packages %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ package.package_type }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        {% if package.status == 'available' %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Available</span>
+                                        {% else %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Rented Out</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ package.last_activity_time.strftime('%b %d, %Y %I:%M %p') if package.last_activity_time else 'N/A' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {% if package.status == 'available' %}
+                                            <button onclick="updatePackageStatus({{ package.id }}, 'rented_out')" class="text-indigo-600 hover:text-indigo-900">Check Out</button>
+                                        {% else %}
+                                            <button onclick="updatePackageStatus({{ package.id }}, 'available')" class="text-green-600 hover:text-green-900">Check In</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No packages found for this user.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% if packages|length <= 1 %}
+            <div class="border-b border-gray-200">
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rental Status</h2>
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
                             <div>
-                                <div class="text-sm font-medium text-gray-500">Full Name</div>
-                                <div class="mt-1 text-sm text-gray-900">{{ user.first_name }} {{ user.last_name }}</div>
+                                <span class="text-sm font-medium text-gray-500">Current Status</span>
+                                <span class="ml-2">
+                                    {% if user.rental_status == 0 %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Not Active</span>
+                                    {% elif user.rental_status == 1 %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active Rental</span>
+                                    {% elif user.rental_status == 2 %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Returned</span>
+                                    {% endif %}
+                                </span>
                             </div>
-                            <div>
-                                <div class="text-sm font-medium text-gray-500">Email Address</div>
-                                <div class="mt-1 text-sm text-gray-900">{{ user.email }}</div>
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="text-sm font-medium text-gray-500">City</div>
-                                <div class="mt-1 text-sm text-gray-900">{{ user.city if user.city else 'Not specified' }}</div>
-                            </div>
-                            <div>
-                                <div class="text-sm font-medium text-gray-500">Package Type</div>
-                                <div class="mt-1 text-sm text-gray-900">{{ user.package_type if user.package_type else 'Not specified' }}</div>
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="text-sm font-medium text-gray-500">QR Code Number</div>
-                                <div class="mt-1 text-sm text-gray-900">{{ user.qr_code_number }}</div>
-                            </div>
-                            <div>
-                                <div class="text-sm font-medium text-gray-500">Created At</div>
-                                <div class="mt-1 text-sm text-gray-900">
-                                    {{ user.qr_created_at.strftime('%B %d, %Y at %I:%M %p') if user.qr_created_at else 'N/A' }}
-                                </div>
+                            <div class="flex flex-col gap-3">
+                                <button onclick="toggleRental({{ user.user_id }}, {{ user.rental_status }})"
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    {% if user.rental_status == 1 %}
+                                        Check In Package
+                                    {% else %}
+                                        Check Out Package
+                                    {% endif %}
+                                </button>
+                                <button onclick="resetRental({{ user.user_id }})"
+                                        class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                    Reset Status
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            {% endif %}
 
             <div class="border-b border-gray-200">
                 <div class="p-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Notes</h2>
                     <div class="space-y-4">
                         <div class="flex flex-col space-y-2">
-                            <textarea 
-                                id="userNotes" 
-                                name="userNotes" 
-                                rows="4" 
+                            <textarea
+                                id="userNotes"
+                                name="userNotes"
+                                rows="4"
                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                 placeholder="Add notes about this customer..."
                             >{{ user.notes if user.notes else '' }}</textarea>
                             <div class="flex justify-end">
-                                <button 
-                                    onclick="saveNotes({{ user.user_id }})" 
+                                <button
+                                    onclick="saveNotes({{ user.user_id }})"
                                     class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                 >
                                     Save Notes
@@ -84,40 +134,6 @@
                             Last updated: {{ user.notes_updated_at.strftime('%B %d, %Y at %I:%M %p') }}
                         </div>
                         {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Rental Status</h2>
-                <div class="bg-gray-50 rounded-lg p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <span class="text-sm font-medium text-gray-500">Current Status</span>
-                            <span class="ml-2">
-                                {% if user.rental_status == 0 %}
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Not Active</span>
-                                {% elif user.rental_status == 1 %}
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active Rental</span>
-                                {% elif user.rental_status == 2 %}
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Returned</span>
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div class="flex flex-col gap-3">
-                            <button onclick="toggleRental({{ user.user_id }}, {{ user.rental_status }})" 
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                {% if user.rental_status == 1 %}
-                                    Check In Package
-                                {% else %}
-                                    Check Out Package
-                                {% endif %}
-                            </button>
-                            <button onclick="resetRental({{ user.user_id }})"
-                                    class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                Reset Status
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -219,6 +235,30 @@ function resetRental(userId) {
             alert('Error resetting rental status');
         });
     }
+}
+function updatePackageStatus(packageId, newStatus) {
+    // Show a confirmation dialog before proceeding
+    if (!confirm(`Are you sure you want to '${newStatus === 'rented_out' ? 'Check Out' : 'Check In'}' this package?`)) {
+        return;
+    }
+
+    fetch(`/api/update-package-status/${packageId}`, { // This API endpoint is now active
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload(); // Reload the page to show the updated status
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the package status.');
+    });
 }
 </script>
 

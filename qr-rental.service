@@ -1,0 +1,43 @@
+[Unit]
+# Service description and dependencies
+Description=QR Rental System Flask Application
+After=network.target mysql.service
+Wants=mysql.service
+# Ensure network and MySQL are available before starting
+
+[Service]
+# Service configuration
+Type=simple
+User=www-data
+Group=www-data
+
+# Working directory - where the application files are located
+WorkingDirectory=/var/www/qr-rental-system
+
+# Environment variables for the service
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=/var/www/qr-rental-system
+
+# Use our startup script that handles venv activation
+ExecStart=/var/www/qr-rental-system/start_deb_app.sh
+
+# Restart configuration
+Restart=always
+RestartSec=3
+StartLimitBurst=5
+StartLimitIntervalSec=300
+
+# Security and resource limits
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/www/qr-rental-system
+MemoryLimit=512M
+
+# Standard output and error logging
+StandardOutput=append:/var/www/qr-rental-system/logs/qr-rental.log
+StandardError=append:/var/www/qr-rental-system/logs/qr-rental-error.log
+
+[Install]
+# Enable automatic startup on boot
+WantedBy=multi-user.target

@@ -16,13 +16,13 @@ import json
 import requests
 from werkzeug.datastructures import ImmutableMultiDict
 
-
-qr_sender = QREmailSender()
-
+# Initialize Flask app and components
 app = Flask(__name__, static_folder='static')
 app.secret_key = Config.FLASK_SECRET_KEY
 db = DatabaseHandler()
 qr_sender = QREmailSender()
+
+# Email progress tracking
 email_progress = {
     'status': 'idle',
     'current': 0,
@@ -30,29 +30,726 @@ email_progress = {
     'current_email': ''
 }
 
+# Configure logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 app.logger.setLevel(logging.DEBUG)
 app.debug = True
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+# Form field mapping configuration for multiple JotForm forms
+# Each form can have different field names - add new forms here
+FORM_FIELD_MAPPINGS = {
+    # Original form mapping
+    'original_form': {
+        'first_name': 'q3_first_name',
+        'last_name': 'q4_last_name', 
+        'email': 'q5_email',
+        'city': 'q7_City',
+        'package_type': 'q8_package_type',
+        'package_products': 'q11_package_type',
+        'phone': None,  # Not available in original form
+        'paid_status': None  # Not available in original form
+    },
+    
+    # Second form mapping (based on your webhook logs)
+    'second_form': {
+        'first_name': 'q34_first_name',
+        'last_name': 'q35_last_name',
+        'email': 'q5_email',
+        'city': 'q8_city',
+        'package_type': 'q17_package_type',
+        'package_products': 'q17_package_type',  # Same field likely contains product data
+        'phone': 'q6_phoneNumber',  # Phone number field available
+        'paid_status': 'q27_paidIn'  # Backend field for payment status
+    }
+}
 
-
+# Headers configuration
 @app.after_request
 def after_request(response):
+    """Add CORS headers and permissions policy to all responses"""
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     response.headers['Permissions-Policy'] = 'camera=*, microphone=*'
     return response
 
+# Authentication decorators
+def admin_required(f):
+    """Decorator to require admin authentication"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session or 'role' not in session or session['role'] != 'admin':
+            flash('Admin access required', 'error')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def login_required(f):
+    """Decorator to require any user authentication"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def staff_or_admin_required(f):
+    """Decorator to require staff or admin authentication"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session:
+            flash('Please log in first', 'error')
+            return redirect(url_for('login'))
+            
+        if 'role' not in session:
+            flash('Session error: no role assigned', 'error')
+            return redirect(url_for('login'))
+            
+        if session['role'] not in ['admin', 'user']:
+            flash('Access denied: insufficient privileges', 'error')
+            return redirect(url_for('login'))
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Form processing helper functions
+def detect_form_type(raw_request):
+    """
+    Detect which form this submission came from based on available fields
+    
+    Args:
+        raw_request (dict): The rawRequest data from JotForm
+        
+    Returns:
+        str: The form type key, or 'unknown' if no match found
+    """
+    try:
+        available_fields = set(raw_request.keys())
+        app.logger.debug(f"Available fields in submission: {available_fields}")
+        
+        # Check each form mapping to see which one matches
+        best_match = 'unknown'
+        best_score = 0
+        
+        for form_type, field_mapping in FORM_FIELD_MAPPINGS.items():
+            # Count how many expected fields are present
+            matching_fields = 0
+            total_fields = sum(1 for field in field_mapping.values() if field is not None)
+            
+            for logical_field, actual_field in field_mapping.items():
+                if actual_field and actual_field in available_fields:
+                    matching_fields += 1
+            
+            # Calculate match percentage
+            match_percentage = matching_fields / total_fields if total_fields > 0 else 0
+            app.logger.debug(f"Form type '{form_type}': {matching_fields}/{total_fields} fields match ({match_percentage:.2%})")
+            
+            # Keep track of best match
+            if match_percentage > best_score:
+                best_score = match_percentage
+                best_match = form_type
+        
+        # Only accept matches with at least 60% field overlap
+        if best_score > 0.6:
+            app.logger.info(f"Detected form type: {best_match} (confidence: {best_score:.2%})")
+            return best_match
+        else:
+            app.logger.warning(f"Could not detect form type - best match was {best_match} with {best_score:.2%} confidence")
+            return 'unknown'
+        
+    except Exception as e:
+        app.logger.error(f"Error detecting form type: {str(e)}")
+        return 'unknown'
+
+def extract_user_data(raw_request, form_type):
+    """
+    Extract user data from rawRequest based on detected form type
+    Fixed to handle both dict and string field values properly
+    
+    Args:
+        raw_request (dict): The rawRequest data from JotForm
+        form_type (str): The detected form type
+        
+    Returns:
+        dict: Extracted user data with standardized field names
+    """
+    try:
+        # Get the field mapping for this form type
+        if form_type not in FORM_FIELD_MAPPINGS:
+            raise ValueError(f"Unknown form type: {form_type}")
+        
+        field_mapping = FORM_FIELD_MAPPINGS[form_type]
+        user_data = {}
+        
+        # Extract first name - handle both dict and string formats
+        first_name_field = field_mapping.get('first_name')
+        if first_name_field and first_name_field in raw_request:
+            field_value = raw_request[first_name_field]
+            # Handle name fields that might be objects with 'first' and 'last' properties
+            if isinstance(field_value, dict):
+                user_data['first_name'] = field_value.get('first', '').strip()
+            else:
+                user_data['first_name'] = str(field_value).strip()
+        
+        # Extract last name - handle both dict and string formats
+        last_name_field = field_mapping.get('last_name')
+        if last_name_field and last_name_field in raw_request:
+            field_value = raw_request[last_name_field]
+            if isinstance(field_value, dict):
+                user_data['last_name'] = field_value.get('last', '').strip()
+            else:
+                user_data['last_name'] = str(field_value).strip()
+        
+        # Extract email
+        email_field = field_mapping.get('email')
+        if email_field and email_field in raw_request:
+            user_data['email'] = str(raw_request[email_field]).strip()
+        
+        # Extract city
+        city_field = field_mapping.get('city')
+        if city_field and city_field in raw_request:
+            user_data['city'] = str(raw_request[city_field]).strip()
+        
+        # Extract phone number
+        phone_field = field_mapping.get('phone')
+        if phone_field and phone_field in raw_request:
+            phone_value = raw_request[phone_field]
+            if isinstance(phone_value, dict):
+                # JotForm phone fields often have 'full' property
+                user_data['phone'] = phone_value.get('full', '').strip()
+            else:
+                user_data['phone'] = str(phone_value).strip()
+        
+        # Extract package type and quantity - try both simple and product-based selection
+        package_type = None
+        quantity = 1  # Default quantity
+        
+        # First try simple package selection
+        package_field = field_mapping.get('package_type')
+        if package_field and package_field in raw_request:
+            package_value = raw_request[package_field]
+            
+            # Handle different package field formats
+            if isinstance(package_value, list) and len(package_value) > 0:
+                package_type = package_value[0]
+            elif isinstance(package_value, str):
+                package_type = package_value
+            elif isinstance(package_value, dict):
+                # Handle product-based package selection
+                if 'products' in package_value or '0' in package_value:
+                    # This looks like a product selection field
+                    if 'products' in package_value:
+                        products = package_value['products']
+                        if products and len(products) > 0:
+                            product = products[0]
+                            package_type = product.get('productName', 'Unknown')
+                            # Extract quantity from the product
+                            quantity = int(product.get('quantity', 1))
+                    elif '0' in package_value:
+                        # Handle numbered product format
+                        first_product = package_value['0']
+                        if 'id' in first_product:
+                            package_type = f"Product ID: {first_product['id']}"
+                            quantity = int(first_product.get('quantity', 1))
+        
+        # If still no package type, try the products field
+        if not package_type:
+            products_field = field_mapping.get('package_products')
+            if products_field and products_field in raw_request:
+                package_data = raw_request[products_field]
+                if isinstance(package_data, dict) and 'products' in package_data:
+                    products = package_data['products']
+                    if products and len(products) > 0:
+                        product = products[0]
+                        package_type = product.get('productName', 'Unknown')
+                        quantity = int(product.get('quantity', 1))
+        
+        user_data['package_type'] = package_type or 'Not specified'
+        user_data['quantity'] = quantity
+        
+        # Extract payment/backend status if available
+        paid_field = field_mapping.get('paid_status')
+        if paid_field and paid_field in raw_request:
+            user_data['paid_status'] = raw_request[paid_field]
+        
+        # Set default values for any missing required fields
+        user_data.setdefault('first_name', '')
+        user_data.setdefault('last_name', '')
+        user_data.setdefault('email', '')
+        user_data.setdefault('city', '')
+        user_data.setdefault('phone', '')
+        user_data.setdefault('paid_status', 0)
+        
+        app.logger.debug(f"Extracted user data: {user_data}")
+        return user_data
+        
+    except Exception as e:
+        app.logger.error(f"Error extracting user data: {str(e)}")
+        raise
 
 
+def analyze_form_fields(raw_request):
+    """
+    Analyze form fields and try to identify their purpose
+    
+    Args:
+        raw_request (dict): The rawRequest data from JotForm
+        
+    Returns:
+        dict: Analysis of each field with suggested purpose
+    """
+    field_analysis = {}
+    
+    for field_name, field_value in raw_request.items():
+        analysis = {
+            'value': field_value,
+            'type': type(field_value).__name__,
+            'is_empty': not bool(field_value),
+            'suggested_purpose': 'unknown',
+            'mapping_confidence': 0
+        }
+        
+        # Analyze field name to guess purpose
+        field_name_lower = field_name.lower()
+        
+        # Check for name fields
+        if 'name' in field_name_lower:
+            if 'first' in field_name_lower:
+                analysis['suggested_purpose'] = 'first_name'
+                analysis['mapping_confidence'] = 95
+            elif 'last' in field_name_lower:
+                analysis['suggested_purpose'] = 'last_name' 
+                analysis['mapping_confidence'] = 95
+            elif isinstance(field_value, dict):
+                # Full name component with first/last
+                if 'first' in field_value or 'last' in field_value:
+                    analysis['suggested_purpose'] = 'full_name_component'
+                    analysis['mapping_confidence'] = 90
+                else:
+                    analysis['suggested_purpose'] = 'name_field'
+                    analysis['mapping_confidence'] = 75
+            else:
+                analysis['suggested_purpose'] = 'name_field'
+                analysis['mapping_confidence'] = 70
+        
+        # Check for email fields
+        elif 'email' in field_name_lower:
+            analysis['suggested_purpose'] = 'email'
+            analysis['mapping_confidence'] = 95
+            
+        # Check for location fields
+        elif any(keyword in field_name_lower for keyword in ['city', 'location', 'address']):
+            analysis['suggested_purpose'] = 'city'
+            analysis['mapping_confidence'] = 85
+            
+        # Check for phone fields
+        elif 'phone' in field_name_lower:
+            analysis['suggested_purpose'] = 'phone'
+            analysis['mapping_confidence'] = 90
+            
+        # Check for package/product fields
+        elif any(keyword in field_name_lower for keyword in ['package', 'product', 'service', 'plan']):
+            if isinstance(field_value, dict) and ('products' in field_value or '0' in field_value):
+                analysis['suggested_purpose'] = 'package_products'
+                analysis['mapping_confidence'] = 85
+            else:
+                analysis['suggested_purpose'] = 'package_type'
+                analysis['mapping_confidence'] = 80
+                
+        # Check for payment/paid fields
+        elif any(keyword in field_name_lower for keyword in ['paid', 'payment', 'price']):
+            analysis['suggested_purpose'] = 'paid_status'
+            analysis['mapping_confidence'] = 80
+            
+        field_analysis[field_name] = analysis
+    
+    return field_analysis
+
+def generate_mapping_code(field_analysis, submission_id):
+    """
+    Generate Python code for the field mapping based on analysis
+    
+    Args:
+        field_analysis (dict): Analysis of form fields
+        submission_id (str): The submission ID for reference
+        
+    Returns:
+        str: Python code for the mapping
+    """
+    # Find the best field for each purpose
+    mappings = {
+        'first_name': None,
+        'last_name': None,
+        'email': None,
+        'city': None,
+        'package_type': None,
+        'package_products': None,
+        'phone': None,
+        'paid_status': None
+    }
+    
+    confidence_scores = {key: 0 for key in mappings.keys()}
+    
+    # Find best matches for each purpose
+    for field_name, analysis in field_analysis.items():
+        purpose = analysis['suggested_purpose']
+        confidence = analysis['mapping_confidence']
+        
+        # Handle full name component specially
+        if purpose == 'full_name_component':
+            if confidence > confidence_scores['first_name']:
+                mappings['first_name'] = field_name
+                mappings['last_name'] = field_name  # Same field for both
+                confidence_scores['first_name'] = confidence
+                confidence_scores['last_name'] = confidence
+        
+        # Handle other purposes
+        elif purpose in mappings:
+            if confidence > confidence_scores[purpose]:
+                mappings[purpose] = field_name
+                confidence_scores[purpose] = confidence
+    
+    # Generate the mapping code
+    form_name = f"form_{submission_id[:8]}"  # Use first 8 chars of submission ID
+    
+    code_lines = [
+        f"# Suggested mapping for form with submission ID: {submission_id}",
+        f"# Add this to your FORM_FIELD_MAPPINGS dictionary:",
+        f"",
+        f"'{form_name}': {{",
+    ]
+    
+    for logical_field, actual_field in mappings.items():
+        if actual_field:
+            confidence = confidence_scores[logical_field]
+            code_lines.append(f"    '{logical_field}': '{actual_field}',  # Confidence: {confidence}%")
+        else:
+            code_lines.append(f"    '{logical_field}': None,  # Field not found")
+    
+    code_lines.extend([
+        "},",
+        "",
+        "# Detailed Field Analysis:",
+    ])
+    
+    # Add detailed analysis as comments
+    for field_name, analysis in field_analysis.items():
+        purpose = analysis['suggested_purpose']
+        confidence = analysis['mapping_confidence']
+        value_preview = str(analysis['value'])[:50] + "..." if len(str(analysis['value'])) > 50 else str(analysis['value'])
+        
+        code_lines.append(f"# {field_name}: {purpose} ({confidence}% confidence) = {value_preview}")
+    
+    return "\n".join(code_lines)
+
+# Main webhook handler
+@app.route('/api/jotform-webhook', methods=['POST'])
+def jotform_webhook():
+    """
+    Enhanced webhook handler that processes JotForm submissions and adds packages
+    to user inventory using the 1-to-many relationship model.
+    
+    This handler:
+    1. Detects which form the submission came from
+    2. Extracts data including package type and quantity
+    3. Finds or creates the user by email
+    4. Adds the purchased packages to their inventory
+    5. Sends a QR code email to the user
+    """
+    try:
+        app.logger.info("=== PROCESSING JOTFORM WEBHOOK ===")
+        
+        # Parse the incoming form data based on content type
+        if request.content_type and request.content_type.startswith('multipart/form-data'):
+            # Handle form-encoded data (common for JotForm webhooks)
+            form_data = request.form.to_dict()
+            
+            # Parse the rawRequest JSON string if present
+            if 'rawRequest' in form_data and isinstance(form_data['rawRequest'], str):
+                try:
+                    form_data['rawRequest'] = json.loads(form_data['rawRequest'])
+                    app.logger.debug("Successfully parsed rawRequest JSON")
+                except json.JSONDecodeError as e:
+                    app.logger.error(f"Failed to parse rawRequest JSON: {str(e)}")
+                    return jsonify({"error": "Invalid rawRequest format"}), 400
+        else:
+            # Handle JSON data
+            form_data = request.json
+            if not form_data:
+                app.logger.error("No JSON data received")
+                return jsonify({"error": "No JSON data received"}), 400
+
+        # Validate that we have the required data structure
+        if not form_data:
+            app.logger.error("No form data received")
+            return jsonify({"error": "No form data received"}), 400
+
+        # Extract submission ID (this should be consistent across all forms)
+        submission_id = form_data.get('submissionID')
+        if not submission_id:
+            app.logger.error("Missing submission ID")
+            return jsonify({"error": "Missing submission ID"}), 400
+
+        # Get the raw request data
+        raw_request = form_data.get('rawRequest', {})
+        if not raw_request:
+            app.logger.error("Missing rawRequest data")
+            return jsonify({"error": "Missing rawRequest data"}), 400
+
+        app.logger.info(f"Processing submission ID: {submission_id}")
+        
+        # Detect which form this submission came from
+        form_type = detect_form_type(raw_request)
+        if form_type == 'unknown':
+            # Log available fields to help with debugging
+            available_fields = list(raw_request.keys())
+            app.logger.error(f"Unknown form type. Available fields: {available_fields}")
+            
+            # Try to process with fallback logic (assume it's like original form)
+            app.logger.warning("Attempting to process with original form mapping as fallback")
+            form_type = 'original_form'
+
+        # Extract user data using the detected form type (now includes quantity)
+        user_data = extract_user_data(raw_request, form_type)
+        
+        # Validate that we have the required fields
+        required_fields = ['first_name', 'last_name', 'email']
+        missing_fields = [field for field in required_fields if not user_data.get(field)]
+        
+        if missing_fields:
+            error_msg = f"Missing required fields: {missing_fields}"
+            app.logger.error(error_msg)
+            return jsonify({"error": error_msg}), 400
+
+        # Log the extracted data for debugging
+        app.logger.info(f"""
+        ====== EXTRACTED USER DATA ======
+        Form Type: {form_type}
+        Submission ID: {submission_id}
+        First Name: {user_data['first_name']}
+        Last Name: {user_data['last_name']}
+        Email: {user_data['email']}
+        City: {user_data['city']}
+        Phone: {user_data.get('phone', 'N/A')}
+        Package Type: {user_data['package_type']}
+        Quantity: {user_data['quantity']}
+        Paid Status: {user_data.get('paid_status', 'N/A')}
+        ================================
+        """)
+
+        # Database operations with proper error handling
+        try:
+            # Ensure database connection is active
+            if not hasattr(db, 'connection') or not db.connection.is_connected():
+                db.connect()
+            
+            # Step 1: Find or create the user by their unique EMAIL
+            user_id = db.create_user(
+                user_data['first_name'],
+                user_data['last_name'],
+                user_data['email'],
+                user_data.get('city'),
+                user_data['package_type']  # Keep for compatibility, but packages will be in separate table
+            )
+            app.logger.info(f"User ID: {user_id}")
+
+            # Step 2: Add the new packages to the user's inventory
+            # This is the key feature that prevents overwriting existing packages
+            db.add_user_packages(
+                user_id,
+                user_data['package_type'],
+                user_data['quantity']
+            )
+            app.logger.info(f"Successfully added {user_data['quantity']} packages of type '{user_data['package_type']}' to user {user_id}")
+
+        except Exception as db_error:
+            # Rollback on database error
+            app.logger.error(f"Database error: {str(db_error)}")
+            if hasattr(db, 'connection') and db.connection.is_connected():
+                db.connection.rollback()
+            raise
+
+        # Send QR code email with updated logic
+        try:
+            app.logger.info("Sending QR code email")
+            qr_sender_instance = QREmailSender()
+            
+            # Send email with quantity information
+            success, result, _ = qr_sender_instance.send_email(
+                user_data['email'],
+                user_data['first_name'],
+                user_data['last_name'],
+                user_data.get('city'),
+                user_data['package_type'],
+                user_data['quantity']  # Pass quantity to email
+            )
+
+            if not success:
+                app.logger.error(f"QR code email failed: {result}")
+                # Don't fail the webhook for email errors - data is already saved
+                
+            app.logger.info("QR code email processing completed")
+            
+        except Exception as email_error:
+            # Log email error but don't fail the webhook
+            # The user data is already saved, so this is not critical
+            app.logger.error(f"Email sending failed: {str(email_error)}")
+
+        # Prepare success response
+        response_data = {
+            "status": "success",
+            "message": f"Successfully added {user_data['quantity']} {user_data['package_type']} package(s)",
+            "user_id": user_id,
+            "form_type": form_type,
+            "packages_added": user_data['quantity'],
+            "package_type": user_data['package_type']
+        }
+        
+        app.logger.info("Webhook processing completed successfully")
+        return jsonify(response_data), 200
+
+    except Exception as e:
+        # Handle any unexpected errors
+        error_msg = f"Error in webhook processing: {str(e)}"
+        app.logger.error(error_msg, exc_info=True)
+        
+        # Rollback database changes if needed
+        if hasattr(db, 'connection') and db.connection.is_connected():
+            try:
+                db.connection.rollback()
+            except:
+                pass
+        
+        # Return error response
+        return jsonify({
+            "status": "error", 
+            "message": error_msg
+        }), 500
+
+# Field discovery tool (no authentication required for webhooks)
+@app.route('/api/field-mapper', methods=['GET', 'POST'])
+def field_mapper():
+    """
+    Tool to help discover and map field names from JotForm submissions
+    No authentication required so JotForm webhooks can access it
+    """
+    if request.method == 'GET':
+        # Show simple instructions page
+        return """
+        <html>
+        <head>
+            <title>Field Mapping Discovery Tool</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; background-color: #f5f5f5; }
+                .container { max-width: 800px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+                .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; }
+                .step { background: #e3f2fd; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #2196f3; }
+                .url { font-weight: bold; color: #1976d2; font-size: 16px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🔍 JotForm Field Mapping Discovery Tool</h1>
+                
+                <div class="warning">
+                    <strong>⚠️ Important:</strong> This tool is for temporary use only. 
+                    Remember to change your webhook URL back after testing!
+                </div>
+                
+                <h2>📝 Setup Instructions:</h2>
+                
+                <div class="step">
+                    <strong>Step 1:</strong> Go to your JotForm → Settings → Integrations → Webhooks
+                </div>
+                
+                <div class="step">
+                    <strong>Step 2:</strong> Set webhook URL to:<br>
+                    <span class="url">{}/api/field-mapper</span>
+                </div>
+                
+                <div class="step">
+                    <strong>Step 3:</strong> Make a test submission in your form
+                </div>
+                
+                <div class="step">
+                    <strong>Step 4:</strong> Check your Flask console logs for the mapping
+                </div>
+                
+                <div class="step">
+                    <strong>Step 5:</strong> Change webhook URL back to:<br>
+                    <span class="url">{}/api/jotform-webhook</span>
+                </div>
+            </div>
+        </body>
+        </html>
+        """.format(request.url_root.rstrip('/'), request.url_root.rstrip('/'))
+    
+    elif request.method == 'POST':
+        try:
+            app.logger.info("=== FIELD MAPPING DISCOVERY STARTED ===")
+            
+            # Parse the incoming webhook data
+            if request.content_type and request.content_type.startswith('multipart/form-data'):
+                form_data = request.form.to_dict()
+                if 'rawRequest' in form_data and isinstance(form_data['rawRequest'], str):
+                    try:
+                        form_data['rawRequest'] = json.loads(form_data['rawRequest'])
+                        app.logger.info("Successfully parsed rawRequest JSON")
+                    except json.JSONDecodeError as e:
+                        app.logger.error(f"Failed to parse rawRequest JSON: {str(e)}")
+                        return jsonify({"error": "Invalid rawRequest format"}), 400
+            else:
+                form_data = request.json
+                app.logger.info("Processing JSON webhook data")
+
+            raw_request = form_data.get('rawRequest', {})
+            submission_id = form_data.get('submissionID', 'unknown')
+            
+            app.logger.info(f"Analyzing submission ID: {submission_id}")
+            app.logger.info(f"Number of fields received: {len(raw_request)}")
+            
+            # Show all raw field data in logs
+            app.logger.info("=== RAW FIELD DATA ===")
+            for field_name, field_value in raw_request.items():
+                value_str = str(field_value)
+                if len(value_str) > 100:
+                    value_str = value_str[:100] + "..."
+                app.logger.info(f"  {field_name}: {value_str}")
+            
+            # Analyze the fields and suggest mappings
+            field_analysis = analyze_form_fields(raw_request)
+            
+            # Generate suggested mapping code
+            suggested_mapping = generate_mapping_code(field_analysis, submission_id)
+            
+            # Log the suggested mapping prominently
+            app.logger.info("=== SUGGESTED MAPPING CODE ===")
+            for line in suggested_mapping.split('\n'):
+                app.logger.info(line)
+            app.logger.info("=== END MAPPING CODE ===")
+            
+            app.logger.info("=== FIELD MAPPING DISCOVERY COMPLETED ===")
+            
+            # Return success response to JotForm
+            return jsonify({
+                "status": "success",
+                "message": "Field mapping analysis complete - check Flask logs",
+                "submission_id": submission_id,
+                "fields_analyzed": len(raw_request)
+            })
+            
+        except Exception as e:
+            app.logger.error(f"Error in field mapping discovery: {str(e)}")
+            return jsonify({"status": "error", "message": str(e)}), 500
+
+# Legacy webhook processing function (keep for compatibility)
 def process_jotform_submission(form_data):
-    """Process JotForm submission and store in database"""
+    """Legacy function for processing JotForm submissions (original form only)"""
     try:
         app.logger.debug(f"Processing submission data: {form_data}")
         
@@ -65,7 +762,7 @@ def process_jotform_submission(form_data):
         raw_request = form_data.get('rawRequest', {})
         app.logger.debug(f"Raw request data: {raw_request}")
 
-        # Extract fields using the correct form field names
+        # Extract fields using the original form field names
         first_name = raw_request.get('q3_first_name', '').strip()
         last_name = raw_request.get('q4_last_name', '').strip()
         email = raw_request.get('q5_email', '').strip()
@@ -190,186 +887,11 @@ def parse_payment_fields(form_data):
             'error': str(e),
             'raw_data': raw_request
         }
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'logged_in' not in session or 'role' not in session or session['role'] != 'admin':
-            flash('Admin access required', 'error')
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
 
-
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'logged_in' not in session:
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def staff_or_admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'logged_in' not in session:
-            flash('Please log in first', 'error')
-            return redirect(url_for('login'))
-            
-        if 'role' not in session:
-            flash('Session error: no role assigned', 'error')
-            return redirect(url_for('login'))
-            
-        if session['role'] not in ['admin', 'user']:
-            flash('Access denied: insufficient privileges', 'error')
-            return redirect(url_for('login'))
-            
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-@app.route('/api/jotform-webhook', methods=['POST'])
-def jotform_webhook():
-    """Handle incoming JotForm webhook"""
-    try:
-        # Get the form data and handle different content types
-        if request.content_type.startswith('multipart/form-data'):
-            form_data = request.form.to_dict()
-            if 'rawRequest' in form_data and isinstance(form_data['rawRequest'], str):
-                try:
-                    form_data['rawRequest'] = json.loads(form_data['rawRequest'])
-                except json.JSONDecodeError:
-                    app.logger.error("Failed to parse rawRequest JSON")
-                    return jsonify({"error": "Invalid rawRequest format"}), 400
-        else:
-            form_data = request.json
-
-        if not form_data:
-            app.logger.error("No form data received")
-            return jsonify({"error": "No form data received"}), 400
-
-        # Extract submission ID
-        submission_id = form_data.get('submissionID')
-        if not submission_id:
-            raise ValueError("Missing submission ID")
-
-        # Get raw request data
-        raw_request = form_data.get('rawRequest', {})
-        
-        # Extract user information
-        first_name = raw_request.get('q3_first_name', '').strip()
-        last_name = raw_request.get('q4_last_name', '').strip()
-        email = raw_request.get('q5_email', '').strip()
-        city = raw_request.get('q7_City', '').strip()
-
-        # Parse package information
-        package_data = raw_request.get('q11_package_type', {})
-        products = package_data.get('products', [])
-        
-        package_type = None
-        if products and len(products) > 0:
-            product = products[0]
-            package_type = f"{product.get('productName', 'Unknown')} (Qty: {product.get('quantity', 0)})"
-
-        # Log the data before database operation
-        app.logger.debug(f"""
-        ====== PROCESSING SUBMISSION ======
-        Submission ID: {submission_id}
-        First Name: {first_name}
-        Last Name: {last_name}
-        Email: {email}
-        City: {city}
-        Package Type: {package_type}
-        ================================
-        """)
-
-        # Validate required fields
-        if not all([first_name, last_name, email]):
-            error_details = {
-                'first_name': bool(first_name),
-                'last_name': bool(last_name),
-                'email': bool(email)
-            }
-            raise ValueError(f"Missing required fields: {error_details}")
-
-        try:
-            # Check if submission already exists
-            db.cursor.execute("""
-                SELECT id FROM users 
-                WHERE jotform_submission_id = %s
-            """, (submission_id,))
-            existing_user = db.cursor.fetchone()
-
-            if existing_user:
-                # Log update attempt
-                app.logger.debug(f"Updating existing user with ID: {existing_user['id']}")
-                
-                # Update existing record
-                db.cursor.execute("""
-                    UPDATE users 
-                    SET first_name = %s,
-                        last_name = %s,
-                        email = %s,
-                        city = %s,
-                        package_type = %s,
-                        updated_at = CURRENT_TIMESTAMP
-                    WHERE jotform_submission_id = %s
-                """, (first_name, last_name, email, city, package_type, submission_id))
-                user_id = existing_user['id']
-                app.logger.info(f"Updated existing user record: {user_id}")
-            else:
-                # Log insert attempt
-                app.logger.debug("Creating new user record")
-                
-                # Insert new record
-                db.cursor.execute("""
-                    INSERT INTO users 
-                    (first_name, last_name, email, city, package_type, jotform_submission_id)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """, (first_name, last_name, email, city, package_type, submission_id))
-                user_id = db.cursor.lastrowid
-                app.logger.info(f"Created new user record: {user_id}")
-
-            db.connection.commit()
-            app.logger.debug("Database operation successful")
-
-        except mysql.connector.Error as db_error:
-            app.logger.error(f"Database error: {str(db_error)}")
-            raise
-
-        # Generate and send QR code
-        app.logger.debug("Initializing QR email sender")
-        qr_sender = QREmailSender()
-        success, result = qr_sender.send_email(
-            email,
-            first_name,
-            last_name,
-            city,
-            package_type
-        )
-
-        if not success:
-            raise Exception(f"Failed to send QR code email: {result}")
-
-        app.logger.debug("Webhook processing completed successfully")
-        response = {
-            "status": "success",
-            "message": "Submission processed successfully",
-            "user_id": user_id,
-            "package_info": package_type
-        }
-        return jsonify(response), 200
-
-    except Exception as e:
-        error_msg = f"Error in webhook: {str(e)}"
-        app.logger.error(error_msg)
-        if hasattr(db, 'connection'):
-            db.connection.rollback()
-        return jsonify({"status": "error", "message": error_msg}), 500
-    
-# Login route
+# Authentication routes
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Handle user login for both admin and staff users"""
     error = None
     if request.method == 'POST':
         username = request.form['username']
@@ -392,7 +914,6 @@ def login():
             session['role'] = 'user'
             session['username'] = username
             app.logger.info(f"Successful staff login: {username}")
-            # Now redirecting to home instead of scan
             return redirect(url_for('home'))
             
         # Failed login
@@ -402,41 +923,66 @@ def login():
     # GET request or failed login
     return render_template('login.html', error=error)
 
-# Logout route
 @app.route('/logout')
 def logout():
+    """Handle user logout"""
     session.pop('logged_in', None)
     return redirect(url_for('login'))
 
-# Serve static files
+# Static file serving
 @app.route('/static/<path:filename>')
 def serve_static(filename):
+    """Serve static files with no-cache headers"""
     response = send_from_directory('static', filename)
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
 
-
-# Home route
+# Main application routes
 @app.route('/')
 @login_required
 def home():
+    """Main dashboard/home page"""
     return render_template('home.html', title='QR System')
 
-# Scanner page route
 @app.route('/scan')
-@login_required  # This route is accessible to all logged-in users
+@login_required
 def scan():
+    """QR code scanner page"""
     return render_template('scan.html')
+
+
+@app.route('/api/update-package-status/<int:package_id>', methods=['POST'])
+@login_required
+def update_package_status_api(package_id):
+    """API endpoint to update the status of an individual package."""
+    try:
+        data = request.get_json()
+        new_status = data.get('status')
+
+        if not new_status or new_status not in ['available', 'rented_out']:
+            return jsonify({'success': False, 'error': 'Invalid status provided'}), 400
+
+        # Call the database handler method to update the package
+        if db.update_package_status(package_id, new_status):
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'Database update failed'}), 500
+
+    except Exception as e:
+        app.logger.error(f"Error updating package status for package_id {package_id}: {str(e)}")
+        return jsonify({'success': False, 'error': 'An internal error occurred'}), 500
 
 
 @app.route('/email-client', methods=['GET', 'POST'])
 @admin_required
 def email_client():
+    """Email client for bulk sending QR codes via CSV upload"""
     if request.method == 'POST':
         app.logger.info("Processing email client POST request")
         
+        # Validate file upload
         if 'csv_file' not in request.files:
             app.logger.error("No file part in request")
             flash('No file uploaded', 'error')
@@ -454,25 +1000,29 @@ def email_client():
             return redirect(url_for('email_client'))
         
         try:
+            # Save uploaded file temporarily
             temp_path = os.path.join(app.static_folder, 'temp', file.filename)
             os.makedirs(os.path.dirname(temp_path), exist_ok=True)
             file.save(temp_path)
             
+            # Process the CSV file
             app.logger.info(f"Processing CSV file: {temp_path}")
             results = qr_sender.process_csv(temp_path)
-            os.remove(temp_path)
+            os.remove(temp_path)  # Clean up temp file
             
             if not results:
                 app.logger.error("No results returned from CSV processing")
                 flash('No results were generated from the CSV file', 'error')
                 return redirect(url_for('email_client'))
             
+            # Calculate summary statistics
             total = len(results)
             successful = sum(1 for r in results if r['success'])
             failed = total - successful
             
             app.logger.info(f"CSV Processing Summary - Total: {total}, Successful: {successful}, Failed: {failed}")
             
+            # Log failed emails for debugging
             for result in results:
                 if not result['success']:
                     app.logger.error(f"Email failed for {result['email']}: {result['result']}")
@@ -494,11 +1044,11 @@ def email_client():
             
     return render_template('email_client.html')
 
-
-# QR code verification API endpoint
+# API endpoints
 @app.route('/api/lookup', methods=['POST'])
 @login_required
 def api_lookup():
+    """API endpoint for QR code verification"""
     try:
         data = request.get_json()
         if not data:
@@ -516,11 +1066,11 @@ def api_lookup():
     except Exception as e:
         app.logger.error(f"Error in API lookup: {str(e)}")
         return jsonify({"error": "Server error", "details": str(e)}), 500
-    
-#Toggle Switch using js
+
 @app.route('/api/toggle-rental/<int:user_id>', methods=['POST'])
 @login_required
 def toggle_rental_status(user_id):
+    """Toggle rental status for a user via API"""
     try:
         data = request.get_json()
         new_status = int(data.get('status', 0))  # Convert to integer
@@ -533,87 +1083,20 @@ def toggle_rental_status(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    
-# Manual lookup route
-@app.route('/lookup', methods=['GET', 'POST'])
-@login_required
-def lookup():
-    if request.method == 'GET':
-        qr_code = request.args.get('qr_code')
-        if qr_code:
-            try:
-                user_data = db.verify_qr_code(qr_code)
-                if user_data:
-                    # Debug logging
-                    app.logger.debug(f"Found user data:")
-                    app.logger.debug(f"Name: {user_data.get('first_name')} {user_data.get('last_name')}")
-                    app.logger.debug(f"City: {user_data.get('city')}")
-                    app.logger.debug(f"Package Type: {user_data.get('package_type')}")
-                    
-                    # Ensure data is properly formatted for template
-                    user_data['city'] = user_data.get('city', '') or 'Not specified'
-                    user_data['package_type'] = user_data.get('package_type', '') or 'Not specified'
-                    
-                    return render_template('user_details.html', user=user_data)
-                    
-                app.logger.warning(f"No user found for QR code: {qr_code}")
-                return render_template('lookup.html', error="Invalid QR code")
-                
-            except Exception as e:
-                app.logger.error(f"Error in lookup: {str(e)}")
-                return render_template('lookup.html', error=str(e))
-                
-        return render_template('lookup.html')
-    
-    elif request.method == 'POST':
-        search_type = request.form.get('search_type')
-        search_term = request.form.get('search_term')
-
-        if not search_term:
-            return render_template('lookup.html', error="Please enter a search term")
-
-        try:
-            user_data = None
-            
-            if search_type == 'qr_code':
-                user_data = db.verify_qr_code(search_term)
-                if user_data:
-                    # Debug logging
-                    app.logger.debug(f"Found user data:")
-                    app.logger.debug(f"City: {user_data.get('city')}")
-                    app.logger.debug(f"Package Type: {user_data.get('package_type')}")
-                    return render_template('user_details.html', user=user_data)
-                    
-            elif search_type == 'first_name':
-                users = db.search_by_first_name(search_term)
-                if users:
-                    return render_template('search_results.html', users=users)
-                    
-            elif search_type == 'last_name':
-                users = db.search_by_last_name(search_term)
-                if users:
-                    return render_template('search_results.html', users=users)
-            
-            return render_template('lookup.html', 
-                                error=f"No user found for this {search_type.replace('_', ' ')}")
-            
-        except Exception as e:
-            app.logger.error(f"Error in lookup POST: {str(e)}")
-            return render_template('lookup.html', error=str(e))
-        
-
 @app.route('/api/reset-rental/<int:user_id>', methods=['POST'])
 @login_required
 def reset_rental_status(user_id):
+    """Reset rental status to 'Not Active' for a user"""
     try:
         db.update_rental_status(user_id, 0)  # Set to Not Active
         return jsonify({"success": True})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500  
-    
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/save-notes', methods=['POST'])
 @login_required
 def save_notes():
+    """Save notes for a specific user"""
     try:
         data = request.get_json()
         user_id = data.get('user_id')
@@ -635,90 +1118,6 @@ def save_notes():
     except Exception as e:
         app.logger.error(f"Error saving notes: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
-            
-# Email logs route
-@app.route('/email-logs')
-@login_required
-def email_logs():
-    try:
-        query = """
-        SELECT 
-            u.id,
-            u.first_name,
-            u.last_name,
-            u.email,
-            u.rental_status,
-            qr.qr_code_number,
-            COALESCE(
-                (SELECT created_at 
-                 FROM email_logs 
-                 WHERE user_id = u.id 
-                 ORDER BY created_at DESC 
-                 LIMIT 1),
-                NULL
-            ) as last_action
-        FROM users u
-        LEFT JOIN qr_codes qr ON u.id = qr.user_id AND qr.is_active = TRUE
-        ORDER BY u.last_name, u.first_name
-        """
-        db.cursor.execute(query)
-        users = db.cursor.fetchall()
-        
-        return render_template('email_logs.html', users=users)
-    except Exception as e:
-        return render_template('email_logs.html', error=str(e), users=[])
-
-# Error handlers
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    return render_template('500.html'), 500
-
-# Health check endpoint
-@app.route('/health')
-def health_check():
-    try:
-        db.cursor.execute("SELECT 1")
-        db.cursor.fetchone()
-        return jsonify({
-            "status": "healthy",
-            "database": "connected",
-            "timestamp": datetime.now().isoformat()
-        })
-    except Exception as e:
-        return jsonify({
-            "status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
-        }), 500
-
-@app.route('/admin')
-@admin_required
-def admin():
-    return render_template('admin.html')
-
-@app.route('/api/stats')
-def get_stats():
-    try:
-        db.connect()  
-        stats = db.get_database_stats()
-        return jsonify(stats)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/reset-database', methods=['POST'])
-@admin_required
-def reset_database():
-    try:
-        db.reset_database()
-        db.connect()
-        return jsonify({"message": "Database reset successful"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
 
 @app.route('/api/filter-users/<status>')
 @login_required
@@ -779,8 +1178,197 @@ def filter_users(status):
         app.logger.error(f"Error filtering users: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/stats')
+def get_stats():
+    """Get database statistics"""
+    try:
+        # Add this line to ensure the database is connected
+        db.connect()  
+        stats = db.get_database_stats()
+        return jsonify(stats)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
+
+@app.route('/api/reset-database', methods=['POST'])
+@admin_required
+def reset_database():
+    """Reset the entire database (admin only)"""
+    try:
+        db.reset_database()
+        # Add this line to reconnect after resetting
+        db.connect()
+        return jsonify({"message": "Database reset successful"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Web interface routes
+@app.route('/lookup', methods=['GET', 'POST'])
+@login_required
+def lookup():
+    # --- The GET request logic can remain the same ---
+    if request.method == 'GET':
+        qr_code = request.args.get('qr_code')
+        if qr_code:
+            try:
+                user_data = db.verify_qr_code(qr_code)
+                if user_data:
+                    # --- NEW: Fetch the user's package inventory ---
+                    packages = db.get_user_packages(user_data['user_id'])
+                    app.logger.debug(f"Found {len(packages)} packages for user {user_data['user_id']}")
+                    
+                    return render_template('user_details.html', user=user_data, packages=packages)
+                
+                return render_template('lookup.html', error="Invalid QR code")
+            except Exception as e:
+                app.logger.error(f"Error in lookup GET: {str(e)}")
+                return render_template('lookup.html', error=str(e))
+        return render_template('lookup.html')
+    
+    # --- Modify the POST request logic ---
+    elif request.method == 'POST':
+        search_type = request.form.get('search_type')
+        search_term = request.form.get('search_term')
+
+        if not search_term:
+            return render_template('lookup.html', error="Please enter a search term")
+
+        try:
+            users_to_display = []
+            if search_type == 'qr_code':
+                user_data = db.verify_qr_code(search_term)
+                if user_data:
+                    # --- NEW: Fetch the user's package inventory ---
+                    packages = db.get_user_packages(user_data['user_id'])
+                    app.logger.debug(f"Found {len(packages)} packages for user {user_data['user_id']}")
+
+                    return render_template('user_details.html', user=user_data, packages=packages)
+            else:
+                # For name searches, you might get multiple users
+                if search_type == 'first_name':
+                    users_to_display = db.search_by_first_name(search_term)
+                elif search_type == 'last_name':
+                    users_to_display = db.search_by_last_name(search_term)
+                
+                if users_to_display:
+                    return render_template('search_results.html', users=users_to_display)
+            
+            return render_template('lookup.html', 
+                                error=f"No user found for this {search_type.replace('_', ' ')}")
+            
+        except Exception as e:
+            app.logger.error(f"Error in lookup POST: {str(e)}")
+            return render_template('lookup.html', error=str(e))
+        
+@app.route('/email-logs')
+@login_required
+def email_logs():
+    """Display email logs and user activity"""
+    try:
+        # It's good practice to ensure connection here as well
+        db.connect()
+        query = """
+        SELECT 
+            u.id,
+            u.first_name,
+            u.last_name,
+            u.email,
+            u.rental_status,
+            qr.qr_code_number,
+            COALESCE(
+                (SELECT created_at 
+                 FROM email_logs 
+                 WHERE user_id = u.id 
+                 ORDER BY created_at DESC 
+                 LIMIT 1),
+                NULL
+            ) as last_action
+        FROM users u
+        LEFT JOIN qr_codes qr ON u.id = qr.user_id AND qr.is_active = TRUE
+        ORDER BY u.last_name, u.first_name
+        """
+        db.cursor.execute(query)
+        users = db.cursor.fetchall()
+        
+        return render_template('email_logs.html', users=users)
+    except Exception as e:
+        return render_template('email_logs.html', error=str(e), users=[])
+
+@app.route('/admin')
+@admin_required
+def admin():
+    """Admin dashboard page"""
+    return render_template('admin.html')
+
+# Error handlers
+@app.errorhandler(404)
+def page_not_found(e):
+    """Handle 404 errors"""
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    """Handle 500 errors"""
+    return render_template('500.html'), 500
+
+# Health check endpoint
+@app.route('/health')
+def health_check():
+    """Health check endpoint to verify server and database status"""
+    try:
+        db.cursor.execute("SELECT 1")
+        db.cursor.fetchone()
+        return jsonify({
+            "status": "healthy",
+            "database": "connected",
+            "timestamp": datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }), 500
+
+# Development and debugging routes
+@app.route('/api/debug-webhook', methods=['POST'])
+def debug_webhook():
+    """Simple webhook for debugging - logs all received data"""
+    try:
+        app.logger.info("=== DEBUG WEBHOOK CALLED ===")
+        
+        # Log request headers
+        app.logger.info("Headers:")
+        for header, value in request.headers:
+            app.logger.info(f"  {header}: {value}")
+        
+        # Log form data
+        if request.form:
+            app.logger.info("Form Data:")
+            for key, value in request.form.items():
+                app.logger.info(f"  {key}: {str(value)[:200]}...")
+        
+        # Log JSON data
+        if request.json:
+            app.logger.info("JSON Data:")
+            app.logger.info(json.dumps(request.json, indent=2)[:1000] + "...")
+        
+        app.logger.info("=== END DEBUG WEBHOOK ===")
+        
+        return jsonify({"status": "logged", "message": "Check Flask logs for details"})
+        
+    except Exception as e:
+        app.logger.error(f"Error in debug webhook: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+# Run the application
 if __name__ == '__main__':
+    """
+    Start the Flask application with SSL configuration
+    
+    The server will start using the HOST and PORT defined in ssl_config.py
+    SSL certificates are also configured in ssl_config.py
+    """
     ssl_context = (SSLConfig.SSL_CERTIFICATE, SSLConfig.SSL_KEY)
     print(f"Starting server on https://{SSLConfig.HOST}:{SSLConfig.PORT}")
     
