@@ -956,7 +956,10 @@ def scan():
 @app.route('/api/update-package-status/<int:package_id>', methods=['POST'])
 @login_required
 def update_package_status_api(package_id):
-    """API endpoint to update the status of an individual package."""
+    """
+    API endpoint to update the status of an individual package.
+    FIXED VERSION - Includes email logic when all packages become available
+    """
     try:
         data = request.get_json()
         new_status = data.get('status')
@@ -964,8 +967,113 @@ def update_package_status_api(package_id):
         if not new_status or new_status not in ['available', 'rented_out']:
             return jsonify({'success': False, 'error': 'Invalid status provided'}), 400
 
-        # Call the database handler method to update the package
+        app.logger.info(f"Updating package {package_id} to status: {new_status}")
+
+        # First, get the user_id for this package
+        db.cursor.execute("""
+            SELECT user_id FROM user_packages WHERE id = %s
+        """, (package_id,))
+        
+        package_result = db.cursor.fetchone()
+        if not package_result:
+            return jsonify({'success': False, 'error': 'Package not found'}), 404
+        
+        user_id = package_result['user_id']
+        app.logger.debug(f"Package {package_id} belongs to user {user_id}")
+
+        # Update the individual package status
         if db.update_package_status(package_id, new_status):
+            app.logger.info(f"Successfully updated package {package_id} to {new_status}")
+            
+            # 🔥 NEW: Check if we need to send thank you email after individual package update
+            if new_status == 'available':  # Only check when checking IN a package
+                try:
+                    # Get current package summary for this user
+                    summary = db.get_user_package_summary(user_id)
+                    
+                    app.logger.debug(f"Package summary after individual update for user {user_id}: {summary}")
+                    
+                    # If ALL packages are now available, send thank you email
+                    if summary['has_packages'] and summary['all_returned'] and summary['total_packages'] > 0:
+                        app.logger.info(f"🎉 ALL {summary['total_packages']} packages are now available for user {user_id} - sending thank you email")
+                        
+                        # Update user rental status to "returned" (2)
+                        db.cursor.execute("""
+                            UPDATE users 
+                            SET rental_status = 2,
+                                updated_at = CURRENT_TIMESTAMP
+                            WHERE id = %s
+                        """, (user_id,))
+                        
+                        # Update any active rental records
+                        db.cursor.execute("""
+                            UPDATE rentals
+                            SET status = 'returned',
+                                return_time = CURRENT_TIMESTAMP
+                            WHERE user_id = %s
+                            AND status = 'checked_out'
+                        """, (user_id,))
+                        
+                        db.connection.commit()
+                        
+                        # Get user details for email
+                        db.cursor.execute("""
+                            SELECT first_name, last_name, email, city, package_type
+                            FROM users
+                            WHERE id = %s
+                        """, (user_id,))
+                        user = db.cursor.fetchone()
+                        
+                        if user:
+                            from rental_email_handler import RentalEmailHandler
+                            
+                            email_handler = RentalEmailHandler(
+                                os.getenv('GMAIL_ADDRESS'),
+                                os.getenv('GMAIL_APP_PASSWORD')
+                            )
+                            
+                            # Send thank you email
+                            success, message = email_handler.send_thank_you_email(
+                                user['email'],
+                                user['first_name'],
+                                user['last_name'],
+                                user.get('city'),
+                                user.get('package_type')
+                            )
+                            
+                            # Log the email attempt
+                            db.cursor.execute("""
+                                SELECT id FROM qr_codes 
+                                WHERE user_id = %s AND is_active = TRUE
+                                LIMIT 1
+                            """, (user_id,))
+                            qr_code = db.cursor.fetchone()
+                            
+                            qr_code_id = qr_code['id'] if qr_code else None
+                            db.log_email(
+                                user_id,
+                                qr_code_id,
+                                'success_thank_you' if success else 'failed_thank_you',
+                                None if success else message
+                            )
+                            
+                            db.connection.commit()
+                            
+                            if success:
+                                app.logger.info(f"✅ Thank you email sent to user {user_id} after individual package check-in")
+                                return jsonify({
+                                    'success': True, 
+                                    'message': f'Package checked in successfully. All {summary["total_packages"]} packages returned - thank you email sent!',
+                                    'email_sent': True,
+                                    'package_summary': summary
+                                })
+                            else:
+                                app.logger.error(f"❌ Failed to send thank you email: {message}")
+                        
+                except Exception as email_error:
+                    app.logger.error(f"Error in email logic for individual package update: {email_error}")
+                    # Don't fail the package update due to email errors
+                    
             return jsonify({'success': True})
         else:
             return jsonify({'success': False, 'error': 'Database update failed'}), 500
@@ -1069,29 +1177,314 @@ def api_lookup():
 
 @app.route('/api/toggle-rental/<int:user_id>', methods=['POST'])
 @login_required
-def toggle_rental_status(user_id):
-    """Toggle rental status for a user via API"""
+def toggle_rental_status_new(user_id):
+    """
+    Updated rental status toggle that works with individual packages
+    FIXED VERSION - Proper handling of return values and database state
+    """
     try:
         data = request.get_json()
-        new_status = int(data.get('status', 0))  # Convert to integer
+        action = data.get('action', 'auto')  # 'auto', 'checkout_all', 'checkin_all', etc.
         
-        if new_status not in [0, 1, 2]:
-            return jsonify({"error": "Invalid status value"}), 400
+        app.logger.info(f"Toggle rental request for user {user_id}, action: {action}")
+        
+        # Get current package summary to determine action
+        summary = db.get_user_package_summary(user_id)
+        
+        if not summary['has_packages']:
+            return jsonify({"error": "User has no packages in inventory"}), 400
+        
+        # Auto-determine action if not specified
+        if action == 'auto':
+            if summary['rented_packages'] > 0:
+                # Has rented packages - check them in
+                action = 'checkin_all'
+            elif summary['available_packages'] > 0:
+                # Has available packages - check them out  
+                action = 'checkout_all'
+            else:
+                return jsonify({"error": "No packages to process"}), 400
+        
+        app.logger.info(f"Executing action '{action}' for user {user_id}")
+        
+        # Execute the action using new package-based method
+        success, message = db.update_rental_status_new(user_id, action)
+        
+        if success:
+            # Get updated summary for response - IMPORTANT: Get fresh data after operation
+            updated_summary = db.get_user_package_summary(user_id)
             
-        db.update_rental_status(user_id, new_status)
-        return jsonify({"success": True})
+            app.logger.info(f"Action '{action}' completed successfully for user {user_id}: {message}")
+            
+            return jsonify({
+                "success": True,
+                "message": message,
+                "package_summary": updated_summary,
+                "action_performed": action
+            })
+        else:
+            app.logger.error(f"Action '{action}' failed for user {user_id}: {message}")
+            return jsonify({"error": message}), 400
+            
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(f"Error in toggle_rental_status_new: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
+
+@app.route('/api/user-summary/<int:user_id>', methods=['GET'])
+@login_required
+def get_user_summary(user_id):
+    """
+    Get detailed package summary for a user
+    SIMPLIFIED VERSION - No dependency on verify_qr_code_by_user_id
+    """
+    try:
+        # Get both summary and individual packages
+        summary = db.get_user_package_summary(user_id)
+        packages = db.get_user_packages(user_id)
+        
+        # Simple user info from the users table
+        db.cursor.execute("""
+            SELECT id, first_name, last_name, email, city, package_type, rental_status
+            FROM users WHERE id = %s
+        """, (user_id,))
+        user_info = db.cursor.fetchone()
+        
+        response = {
+            "success": True,
+            "summary": summary,
+            "packages": packages,
+            "user_info": user_info,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        app.logger.debug(f"User summary requested for user {user_id}: {summary}")
+        
+        return jsonify(response)
+        
+    except Exception as e:
+        app.logger.error(f"Error getting user summary for user {user_id}: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+    
+@app.route('/api/package-action/<int:user_id>', methods=['POST'])
+@login_required
+def package_action(user_id):
+    """
+    New endpoint for specific package actions
+    FIXED VERSION - Better error handling and response formatting
+    """
+    try:
+        data = request.get_json()
+        action = data.get('action')
+        
+        if not action:
+            return jsonify({"error": "Action is required"}), 400
+        
+        valid_actions = ['checkout_one', 'checkin_one', 'checkout_all', 'checkin_all']
+        if action not in valid_actions:
+            return jsonify({"error": f"Invalid action. Must be one of: {valid_actions}"}), 400
+        
+        app.logger.info(f"Package action request: {action} for user {user_id}")
+        
+        # Get initial state for logging
+        initial_summary = db.get_user_package_summary(user_id)
+        app.logger.debug(f"Initial state for user {user_id}: {initial_summary}")
+        
+        # Execute the package action
+        success, message = db.update_rental_status_new(user_id, action)
+        
+        if success:
+            # Get updated package summary - CRITICAL: Fresh data after operation
+            final_summary = db.get_user_package_summary(user_id)
+            
+            app.logger.info(f"Package action '{action}' completed for user {user_id}: {message}")
+            app.logger.debug(f"Final state for user {user_id}: {final_summary}")
+            
+            # Prepare detailed response
+            response = {
+                "success": True,
+                "message": message,
+                "package_summary": final_summary,
+                "action_performed": action,
+                "changes": {
+                    "available_before": initial_summary['available_packages'],
+                    "available_after": final_summary['available_packages'],
+                    "rented_before": initial_summary['rented_packages'],
+                    "rented_after": final_summary['rented_packages']
+                }
+            }
+            
+            # Add special flag if email was sent (all packages returned)
+            if final_summary['all_returned'] and final_summary['has_packages']:
+                response['email_sent'] = True
+                response['message'] += " Thank you email sent to customer."
+            
+            return jsonify(response)
+        else:
+            app.logger.error(f"Package action '{action}' failed for user {user_id}: {message}")
+            return jsonify({"error": message}), 400
+            
+    except Exception as e:
+        app.logger.error(f"Error in package_action: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+    
 @app.route('/api/reset-rental/<int:user_id>', methods=['POST'])
 @login_required
 def reset_rental_status(user_id):
-    """Reset rental status to 'Not Active' for a user"""
+    """
+    Reset rental status to 'Not Active' - makes everything inactive/available
+    SIMPLIFIED VERSION - Just focuses on making everything inactive
+    """
     try:
-        db.update_rental_status(user_id, 0)  # Set to Not Active
-        return jsonify({"success": True})
+        app.logger.info(f"🔄 Resetting user {user_id} to inactive state")
+        
+        # Get current state for logging
+        current_summary = db.get_user_package_summary(user_id)
+        app.logger.info(f"📊 BEFORE reset: {current_summary}")
+        
+        if not current_summary['has_packages']:
+            return jsonify({"error": "User has no packages to reset"}), 400
+        
+        # Step 1: Set ALL packages to available (inactive state)
+        db.cursor.execute("""
+            UPDATE user_packages 
+            SET status = 'available',
+                last_activity_time = CURRENT_TIMESTAMP
+            WHERE user_id = %s
+        """, (user_id,))
+        
+        packages_updated = db.cursor.rowcount
+        app.logger.info(f"📦 Set {packages_updated} packages to available")
+        
+        # Step 2: Set user to inactive state (rental_status = 0)
+        db.cursor.execute("""
+            UPDATE users 
+            SET rental_status = 0,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """, (user_id,))
+        
+        app.logger.info(f"👤 Set user {user_id} to inactive state (rental_status = 0)")
+        
+        # Step 3: Commit the changes
+        db.connection.commit()
+        app.logger.info(f"✅ Reset committed to database")
+        
+        # Step 4: Verify everything is now inactive/available
+        final_summary = db.get_user_package_summary(user_id)
+        app.logger.info(f"📊 AFTER reset: {final_summary}")
+        
+        # Validation
+        if final_summary['rented_packages'] != 0:
+            app.logger.error(f"❌ Reset failed - {final_summary['rented_packages']} packages still rented")
+            return jsonify({
+                "error": f"Reset failed - {final_summary['rented_packages']} packages still active",
+                "summary": final_summary
+            }), 500
+        
+        # Success!
+        success_message = f"✅ Reset complete! All {final_summary['total_packages']} packages are now inactive/available."
+        app.logger.info(f"🎉 Reset successful for user {user_id}")
+        
+        return jsonify({
+            "success": True, 
+            "message": success_message,
+            "package_summary": final_summary,
+            "packages_reset": packages_updated
+        })
+            
+    except mysql.connector.Error as db_error:
+        # Rollback on database error
+        try:
+            db.connection.rollback()
+            app.logger.error(f"🔄 Rolled back due to database error")
+        except:
+            pass
+            
+        app.logger.error(f"❌ Database error during reset for user {user_id}: {str(db_error)}")
+        return jsonify({
+            "error": f"Database error: {str(db_error)}",
+            "user_id": user_id
+        }), 500
+        
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Rollback on any error
+        try:
+            db.connection.rollback()
+            app.logger.error(f"🔄 Rolled back due to error")
+        except:
+            pass
+            
+        app.logger.error(f"❌ Error during reset for user {user_id}: {str(e)}")
+        return jsonify({
+            "error": f"Reset failed: {str(e)}",
+            "user_id": user_id
+        }), 500
+
+# ALSO: Add this improved reset method to your DatabaseHandler class
+def reset_user_packages_to_available_improved(self, user_id: int) -> Tuple[bool, str, Dict]:
+    """
+    Improved helper method to reset all user packages to available status with verification
+    
+    Args:
+        user_id (int): User ID to reset packages for
+        
+    Returns:
+        tuple: (success, message, summary_dict)
+    """
+    try:
+        logger.info(f"Resetting all packages to available for user {user_id}")
+        
+        # Get before state
+        before_summary = self.get_user_package_summary(user_id)
+        
+        # Update all packages to available
+        self.cursor.execute("""
+            UPDATE user_packages 
+            SET status = 'available',
+                last_activity_time = CURRENT_TIMESTAMP
+            WHERE user_id = %s
+        """, (user_id,))
+        packages_updated = self.cursor.rowcount
+        
+        # Update user status to not active
+        self.cursor.execute("""
+            UPDATE users 
+            SET rental_status = 0,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """, (user_id,))
+        
+        # Cancel any active rentals
+        self.cursor.execute("""
+            UPDATE rentals
+            SET status = 'cancelled',
+                return_time = CURRENT_TIMESTAMP
+            WHERE user_id = %s
+            AND status = 'checked_out'
+        """, (user_id,))
+        
+        # Commit changes
+        self.connection.commit()
+        
+        # Verify the reset
+        after_summary = self.get_user_package_summary(user_id)
+        
+        if after_summary['rented_packages'] == 0 and after_summary['total_packages'] > 0:
+            logger.info(f"Successfully reset {packages_updated} packages for user {user_id}")
+            return True, f"Reset successful - all {after_summary['total_packages']} packages available", after_summary
+        else:
+            logger.error(f"Reset verification failed for user {user_id}: {after_summary}")
+            return False, f"Reset failed verification - {after_summary['rented_packages']} packages still rented", after_summary
+        
+    except mysql.connector.Error as err:
+        self.connection.rollback()
+        logger.error(f"Database error resetting packages for user {user_id}: {err}")
+        return False, f"Database error: {err}", {}
+    except Exception as err:
+        self.connection.rollback()
+        logger.error(f"Unexpected error resetting packages for user {user_id}: {err}")
+        return False, f"Unexpected error: {err}", {}
 
 @app.route('/api/save-notes', methods=['POST'])
 @login_required
@@ -1121,18 +1514,15 @@ def save_notes():
 
 @app.route('/api/filter-users/<status>')
 @login_required
-def filter_users(status):
+def filter_users_with_packages(status):
     """
-    Filter users by rental status
-    
-    Args:
-        status: 'all', 'not_active' (0), 'active' (1), or 'returned' (2)
+    Filter users by rental status with package information included
     """
     try:
         if status not in ['all', 'not_active', 'active', 'returned']:
             return jsonify({'error': 'Invalid status parameter'}), 400
             
-        # Base query with common joins
+        # Base query with package information
         base_query = """
             SELECT 
                 u.id,
@@ -1148,7 +1538,26 @@ def filter_users(status):
                      ORDER BY created_at DESC 
                      LIMIT 1),
                     NULL
-                ) as last_action
+                ) as last_action,
+                -- Package counts
+                COALESCE(
+                    (SELECT COUNT(*) 
+                     FROM user_packages 
+                     WHERE user_id = u.id),
+                    0
+                ) as total_packages,
+                COALESCE(
+                    (SELECT COUNT(*) 
+                     FROM user_packages 
+                     WHERE user_id = u.id AND status = 'available'),
+                    0
+                ) as available_packages,
+                COALESCE(
+                    (SELECT COUNT(*) 
+                     FROM user_packages 
+                     WHERE user_id = u.id AND status = 'rented_out'),
+                    0
+                ) as rented_packages
             FROM users u
             LEFT JOIN qr_codes qr ON u.id = qr.user_id AND qr.is_active = TRUE
         """
@@ -1167,15 +1576,19 @@ def filter_users(status):
         db.cursor.execute(base_query)
         users = db.cursor.fetchall()
         
-        # Convert datetime objects to strings for JSON serialization
+        # Convert datetime objects to strings and add package summary flags
         for user in users:
             if user['last_action']:
                 user['last_action'] = user['last_action'].strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Add helpful flags
+            user['has_packages'] = user['total_packages'] > 0
+            user['all_returned'] = user['rented_packages'] == 0 if user['has_packages'] else True
                 
         return jsonify({'users': users})
         
     except Exception as e:
-        app.logger.error(f"Error filtering users: {str(e)}")
+        app.logger.error(f"Error filtering users with packages: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/stats')
@@ -1206,26 +1619,32 @@ def reset_database():
 @app.route('/lookup', methods=['GET', 'POST'])
 @login_required
 def lookup():
-    # --- The GET request logic can remain the same ---
     if request.method == 'GET':
         qr_code = request.args.get('qr_code')
         if qr_code:
             try:
                 user_data = db.verify_qr_code(qr_code)
                 if user_data:
-                    # --- NEW: Fetch the user's package inventory ---
+                    # Get user's package inventory and summary
                     packages = db.get_user_packages(user_data['user_id'])
-                    app.logger.debug(f"Found {len(packages)} packages for user {user_data['user_id']}")
+                    package_summary = db.get_user_package_summary(user_data['user_id'])
                     
-                    return render_template('user_details.html', user=user_data, packages=packages)
+                    app.logger.info(f"Lookup successful for QR {qr_code}: user {user_data['user_id']} with {len(packages)} packages")
+                    app.logger.debug(f"Package summary: {package_summary}")
+                    
+                    return render_template('user_details.html', 
+                                         user=user_data, 
+                                         packages=packages,
+                                         package_summary=package_summary)
+                else:
+                    app.logger.warning(f"Invalid QR code lookup attempt: {qr_code}")
                 
                 return render_template('lookup.html', error="Invalid QR code")
             except Exception as e:
                 app.logger.error(f"Error in lookup GET: {str(e)}")
-                return render_template('lookup.html', error=str(e))
+                return render_template('lookup.html', error=f"System error: {str(e)}")
         return render_template('lookup.html')
     
-    # --- Modify the POST request logic ---
     elif request.method == 'POST':
         search_type = request.form.get('search_type')
         search_term = request.form.get('search_term')
@@ -1238,17 +1657,32 @@ def lookup():
             if search_type == 'qr_code':
                 user_data = db.verify_qr_code(search_term)
                 if user_data:
-                    # --- NEW: Fetch the user's package inventory ---
+                    # Get user's package inventory and summary
                     packages = db.get_user_packages(user_data['user_id'])
-                    app.logger.debug(f"Found {len(packages)} packages for user {user_data['user_id']}")
-
-                    return render_template('user_details.html', user=user_data, packages=packages)
+                    package_summary = db.get_user_package_summary(user_data['user_id'])
+                    
+                    app.logger.info(f"QR code search successful for {search_term}: user {user_data['user_id']}")
+                    
+                    return render_template('user_details.html', 
+                                         user=user_data, 
+                                         packages=packages,
+                                         package_summary=package_summary)
             else:
-                # For name searches, you might get multiple users
+                # For name searches, get multiple users with package summaries
                 if search_type == 'first_name':
                     users_to_display = db.search_by_first_name(search_term)
                 elif search_type == 'last_name':
                     users_to_display = db.search_by_last_name(search_term)
+                
+                app.logger.info(f"Name search for '{search_term}' returned {len(users_to_display)} results")
+                
+                # Add package summaries for each user
+                for user in users_to_display:
+                    try:
+                        user['package_summary'] = db.get_user_package_summary(user['user_id'])
+                    except Exception as summary_error:
+                        app.logger.warning(f"Could not get package summary for user {user['user_id']}: {summary_error}")
+                        user['package_summary'] = {'has_packages': False, 'total_packages': 0}
                 
                 if users_to_display:
                     return render_template('search_results.html', users=users_to_display)
@@ -1258,7 +1692,7 @@ def lookup():
             
         except Exception as e:
             app.logger.error(f"Error in lookup POST: {str(e)}")
-            return render_template('lookup.html', error=str(e))
+            return render_template('lookup.html', error=f"System error: {str(e)}")
         
 @app.route('/email-logs')
 @login_required

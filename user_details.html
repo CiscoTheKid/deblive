@@ -3,9 +3,10 @@
 
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="container mx-auto px-4">
+        <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">User Details</h1>
-            <a href="/" class="text-blue-500 hover:text-blue-700 flex items-center">
+            <h1 class="text-3xl font-bold text-gray-800">📋 User Details</h1>
+            <a href="/" class="text-blue-500 hover:text-blue-700 flex items-center transition duration-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10.707 3.293a1 1 0 010 1.414L6.414 9H17a1 1 0 110 2H6.414l4.293 4.293a1 1 0 11-1.414 1.414l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
@@ -13,253 +14,595 @@
             </a>
         </div>
 
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div class="border-b border-gray-200">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-gray-800">Package Inventory</h2>
-                        <span class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
-                            Total Packages: {{ packages|length }}
-                        </span>
-                    </div>
-
-                    <div class="overflow-x-auto border border-gray-200 rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package Type</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Activity</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                {% for package in packages %}
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ package.package_type }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        {% if package.status == 'available' %}
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Available</span>
-                                        {% else %}
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Rented Out</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ package.last_activity_time.strftime('%b %d, %Y %I:%M %p') if package.last_activity_time else 'N/A' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        {% if package.status == 'available' %}
-                                            <button onclick="updatePackageStatus({{ package.id }}, 'rented_out')" class="text-indigo-600 hover:text-indigo-900">Check Out</button>
-                                        {% else %}
-                                            <button onclick="updatePackageStatus({{ package.id }}, 'available')" class="text-green-600 hover:text-green-900">Check In</button>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr>
-                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No packages found for this user.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+        <!-- Customer Information Card -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex justify-between items-start mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">👤 Customer Information</h2>
+                <!-- Reset Button - Always Visible -->
+                <button onclick="resetRental({{ user.user_id }})"
+                        class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200 flex items-center">
+                    🔄 Reset All Packages
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <p class="text-sm text-gray-600">Name</p>
+                    <p class="font-medium text-gray-900">{{ user.first_name }} {{ user.last_name }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Email</p>
+                    <p class="font-medium text-gray-900">{{ user.email }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">QR Code</p>
+                    <p class="font-medium text-gray-900">{{ user.qr_code_number }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">City/Location</p>
+                    <p class="font-medium text-gray-900">{{ user.city if user.city else 'Not specified' }}</p>
                 </div>
             </div>
+        </div>
 
-            {% if packages|length <= 1 %}
-            <div class="border-b border-gray-200">
-                <div class="p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rental Status</h2>
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <span class="text-sm font-medium text-gray-500">Current Status</span>
-                                <span class="ml-2">
-                                    {% if user.rental_status == 0 %}
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Not Active</span>
-                                    {% elif user.rental_status == 1 %}
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active Rental</span>
-                                    {% elif user.rental_status == 2 %}
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Returned</span>
-                                    {% endif %}
-                                </span>
-                            </div>
-                            <div class="flex flex-col gap-3">
-                                <button onclick="toggleRental({{ user.user_id }}, {{ user.rental_status }})"
-                                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                    {% if user.rental_status == 1 %}
-                                        Check In Package
-                                    {% else %}
-                                        Check Out Package
-                                    {% endif %}
-                                </button>
-                                <button onclick="resetRental({{ user.user_id }})"
-                                        class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                    Reset Status
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Package Summary Card - Always Show if User Has Packages -->
+        {% if package_summary and package_summary.has_packages %}
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">📦 Package Summary & Bulk Actions</h2>
+            
+            <!-- Package Count Summary -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-blue-50 p-4 rounded-lg text-center border-2 border-blue-200">
+                    <div class="text-3xl font-bold text-blue-600">{{ package_summary.total_packages }}</div>
+                    <div class="text-sm text-blue-800 font-medium">Total Packages</div>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg text-center border-2 border-green-200">
+                    <div class="text-3xl font-bold text-green-600">{{ package_summary.available_packages }}</div>
+                    <div class="text-sm text-green-800 font-medium">Available</div>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-lg text-center border-2 border-yellow-200">
+                    <div class="text-3xl font-bold text-yellow-600">{{ package_summary.rented_packages }}</div>
+                    <div class="text-sm text-yellow-800 font-medium">Checked Out</div>
                 </div>
             </div>
-            {% endif %}
-
-            <div class="border-b border-gray-200">
-                <div class="p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Notes</h2>
-                    <div class="space-y-4">
-                        <div class="flex flex-col space-y-2">
-                            <textarea
-                                id="userNotes"
-                                name="userNotes"
-                                rows="4"
-                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                placeholder="Add notes about this customer..."
-                            >{{ user.notes if user.notes else '' }}</textarea>
-                            <div class="flex justify-end">
-                                <button
-                                    onclick="saveNotes({{ user.user_id }})"
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                                >
-                                    Save Notes
-                                </button>
-                            </div>
-                            <div id="notesSaveStatus" class="text-sm hidden">
-                                <span class="text-green-600 hidden" id="notesSaveSuccess">Notes saved successfully!</span>
-                                <span class="text-red-600 hidden" id="notesSaveError">Error saving notes. Please try again.</span>
-                            </div>
-                        </div>
-                        {% if user.notes_updated_at %}
-                        <div class="text-sm text-gray-500">
-                            Last updated: {{ user.notes_updated_at.strftime('%B %d, %Y at %I:%M %p') }}
-                        </div>
+            
+            <!-- Status Indicator & Bulk Actions -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <!-- Current Status -->
+                    <div class="flex items-center">
+                        <span class="text-sm font-medium text-gray-700 mr-3">Current Status:</span>
+                        {% if package_summary.rented_packages == 0 %}
+                            <span class="px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800 flex items-center">
+                                ✅ All Packages Available
+                            </span>
+                        {% elif package_summary.available_packages == 0 %}
+                            <span class="px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800 flex items-center">
+                                🔴 All Packages Checked Out
+                            </span>
+                        {% else %}
+                            <span class="px-3 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800 flex items-center">
+                                ⚠️ Partial ({{ package_summary.rented_packages }}/{{ package_summary.total_packages }} out)
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Bulk Action Buttons -->
+                    <div class="flex flex-wrap gap-2">
+                        {% if package_summary.available_packages > 0 %}
+                            <button onclick="performPackageAction('checkout_one')" 
+                                    class="px-3 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 flex items-center">
+                                📤 Check Out 1
+                            </button>
+                            <button onclick="performPackageAction('checkout_all')" 
+                                    class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200 flex items-center font-medium">
+                                📤 Check Out All ({{ package_summary.available_packages }})
+                            </button>
+                        {% endif %}
+                        
+                        {% if package_summary.rented_packages > 0 %}
+                            <button onclick="performPackageAction('checkin_one')" 
+                                    class="px-3 py-2 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 flex items-center">
+                                📥 Check In 1
+                            </button>
+                            <button onclick="performPackageAction('checkin_all')" 
+                                    class="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 transition duration-200 flex items-center font-medium">
+                                📥 Check In All ({{ package_summary.rented_packages }})
+                            </button>
                         {% endif %}
                     </div>
                 </div>
             </div>
+        </div>
+        {% endif %}
 
-            <div class="p-6 bg-gray-50">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <a href="/scan" class="block text-center px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition duration-200">
-                        Scan Another Code
-                    </a>
-                    <a href="/lookup" class="block text-center px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition duration-200">
-                        Manual Lookup
-                    </a>
+        <!-- Individual Package Inventory -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-800">📋 Individual Package Inventory</h2>
+                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
+                        Total: {{ packages|length }} packages
+                    </span>
                 </div>
+            </div>
+            
+            <div class="p-6">
+                {% if packages %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Activity</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for package in packages %}
+                            <tr id="package-row-{{ package.id }}" class="hover:bg-gray-50 transition duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    #{{ package.id }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {{ package.package_type }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span id="status-badge-{{ package.id }}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                          {% if package.status == 'available' %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                        {% if package.status == 'available' %}✅ Available{% else %}📤 Checked Out{% endif %}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <span id="activity-time-{{ package.id }}">
+                                        {{ package.last_activity_time.strftime('%b %d, %Y %I:%M %p') if package.last_activity_time else 'N/A' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button id="action-btn-{{ package.id }}" 
+                                            onclick="updateIndividualPackageStatus({{ package.id }}, '{{ 'rented_out' if package.status == 'available' else 'available' }}')" 
+                                            class="{% if package.status == 'available' %}text-blue-600 hover:text-blue-900{% else %}text-green-600 hover:text-green-900{% endif %} transition duration-150 ease-in-out focus:outline-none font-medium">
+                                        {% if package.status == 'available' %}📤 Check Out{% else %}📥 Check In{% endif %}
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-12">
+                    <div class="text-gray-400 mb-4">
+                        <svg class="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1h-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-500 mb-2">No Packages Found</h3>
+                    <p class="text-gray-400 mb-4">This user has no packages in their inventory.</p>
+                    <p class="text-sm text-gray-400">Packages will appear here after webhook registration or manual assignment.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Notes Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">📝 Customer Notes</h2>
+            <div class="space-y-4">
+                <div class="flex flex-col space-y-3">
+                    <textarea
+                        id="userNotes"
+                        name="userNotes"
+                        rows="4"
+                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-200 resize-none"
+                        placeholder="Add notes about this customer's rental history, special requests, or important information..."
+                    >{{ user.notes if user.notes else '' }}</textarea>
+                    <div class="flex justify-between items-center">
+                        <div id="notesSaveStatus" class="text-sm hidden">
+                            <span class="text-green-600 hidden" id="notesSaveSuccess">✅ Notes saved successfully!</span>
+                            <span class="text-red-600 hidden" id="notesSaveError">❌ Error saving notes. Please try again.</span>
+                        </div>
+                        <button
+                            onclick="saveNotes({{ user.user_id }})"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 flex items-center"
+                        >
+                            💾 Save Notes
+                        </button>
+                    </div>
+                    {% if user.notes_updated_at %}
+                    <div class="text-sm text-gray-500 italic">
+                        Last updated: {{ user.notes_updated_at.strftime('%B %d, %Y at %I:%M %p') }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">🚀 Quick Actions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="/scan" class="block text-center px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition duration-200 transform hover:scale-105 shadow-md">
+                    📱 Scan Another QR Code
+                </a>
+                <a href="/lookup" class="block text-center px-6 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 transition duration-200 transform hover:scale-105 shadow-md">
+                    🔍 Manual Customer Lookup
+                </a>
+                <a href="/email-logs" class="block text-center px-6 py-3 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 transition duration-200 transform hover:scale-105 shadow-md">
+                    📊 View All Customers
+                </a>
             </div>
         </div>
     </div>
 </div>
 
+<!-- COMPLETE JAVASCRIPT - MODERN PACKAGE-BASED SYSTEM ONLY -->
 <script>
-function saveNotes(userId) {
-    const notes = document.getElementById('userNotes').value;
-    const successMessage = document.getElementById('notesSaveSuccess');
-    const errorMessage = document.getElementById('notesSaveError');
-    const statusDiv = document.getElementById('notesSaveStatus');
+// ========================================
+// CONFIGURATION & GLOBAL VARIABLES
+// ========================================
 
-    // Hide any existing messages
-    successMessage.classList.add('hidden');
-    errorMessage.classList.add('hidden');
-    statusDiv.classList.remove('hidden');
+const userId = {{ user.user_id }};
+const DEBUG_MODE = true;
 
-    fetch('/api/save-notes', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            user_id: userId,
-            notes: notes
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            successMessage.classList.remove('hidden');
-            setTimeout(() => {
-                statusDiv.classList.add('hidden');
-            }, 3000);
-        } else {
-            errorMessage.classList.remove('hidden');
-        }
-    })
-    .catch(error => {
-        errorMessage.classList.remove('hidden');
-        console.error('Error:', error);
-    });
-}
-
-function toggleRental(userId, currentStatus) {
-    const newStatus = currentStatus === 1 ? 2 : 1;
-    fetch(`/api/toggle-rental/${userId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            status: newStatus
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert('Error updating rental status');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error updating rental status');
-    });
-}
-
-function resetRental(userId) {
-    if (confirm('Are you sure you want to reset the rental status?')) {
-        fetch(`/api/reset-rental/${userId}`, {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Error resetting rental status');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error resetting rental status');
-        });
+function debugLog(message, data = null) {
+    if (DEBUG_MODE) {
+        console.log(`[${new Date().toISOString()}] ${message}`, data || '');
     }
 }
-function updatePackageStatus(packageId, newStatus) {
-    // Show a confirmation dialog before proceeding
-    if (!confirm(`Are you sure you want to '${newStatus === 'rented_out' ? 'Check Out' : 'Check In'}' this package?`)) {
+
+// ========================================
+// PACKAGE MANAGEMENT FUNCTIONS
+// ========================================
+
+/**
+ * Perform bulk package actions
+ * @param {string} action - 'checkout_one', 'checkin_one', 'checkout_all', 'checkin_all'
+ */
+function performPackageAction(action) {
+    debugLog(`🚀 Starting package action: ${action} for user ${userId}`);
+    
+    showLoading(true);
+    disableActionButtons(true);
+    
+    fetch(`/api/package-action/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action })
+    })
+    .then(response => {
+        debugLog(`Response status: ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        debugLog('Package action response:', data);
+        showLoading(false);
+        
+        if (data.success) {
+            let message = data.message;
+            if (data.email_sent) {
+                message += ' 🎉 Thank you email sent to customer!';
+            }
+            
+            showNotification(message, 'success');
+            
+            if (data.changes) {
+                debugLog('Package changes:', data.changes);
+                console.table(data.changes);
+            }
+            
+            // Refresh page to show updated state
+            setTimeout(() => window.location.reload(), 2000);
+            
+        } else {
+            showNotification(data.error || 'Operation failed', 'error');
+            disableActionButtons(false);
+        }
+    })
+    .catch(error => {
+        showLoading(false);
+        disableActionButtons(false);
+        console.error('Package action error:', error);
+        showNotification('❌ Network error. Please check connection and try again.', 'error');
+    });
+}
+
+/**
+ * Update individual package status
+ * @param {number} packageId - Package ID
+ * @param {string} newStatus - 'available' or 'rented_out'
+ */
+function updateIndividualPackageStatus(packageId, newStatus) {
+    debugLog(`📦 Updating package ${packageId} to status: ${newStatus}`);
+    
+    const button = document.getElementById(`action-btn-${packageId}`);
+    if (!button) {
+        debugLog(`❌ Could not find button for package ${packageId}`);
         return;
     }
-
-    fetch(`/api/update-package-status/${packageId}`, { // This API endpoint is now active
+    
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.innerHTML = '<span class="animate-spin">⟳</span> Processing...';
+    
+    fetch(`/api/update-package-status/${packageId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
     })
     .then(response => response.json())
     .then(data => {
+        debugLog('Individual package update response:', data);
+        
         if (data.success) {
-            location.reload(); // Reload the page to show the updated status
+            updatePackageRowUI(packageId, newStatus);
+            
+            const actionText = newStatus === 'rented_out' ? 'checked out' : 'checked in';
+            let message = `📦 Package #${packageId} ${actionText} successfully`;
+            
+            if (data.email_sent) {
+                message += ' 🎉 All packages returned - thank you email sent!';
+            }
+            
+            showNotification(message, 'success');
+            
+            // Refresh to update package summary
+            setTimeout(() => window.location.reload(), 1500);
+            
         } else {
-            alert('Error: ' + data.error);
+            showNotification('❌ Error: ' + (data.error || 'Unknown error'), 'error');
+            button.disabled = false;
+            button.textContent = originalText;
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while updating the package status.');
+        console.error('Individual package update error:', error);
+        showNotification('❌ Network error occurred. Please try again.', 'error');
+        button.disabled = false;
+        button.textContent = originalText;
     });
 }
+
+/**
+ * Update package row UI after status change
+ */
+function updatePackageRowUI(packageId, newStatus) {
+    const statusBadge = document.getElementById(`status-badge-${packageId}`);
+    const activityTime = document.getElementById(`activity-time-${packageId}`);
+    const actionBtn = document.getElementById(`action-btn-${packageId}`);
+    
+    if (!statusBadge || !activityTime || !actionBtn) {
+        debugLog(`⚠️ Could not find UI elements for package ${packageId}`);
+        return;
+    }
+    
+    if (newStatus === 'available') {
+        statusBadge.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800';
+        statusBadge.textContent = '✅ Available';
+        actionBtn.textContent = '📤 Check Out';
+        actionBtn.className = 'text-blue-600 hover:text-blue-900 transition duration-150 ease-in-out focus:outline-none font-medium';
+        actionBtn.onclick = () => updateIndividualPackageStatus(packageId, 'rented_out');
+    } else {
+        statusBadge.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800';
+        statusBadge.textContent = '📤 Checked Out';
+        actionBtn.textContent = '📥 Check In';
+        actionBtn.className = 'text-green-600 hover:text-green-900 transition duration-150 ease-in-out focus:outline-none font-medium';
+        actionBtn.onclick = () => updateIndividualPackageStatus(packageId, 'available');
+    }
+    
+    // Update activity time
+    activityTime.textContent = new Date().toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit', hour12: true
+    });
+    
+    actionBtn.disabled = false;
+}
+
+// ========================================
+// RESET FUNCTIONALITY
+// ========================================
+
+/**
+ * Reset all packages to available status
+ * @param {number} userId - User ID to reset
+ */
+function resetRental(userId) {
+    const confirmMessage = `🔄 RESET ALL PACKAGES\n\nThis will:\n✅ Mark ALL packages as available\n✅ Cancel any active rentals\n✅ Set user status to "Not Active"\n\n⚠️ This action cannot be undone.\n\nAre you sure you want to continue?`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    debugLog(`🔄 Starting reset for user ${userId}`);
+    
+    showLoading(true);
+    disableActionButtons(true);
+    
+    fetch(`/api/reset-rental/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        showLoading(false);
+        debugLog('Reset response:', data);
+        
+        if (data.success) {
+            let message = data.message || 'Reset completed successfully';
+            
+            if (data.details) {
+                debugLog('Reset details:', data.details);
+                console.table(data.details);
+            }
+            
+            showNotification('✅ ' + message, 'success');
+            
+            // Force hard refresh
+            setTimeout(() => {
+                window.location.replace(window.location.href);
+            }, 2000);
+            
+        } else {
+            disableActionButtons(false);
+            showNotification('❌ ' + (data.error || 'Reset failed'), 'error');
+        }
+    })
+    .catch(error => {
+        showLoading(false);
+        disableActionButtons(false);
+        console.error('Reset error:', error);
+        showNotification('❌ Network error during reset. Please try again.', 'error');
+    });
+}
+
+// ========================================
+// NOTES FUNCTIONALITY
+// ========================================
+
+/**
+ * Save user notes
+ * @param {number} userId - User ID
+ */
+function saveNotes(userId) {
+    debugLog('💾 Saving notes for user', userId);
+    
+    const notes = document.getElementById('userNotes').value;
+    const successMessage = document.getElementById('notesSaveSuccess');
+    const errorMessage = document.getElementById('notesSaveError');
+    const statusDiv = document.getElementById('notesSaveStatus');
+
+    successMessage.classList.add('hidden');
+    errorMessage.classList.add('hidden');
+    statusDiv.classList.remove('hidden');
+
+    fetch('/api/save-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, notes: notes })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            successMessage.classList.remove('hidden');
+            setTimeout(() => statusDiv.classList.add('hidden'), 3000);
+        } else {
+            errorMessage.classList.remove('hidden');
+        }
+    })
+    .catch(error => {
+        errorMessage.classList.remove('hidden');
+        console.error('Save notes error:', error);
+    });
+}
+
+// ========================================
+// UI UTILITY FUNCTIONS
+// ========================================
+
+function disableActionButtons(disable) {
+    const buttons = document.querySelectorAll('button[onclick*="performPackageAction"], button[onclick*="updateIndividualPackageStatus"]');
+    buttons.forEach(button => {
+        button.disabled = disable;
+        if (disable) {
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            button.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+}
+
+function showLoading(show) {
+    let overlay = document.getElementById('loading-overlay');
+    
+    if (show) {
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'loading-overlay';
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            overlay.innerHTML = `
+                <div class="bg-white rounded-lg p-8 flex flex-col items-center shadow-2xl max-w-sm mx-4">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mb-4"></div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Processing...</h3>
+                    <p class="text-gray-600 text-center">Updating package status in database</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        overlay.style.display = 'flex';
+    } else {
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+}
+
+function showNotification(message, type = 'success') {
+    // Remove existing notifications
+    document.querySelectorAll('.notification-toast').forEach(n => n.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `notification-toast fixed bottom-4 right-4 px-6 py-4 rounded-lg shadow-xl transition-all duration-300 transform translate-y-0 z-50 max-w-md ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    
+    const icon = type === 'success' ? '✅' : '❌';
+    notification.innerHTML = `
+        <div class="flex items-start">
+            <span class="text-xl mr-3 flex-shrink-0">${icon}</span>
+            <div class="flex-grow">
+                <div class="font-medium">${message}</div>
+                <div class="text-xs opacity-75 mt-1">${new Date().toLocaleTimeString()}</div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.classList.add('translate-y-full', 'opacity-0');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+
+// ========================================
+// INITIALIZATION & KEYBOARD SHORTCUTS
+// ========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    debugLog('📱 User details interface initialized');
+    
+    // Keyboard shortcuts for power users
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+            switch(e.key) {
+                case 'C':
+                    e.preventDefault();
+                    const checkoutAllBtn = document.querySelector('button[onclick*="checkout_all"]');
+                    if (checkoutAllBtn && !checkoutAllBtn.disabled) checkoutAllBtn.click();
+                    break;
+                case 'I':
+                    e.preventDefault();
+                    const checkinAllBtn = document.querySelector('button[onclick*="checkin_all"]');
+                    if (checkinAllBtn && !checkinAllBtn.disabled) checkinAllBtn.click();
+                    break;
+                case 'R':
+                    e.preventDefault();
+                    resetRental(userId);
+                    break;
+            }
+        }
+    });
+    
+    debugLog('⌨️ Keyboard shortcuts active: Ctrl+Shift+C (checkout all), Ctrl+Shift+I (checkin all), Ctrl+Shift+R (reset)');
+});
+
+// Expose debug functions globally
+window.debugLog = debugLog;
+window.userId = userId;
+
+debugLog('🚀 Modern package management system ready');
 </script>
 
 {% endblock %}
