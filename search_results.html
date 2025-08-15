@@ -1,263 +1,658 @@
 {% extends "base.html" %}
-{% block title %}Search Results{% endblock %}
+{% block title %}📊 Customer Database{% endblock %}
 {% block content %}
 
-<div class="container mx-auto p-4">
-    <div class="bg-white shadow-lg rounded-lg p-6 mb-8 flex flex-col items-center text-center">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">Search Results</h1>
-        <a href="{{ url_for('lookup') }}" class="text-blue-500 hover:text-blue-700">
-            Back to Search
-        </a>
-    </div>
-
-    {% if users %}
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        QR Code
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Last Status Change
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for user in users %}
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">
-                            {{ user.first_name }} {{ user.last_name }}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">
-                            {{ user.email }}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">
-                            {{ user.qr_code_number if user.qr_code_number else 'No QR Code' }}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        {% if user.rental_status == 0 %}
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                Not Active
-                            </span>
-                        {% elif user.rental_status == 1 %}
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Active Rental
-                            </span>
-                        {% else %}
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                Returned
-                            </span>
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">
-                            {{ user.updated_at.strftime('%Y-%m-%d %H:%M:%S') if user.updated_at else user.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <div class="flex space-x-2">
-                            <a href="{{ url_for('lookup', qr_code=user.qr_code_number) }}" 
-                               class="text-blue-600 hover:text-blue-900 font-medium">
-                                View Details
-                            </a>
-                            {% if user.rental_status == 0 %}
-                                <button onclick="updateRentalStatus({{ user.user_id }}, 1)"
-                                        class="text-green-600 hover:text-green-900 font-medium">
-                                    Check Out
-                                </button>
-                            {% elif user.rental_status == 1 %}
-                                <button onclick="updateRentalStatus({{ user.user_id }}, 2)"
-                                        class="text-blue-600 hover:text-blue-900 font-medium">
-                                    Mark Returned
-                                </button>
-                            {% else %}
-                                <button onclick="updateRentalStatus({{ user.user_id }}, 0)"
-                                        class="text-gray-600 hover:text-gray-900 font-medium">
-                                    Reset Status
-                                </button>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <div class="text-center text-gray-600 py-8">
-        <p>No results found</p>
-        <p>Try adjusting your search terms</p>
-    </div>
-    {% endif %}
-
-    <div class="mt-6 pt-6 border-t border-gray-200">
-        <div class="flex flex-col items-center space-y-4">
-            <a href="{{ url_for('scan') }}" 
-               class="w-48 bg-gray-100 text-center py-2 px-4 rounded-md hover:bg-gray-200 transition duration-200">
-                Use Scanner
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+        <!-- Header Section -->
+        <div class="bg-white shadow-lg rounded-lg p-6 mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">📊 Customer Database & Package Management</h1>
+            <p class="text-gray-600 mb-4">Monitor rental status and manage packages for all customers</p>
+            <a href="{{ url_for('home') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition duration-200 transform hover:scale-105 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.707 3.293a1 1 0 010 1.414L6.414 9H17a1 1 0 110 2H6.414l4.293 4.293a1 1 0 11-1.414 1.414l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                🏠 Back to Dashboard
             </a>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">🔍 Filter Customers</h2>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="filterUsers('all')" id="filter-all"
+                        class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200">
+                    👥 All Customers
+                </button>
+                <button onclick="filterUsers('active')" id="filter-active"
+                        class="px-4 py-2 text-sm font-medium rounded-lg bg-green-100 text-green-700 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                    ✅ Active Rentals
+                </button>
+                <button onclick="filterUsers('returned')" id="filter-returned"
+                        class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    📥 Returned
+                </button>
+                <button onclick="filterUsers('not_active')" id="filter-not_active"
+                        class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200">
+                    💤 Not Active
+                </button>
+            </div>
+        </div>
+
+        <!-- Customer Table -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800">👥 Customer List</h2>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                👤 Customer
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                📧 Contact
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                📦 Packages
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                📊 Status
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ⏰ Last Activity
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                🔧 Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="userTableBody">
+                        {% for user in users %}
+                        <tr class="hover:bg-gray-50 transition duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                                            {{ user.first_name[0] }}{{ user.last_name[0] }}
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ user.first_name }} {{ user.last_name }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            QR: {{ user.qr_code_number or 'Not assigned' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ user.email }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    <span class="font-medium">Total: 0</span> | 
+                                    <span class="text-green-600">Available: 0</span> | 
+                                    <span class="text-yellow-600">Out: 0</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if user.rental_status == 0 %}
+                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                        💤 Not Active
+                                    </span>
+                                {% elif user.rental_status == 1 %}
+                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        ✅ Active Rental
+                                    </span>
+                                {% else %}
+                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        📥 Returned
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">
+                                    {% if user.last_action %}
+                                        {{ user.last_action }}
+                                    {% else %}
+                                        No recent activity
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <div class="flex flex-wrap gap-2">
+                                    <!-- View Details Button -->
+                                    <a href="{{ url_for('lookup', qr_code=user.qr_code_number) }}" 
+                                       class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-lg hover:bg-blue-200 transition duration-200">
+                                        👁️ Details
+                                    </a>
+                                    
+                                    <!-- Status Toggle Button -->
+                                    {% if user.rental_status == 0 %}
+                                        <button onclick="quickStatusUpdate({{ user.id }}, 'checkout_all')"
+                                                class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-xs rounded-lg hover:bg-green-200 transition duration-200">
+                                            📤 Check Out
+                                        </button>
+                                    {% elif user.rental_status == 1 %}
+                                        <button onclick="quickStatusUpdate({{ user.id }}, 'checkin_all')"
+                                                class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-lg hover:bg-blue-200 transition duration-200">
+                                            📥 Check In
+                                        </button>
+                                    {% endif %}
+                                    
+                                    <!-- Reset Button -->
+                                    <button onclick="resetUserPackages({{ user.id }}, '{{ user.first_name }} {{ user.last_name }}')"
+                                            class="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 text-xs rounded-lg hover:bg-red-200 transition duration-200">
+                                        🔄 Reset
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 flex flex-col items-center shadow-2xl max-w-sm mx-4">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mb-4"></div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Processing...</h3>
+                <p class="text-gray-600 text-center">Updating package status in database</p>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    async function updateRentalStatus(userId, newStatus) {
-        try {
-            const button = event.target;
-            const originalText = button.textContent;
-            button.disabled = true;
-            button.innerHTML = `
-                <span class="inline-flex items-center">
-                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Updating...
+// ========================================
+// GLOBAL CONFIGURATION & VARIABLES
+// ========================================
+
+const DEBUG_MODE = true;
+let currentFilter = 'all';
+
+/**
+ * Debug logging function
+ */
+function debugLog(message, data = null) {
+    if (DEBUG_MODE) {
+        console.log(`[${new Date().toISOString()}] ${message}`, data || '');
+    }
+}
+
+// ========================================
+// USER FILTERING FUNCTIONS
+// ========================================
+
+/**
+ * Filter users based on rental status with enhanced package data
+ * @param {string} status - Filter status: 'all', 'active', 'returned', 'not_active'
+ */
+async function filterUsers(status) {
+    try {
+        debugLog(`🔍 Filtering users by status: ${status}`);
+        currentFilter = status;
+        
+        // Show loading state in table
+        showTableLoading(true);
+        
+        // Update filter button styles
+        updateFilterButtonStyles(status);
+        
+        const response = await fetch(`/api/filter-users/${status}`);
+        const data = await response.json();
+        
+        if (response.ok && data.users) {
+            debugLog(`✅ Loaded ${data.users.length} users`);
+            renderUserTable(data.users);
+        } else {
+            throw new Error(data.error || 'Failed to load users');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error filtering users:', error);
+        showTableError('Failed to load users. Please try again.');
+        showNotification('Failed to load customer data', 'error');
+    }
+}
+
+/**
+ * Render user table with enhanced package information
+ * @param {Array} users - Array of user objects with package summary
+ */
+function renderUserTable(users) {
+    const tbody = document.getElementById('userTableBody');
+    
+    if (!users || users.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="px-6 py-12 text-center">
+                    <div class="text-gray-400 mb-4">
+                        <svg class="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M17 20h5v-2a3 3 0 00-5.196-2.12M5.404 18.88A3 3 0 004 16v2h1.404zM12 14v-2a4 4 0 00-8 0v2m8-4a4 4 0 108 0v2"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-500 mb-2">No Customers Found</h3>
+                    <p class="text-gray-400">No customers match the current filter criteria.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tbody.innerHTML = users.map(user => `
+        <tr class="hover:bg-gray-50 transition duration-150" id="user-row-${user.id}">
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                            ${user.first_name[0]}${user.last_name[0]}
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">
+                            ${user.first_name} ${user.last_name}
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            QR: ${user.qr_code_number || 'Not assigned'}
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">${user.email}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                    <span class="font-medium">Total: ${user.total_packages || 0}</span> | 
+                    <span class="text-green-600">Available: ${user.available_packages || 0}</span> | 
+                    <span class="text-yellow-600">Out: ${user.rented_packages || 0}</span>
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                ${getRentalStatusBadge(user.rental_status)}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-500">
+                    ${user.last_action || 'No recent activity'}
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <div class="flex flex-wrap gap-2">
+                    <!-- View Details Button -->
+                    <a href="/lookup?qr_code=${user.qr_code_number}" 
+                       class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-lg hover:bg-blue-200 transition duration-200">
+                        👁️ Details
+                    </a>
+                    
+                    ${getActionButtons(user)}
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+/**
+ * Generate rental status badge HTML
+ * @param {number} status - Rental status code
+ * @returns {string} HTML for status badge
+ */
+function getRentalStatusBadge(status) {
+    switch (parseInt(status)) {
+        case 0:
+            return `
+                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                    💤 Not Active
                 </span>
             `;
+        case 1:
+            return `
+                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    ✅ Active Rental
+                </span>
+            `;
+        case 2:
+            return `
+                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    📥 Returned
+                </span>
+            `;
+        default:
+            return `
+                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                    ❓ Unknown
+                </span>
+            `;
+    }
+}
 
-            const response = await fetch(`/api/toggle-rental/${userId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ status: newStatus })
-            });
+/**
+ * Generate action buttons based on user status and packages
+ * @param {Object} user - User object with package summary
+ * @returns {string} HTML for action buttons
+ */
+function getActionButtons(user) {
+    let buttons = '';
+    
+    // Package-based action buttons (only if user has packages)
+    if (user.has_packages) {
+        if (user.available_packages > 0) {
+            buttons += `
+                <button onclick="quickStatusUpdate(${user.id}, 'checkout_all')"
+                        class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-xs rounded-lg hover:bg-green-200 transition duration-200">
+                    📤 Check Out All
+                </button>
+            `;
+        }
+        
+        if (user.rented_packages > 0) {
+            buttons += `
+                <button onclick="quickStatusUpdate(${user.id}, 'checkin_all')"
+                        class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-lg hover:bg-blue-200 transition duration-200">
+                    📥 Check In All
+                </button>
+            `;
+        }
+    } else {
+        // Legacy status toggle for users without packages
+        if (user.rental_status === 0) {
+            buttons += `
+                <button onclick="quickStatusUpdate(${user.id}, 'checkout_all')"
+                        class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-xs rounded-lg hover:bg-green-200 transition duration-200">
+                    📤 Check Out
+                </button>
+            `;
+        } else if (user.rental_status === 1) {
+            buttons += `
+                <button onclick="quickStatusUpdate(${user.id}, 'checkin_all')"
+                        class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-lg hover:bg-blue-200 transition duration-200">
+                    📥 Check In
+                </button>
+            `;
+        }
+    }
+    
+    // Reset button (always available)
+    buttons += `
+        <button onclick="resetUserPackages(${user.id}, '${user.first_name} ${user.last_name}')"
+                class="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 text-xs rounded-lg hover:bg-red-200 transition duration-200">
+            🔄 Reset
+        </button>
+    `;
+    
+    return buttons;
+}
 
-            if (!response.ok) {
-                throw new Error('Failed to update rental status');
+// ========================================
+// USER ACTION FUNCTIONS
+// ========================================
+
+/**
+ * Quick status update for package actions
+ * @param {number} userId - User ID
+ * @param {string} action - Action to perform ('checkout_all', 'checkin_all')
+ */
+async function quickStatusUpdate(userId, action) {
+    try {
+        debugLog(`🚀 Quick status update: ${action} for user ${userId}`);
+        
+        // Show loading state
+        showLoading(true);
+        disableUserActions(userId, true);
+        
+        const response = await fetch(`/api/package-action/${userId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: action })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            let message = data.message;
+            if (data.email_sent) {
+                message += ' 🎉 Thank you email sent to customer!';
             }
-
-            // Update the row
-            const row = button.closest('tr');
-            const statusCell = row.querySelector('td:nth-child(4)');
-            const timestampCell = row.querySelector('td:nth-child(5)');
-            const actionsCell = row.querySelector('td:nth-child(6)');
-
-            // Update status badge
-            statusCell.innerHTML = getStatusBadge(newStatus);
-
-            // Update timestamp to current time
-            const now = new Date().toLocaleString('en-US', { 
-                year: 'numeric', 
-                month: '2-digit', 
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            }).replace(/(\d+)\/(\d+)\/(\d+),/, '$3-$1-$2');
-            timestampCell.querySelector('div').textContent = now;
-
-            // Update action buttons
-            actionsCell.querySelector('div').innerHTML = getActionButtons(userId, newStatus, row.querySelector('a').getAttribute('href'));
-
-            showNotification('Status updated successfully', 'success');
-
-        } catch (error) {
-            console.error('Error updating rental status:', error);
-            showNotification('Failed to update status', 'error');
-            button.disabled = false;
-            button.textContent = originalText;
+            
+            showNotification(message, 'success');
+            
+            // Refresh the current filter view
+            setTimeout(() => filterUsers(currentFilter), 1500);
+        } else {
+            throw new Error(data.error || 'Operation failed');
         }
+        
+    } catch (error) {
+        console.error('❌ Quick status update error:', error);
+        showNotification('Failed to update status: ' + error.message, 'error');
+        disableUserActions(userId, false);
+    } finally {
+        showLoading(false);
     }
+}
 
-    function getStatusBadge(status) {
-        switch (parseInt(status)) {
-            case 0:
-                return `
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                        Not Active
-                    </span>
-                `;
-            case 1:
-                return `
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        Active Rental
-                    </span>
-                `;
-            case 2:
-                return `
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                        Returned
-                    </span>
-                `;
-        }
+/**
+ * Reset all packages for a user
+ * @param {number} userId - User ID
+ * @param {string} userName - User name for confirmation
+ */
+async function resetUserPackages(userId, userName) {
+    const confirmMessage = `🔄 RESET ALL PACKAGES FOR ${userName}\n\nThis will:\n✅ Mark ALL packages as available\n✅ Cancel any active rentals\n✅ Set user status to "Not Active"\n\n⚠️ This action cannot be undone.\n\nAre you sure you want to continue?`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
     }
-
-    function getActionButtons(userId, status, viewDetailsUrl) {
-        let actionButton = '';
-
-        switch (parseInt(status)) {
-            case 0:
-                actionButton = `
-                    <button onclick="updateRentalStatus(${userId}, 1)"
-                            class="text-green-600 hover:text-green-900 font-medium">
-                        Check Out
-                    </button>
-                `;
-                break;
-            case 1:
-                actionButton = `
-                    <button onclick="updateRentalStatus(${userId}, 2)"
-                            class="text-blue-600 hover:text-blue-900 font-medium">
-                        Mark Returned
-                    </button>
-                `;
-                break;
-            case 2:
-                actionButton = `
-                    <button onclick="updateRentalStatus(${userId}, 0)"
-                            class="text-gray-600 hover:text-gray-900 font-medium">
-                        Reset Status
-                    </button>
-                `;
-                break;
+    
+    try {
+        debugLog(`🔄 Resetting packages for user ${userId}: ${userName}`);
+        
+        showLoading(true);
+        disableUserActions(userId, true);
+        
+        const response = await fetch(`/api/reset-rental/${userId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(`✅ Reset completed for ${userName}`, 'success');
+            
+            // Refresh the current filter view
+            setTimeout(() => filterUsers(currentFilter), 1500);
+        } else {
+            throw new Error(data.error || 'Reset failed');
         }
+        
+    } catch (error) {
+        console.error('❌ Reset error:', error);
+        showNotification('Failed to reset packages: ' + error.message, 'error');
+        disableUserActions(userId, false);
+    } finally {
+        showLoading(false);
+    }
+}
 
-        return `
-            <div class="flex space-x-2">
-                <a href="${viewDetailsUrl}" class="text-blue-600 hover:text-blue-900 font-medium">View Details</a>
-                ${actionButton}
-            </div>
+// ========================================
+// UI UTILITY FUNCTIONS
+// ========================================
+
+/**
+ * Update filter button styles to show active state
+ * @param {string} activeStatus - Currently active filter
+ */
+function updateFilterButtonStyles(activeStatus) {
+    const buttons = {
+        'all': 'filter-all',
+        'active': 'filter-active', 
+        'returned': 'filter-returned',
+        'not_active': 'filter-not_active'
+    };
+    
+    // Reset all buttons to default style
+    Object.values(buttons).forEach(buttonId => {
+        const button = document.getElementById(buttonId);
+        if (button) {
+            button.className = button.className.replace(/ring-\d+/g, '').replace(/ring-offset-\d+/g, '');
+        }
+    });
+    
+    // Add active styling to selected button
+    const activeButtonId = buttons[activeStatus];
+    const activeButton = document.getElementById(activeButtonId);
+    if (activeButton) {
+        activeButton.className += ' ring-2 ring-offset-2 ring-blue-500';
+    }
+}
+
+/**
+ * Show/hide loading overlay
+ * @param {boolean} show - Whether to show loading
+ */
+function showLoading(show) {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.toggle('hidden', !show);
+    }
+}
+
+/**
+ * Show loading state in table
+ * @param {boolean} loading - Whether to show loading
+ */
+function showTableLoading(loading) {
+    const tbody = document.getElementById('userTableBody');
+    if (loading) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="px-6 py-8 text-center">
+                    <div class="flex items-center justify-center">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
+                        <span class="text-gray-600">Loading customers...</span>
+                    </div>
+                </td>
+            </tr>
         `;
     }
+}
 
-    function showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-y-0 ${
-            type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-        }`;
-        notification.textContent = message;
+/**
+ * Show error state in table
+ * @param {string} message - Error message
+ */
+function showTableError(message) {
+    const tbody = document.getElementById('userTableBody');
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="6" class="px-6 py-8 text-center text-red-600">
+                <div class="mb-2">❌ ${message}</div>
+                <button onclick="filterUsers(currentFilter)" class="text-sm text-blue-600 hover:text-blue-800">
+                    🔄 Try Again
+                </button>
+            </td>
+        </tr>
+    `;
+}
 
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.classList.add('translate-y-full', 'opacity-0');
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
+/**
+ * Disable/enable action buttons for a specific user
+ * @param {number} userId - User ID
+ * @param {boolean} disable - Whether to disable
+ */
+function disableUserActions(userId, disable) {
+    const userRow = document.getElementById(`user-row-${userId}`);
+    if (userRow) {
+        const buttons = userRow.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.disabled = disable;
+            button.classList.toggle('opacity-50', disable);
+            button.classList.toggle('cursor-not-allowed', disable);
+        });
     }
+}
+
+/**
+ * Show notification message
+ * @param {string} message - Notification message
+ * @param {string} type - Notification type ('success' or 'error')
+ */
+function showNotification(message, type = 'success') {
+    // Remove existing notifications
+    document.querySelectorAll('.notification-toast').forEach(n => n.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `notification-toast fixed bottom-4 right-4 px-6 py-4 rounded-lg shadow-xl transition-all duration-300 transform translate-y-0 z-50 max-w-md ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    
+    const icon = type === 'success' ? '✅' : '❌';
+    notification.innerHTML = `
+        <div class="flex items-start">
+            <span class="text-xl mr-3 flex-shrink-0">${icon}</span>
+            <div class="flex-grow">
+                <div class="font-medium">${message}</div>
+                <div class="text-xs opacity-75 mt-1">${new Date().toLocaleTimeString()}</div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-y-full', 'opacity-0');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+
+// ========================================
+// INITIALIZATION
+// ========================================
+
+/**
+ * Initialize the page
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    debugLog('📊 Customer database interface initialized');
+    
+    // Load all customers by default
+    filterUsers('all');
+    
+    // Keyboard shortcuts for power users
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+            switch(e.key) {
+                case 'A':
+                    e.preventDefault();
+                    filterUsers('all');
+                    break;
+                case 'S':
+                    e.preventDefault();
+                    filterUsers('active');
+                    break;
+                case 'R':
+                    e.preventDefault();
+                    filterUsers('returned');
+                    break;
+                case 'N':
+                    e.preventDefault();
+                    filterUsers('not_active');
+                    break;
+            }
+        }
+    });
+    
+    debugLog('⌨️ Keyboard shortcuts active: Ctrl+Shift+A (all), Ctrl+Shift+S (active), Ctrl+Shift+R (returned), Ctrl+Shift+N (not active)');
+});
+
+debugLog('🚀 Enhanced customer database system ready');
 </script>
 
 {% endblock %}

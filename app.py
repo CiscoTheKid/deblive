@@ -198,6 +198,173 @@ def login():
     
     return render_template('login.html')
 
+@app.route('/api/export-data', methods=['GET'])
+@admin_required
+def export_data():
+    """Export SQL database dump in a ZIP archive"""
+    import subprocess
+    import zipfile
+    import io
+    import tempfile
+    import os
+    from datetime import datetime
+    
+    try:
+        # Generate timestamp for filenames
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        
+        # Create temporary file for SQL dump
+        with tempfile.NamedTemporaryFile(mode='w+', suffix='.sql', delete=False) as temp_sql:
+            temp_sql_path = temp_sql.name
+        
+        try:
+            # Build mysqldump command
+            dump_cmd = [
+                'mysqldump',
+                f'--host={Config.DB_HOST}',
+                f'--user={Config.DB_USER}',
+                f'--password={Config.DB_PASSWORD}',
+                '--single-transaction',
+                '--routines',
+                '--triggers',
+                '--complete-insert',
+                Config.DB_NAME
+            ]
+            
+            # Execute mysqldump
+            logger.info(f"Starting database export for {Config.DB_NAME}")
+            with open(temp_sql_path, 'w') as f:
+                result = subprocess.run(dump_cmd, stdout=f, stderr=subprocess.PIPE, text=True)
+            
+            if result.returncode != 0:
+                raise Exception(f"mysqldump failed: {result.stderr}")
+            
+            # Create ZIP file in memory
+            zip_buffer = io.BytesIO()
+            
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                # Add SQL dump to ZIP
+                sql_filename = f'{Config.DB_NAME}_backup_{timestamp}.sql'
+                zip_file.write(temp_sql_path, sql_filename)
+                
+                # Add export info file
+                export_info = f"""Database Export Information
+Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Database: {Config.DB_NAME}
+Host: {Config.DB_HOST}
+Exported by: {session.get('username', 'Unknown')}
+Export Type: Full SQL Database Dump
+
+Files in this archive:
+- {sql_filename} - Complete SQL database dump
+
+Restore Instructions:
+1. Create new database: CREATE DATABASE {Config.DB_NAME};
+2. Import dump: mysql -u username -p {Config.DB_NAME} < {sql_filename}
+
+Note: This is a complete database backup including structure and data.
+"""
+                zip_file.writestr('README.txt', export_info)
+            
+            zip_buffer.seek(0)
+            
+            # Generate ZIP filename
+            zip_filename = f'{Config.DB_NAME}_export_{timestamp}.zip'
+            
+            logger.info(f"Database export completed: {zip_filename}")
+            
+            # Return ZIP file as download
+            from flask import Response
+            return Response(
+                zip_buffer.getvalue(),
+                mimetype='application/zip',
+                headers={'Content-Disposition': f'attachment; filename={zip_filename}'}
+            )
+            
+        finally:
+            # Clean up temporary file
+            if os.path.exists(temp_sql_path):
+                os.unlink(temp_sql_path)
+        
+    except Exception as e:
+        logger.error(f"Database export error: {str(e)}")
+        return jsonify({"error": f"Database export failed: {str(e)}"}), 500
+
+@app.route('/api/import-data', methods=['POST'])
+@admin_required
+def import_data():
+    """Import SQL database from uploaded file"""
+    import subprocess
+    import tempfile
+    import os
+    from datetime import datetime
+    
+    try:
+        # Check if file was uploaded
+        if 'sql_file' not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+        
+        file = request.files['sql_file']
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+        
+        # Validate file extension
+        if not file.filename.lower().endswith('.sql'):
+            return jsonify({"error": "Only .sql files are allowed"}), 400
+        
+        # Check file size (limit to 50MB)
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
+        file.seek(0)  # Reset file pointer
+        
+        if file_size > 50 * 1024 * 1024:  # 50MB limit
+            return jsonify({"error": "File too large. Maximum size is 50MB"}), 400
+        
+        if file_size == 0:
+            return jsonify({"error": "File is empty"}), 400
+        
+        # Create temporary file for SQL import
+        with tempfile.NamedTemporaryFile(mode='w+b', suffix='.sql', delete=False) as temp_sql:
+            temp_sql_path = temp_sql.name
+            file.save(temp_sql_path)
+        
+        try:
+            logger.info(f"Starting database import for {Config.DB_NAME}")
+            
+            # Build mysql import command
+            import_cmd = [
+                'mysql',
+                f'--host={Config.DB_HOST}',
+                f'--user={Config.DB_USER}',
+                f'--password={Config.DB_PASSWORD}',
+                Config.DB_NAME
+            ]
+            
+            # Execute mysql import
+            with open(temp_sql_path, 'r') as f:
+                result = subprocess.run(import_cmd, stdin=f, stderr=subprocess.PIPE, text=True)
+            
+            if result.returncode != 0:
+                error_msg = result.stderr or "Unknown import error"
+                raise Exception(f"MySQL import failed: {error_msg}")
+            
+            logger.info(f"Database import completed successfully for {Config.DB_NAME}")
+            
+            return jsonify({
+                "success": True,
+                "message": f"Database imported successfully from {file.filename}",
+                "imported_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            })
+            
+        finally:
+            # Clean up temporary file
+            if os.path.exists(temp_sql_path):
+                os.unlink(temp_sql_path)
+        
+    except Exception as e:
+        logger.error(f"Database import error: {str(e)}")
+        return jsonify({"error": f"Database import failed: {str(e)}"}), 500
+
 @app.route('/logout')
 def logout():
     """Handle user logout"""
@@ -481,36 +648,59 @@ def toggle_rental_status_new(user_id):
 @app.route('/api/filter-users/<status>')
 @login_required
 def filter_users(status):
-    """Filter users by rental status"""
+    """Filter users by rental status with package summary data"""
     if status not in ['all', 'not_active', 'active', 'returned']:
         return jsonify({'error': 'Invalid status'}), 400
     
-    query = """
-    SELECT u.id, u.first_name, u.last_name, u.email, u.rental_status,
-           qr.qr_code_number,
-           (SELECT created_at FROM email_logs WHERE user_id = u.id ORDER BY created_at DESC LIMIT 1) as last_action
-    FROM users u
-    LEFT JOIN qr_codes qr ON u.id = qr.user_id AND qr.is_active = TRUE
-    """
+    try:
+        # Base query to get users with QR codes
+        query = """
+        SELECT u.id, u.first_name, u.last_name, u.email, u.rental_status,
+               qr.qr_code_number,
+               (SELECT created_at FROM email_logs WHERE user_id = u.id ORDER BY created_at DESC LIMIT 1) as last_action
+        FROM users u
+        LEFT JOIN qr_codes qr ON u.id = qr.user_id AND qr.is_active = TRUE
+        """
+        
+        # Add status filter
+        if status == 'active':
+            query += " WHERE u.rental_status = 1"
+        elif status == 'returned':
+            query += " WHERE u.rental_status = 2"
+        elif status == 'not_active':
+            query += " WHERE u.rental_status = 0"
+        
+        query += " ORDER BY u.last_name, u.first_name"
+        
+        # Ensure database connection
+        db.ensure_connection()
+        db.cursor.execute(query)
+        users = db.cursor.fetchall()
+        
+        # Add package summary for each user
+        for user in users:
+            # Format last_action timestamp
+            if user['last_action']:
+                user['last_action'] = user['last_action'].strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Get package summary for this user
+            package_summary = db.get_user_package_summary(user['id'])
+            user['package_summary'] = package_summary
+            
+            # Add convenience fields for frontend
+            user['has_packages'] = package_summary['has_packages']
+            user['total_packages'] = package_summary['total_packages']
+            user['available_packages'] = package_summary['available_packages']
+            user['rented_packages'] = package_summary['rented_packages']
+            user['all_returned'] = package_summary['all_returned']
+        
+        logger.info(f"Filtered users by status '{status}': {len(users)} users found")
+        return jsonify({'users': users})
+        
+    except Exception as e:
+        logger.error(f"Error filtering users by status '{status}': {str(e)}")
+        return jsonify({'error': 'Database error occurred'}), 500
     
-    if status == 'active':
-        query += " WHERE u.rental_status = 1"
-    elif status == 'returned':
-        query += " WHERE u.rental_status = 2"
-    elif status == 'not_active':
-        query += " WHERE u.rental_status = 0"
-    
-    query += " ORDER BY u.last_name, u.first_name"
-    
-    db.cursor.execute(query)
-    users = db.cursor.fetchall()
-    
-    for user in users:
-        if user['last_action']:
-            user['last_action'] = user['last_action'].strftime('%Y-%m-%d %H:%M:%S')
-    
-    return jsonify({'users': users})
-
 @app.route('/api/stats')
 def get_stats():
     """Get database statistics"""

@@ -122,33 +122,79 @@
         </div>
         
         <div class="p-6">
-            <div class="bg-orange-50 rounded-lg p-4 mb-4 border-l-4 border-orange-400">
+            <!-- Database Backup & Restore Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Export Section -->
+                <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-400">
+                    <h3 class="font-semibold text-blue-800 mb-2">💾 Export Database</h3>
+                    <p class="text-sm text-blue-700 mb-4">
+                        Download a complete SQL backup of your database. This includes all tables, data, and structure.
+                    </p>
+                    <button onclick="exportData()" 
+                            class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+                        📥 Export SQL Database
+                    </button>
+                </div>
+
+                <!-- Import Section -->
+                <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-400">
+                    <h3 class="font-semibold text-green-800 mb-2">📤 Import Database</h3>
+                    <p class="text-sm text-green-700 mb-4">
+                        Upload and restore a SQL database backup. This will replace current data.
+                    </p>
+                    <form id="importForm" enctype="multipart/form-data" class="space-y-3">
+                        <div class="border-2 border-dashed border-green-300 rounded-lg p-4 text-center">
+                            <input type="file" 
+                                   id="sqlFile" 
+                                   name="sql_file" 
+                                   accept=".sql" 
+                                   class="w-full text-sm text-gray-500
+                                          file:mr-4 file:py-2 file:px-4
+                                          file:rounded-full file:border-0
+                                          file:text-sm file:font-semibold
+                                          file:bg-green-50 file:text-green-700
+                                          hover:file:bg-green-100"
+                                   onchange="validateSQLFile(this)">
+                            <p class="text-xs text-gray-500 mt-2">Only .sql files allowed (max 50MB)</p>
+                        </div>
+                        <button type="button" 
+                                onclick="importData()" 
+                                id="importBtn"
+                                disabled
+                                class="w-full px-4 py-2 bg-gray-400 text-white rounded-lg transition duration-200 font-medium cursor-not-allowed">
+                            📤 Import SQL Database
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Warning Section -->
+            <div class="bg-orange-50 rounded-lg p-4 mb-6 border-l-4 border-orange-400">
                 <div class="flex items-center text-orange-800">
                     <span class="font-medium">⚠️ Warning: Database Operations</span>
                 </div>
                 <p class="mt-2 text-sm text-orange-700">
-                    The following operations are irreversible and will delete ALL data including:
+                    Database operations are powerful and irreversible:
                 </p>
                 <ul class="mt-2 text-sm text-orange-700 list-disc list-inside">
-                    <li>All user accounts and contact information</li>
-                    <li>All QR codes and email logs</li>
-                    <li>All rental history and status records</li>
-                    <li><strong>All package inventory items</strong></li>
+                    <li><strong>Import:</strong> Will replace ALL current data with uploaded backup</li>
+                    <li><strong>Reset:</strong> Will permanently delete ALL data (users, packages, QR codes, logs)</li>
+                    <li><strong>Export:</strong> Creates a complete backup for restoration</li>
                 </ul>
                 <p class="mt-2 text-sm text-orange-700 font-semibold">
-                    Please proceed with extreme caution.
+                    Always export a backup before importing or resetting!
                 </p>
             </div>
 
-            <div class="flex space-x-4">
+            <!-- Reset Database Section -->
+            <div class="bg-red-50 rounded-lg p-4 border-l-4 border-red-400">
+                <h3 class="font-semibold text-red-800 mb-2">🗒️ Reset Database</h3>
+                <p class="text-sm text-red-700 mb-4">
+                    Permanently delete all data and start fresh. This cannot be undone!
+                </p>
                 <button onclick="showResetConfirmation()" 
-                        class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 font-medium">
-                    🗑️ Reset Database
-                </button>
-                
-                <button onclick="exportData()" 
-                        class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
-                    💾 Export Data (Coming Soon)
+                        class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 font-medium">
+                    🗒️ Reset All Data
                 </button>
             </div>
         </div>
@@ -185,11 +231,42 @@
         </div>
     </div>
 
+    <!-- Import Confirmation Modal -->
+    <div id="importConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg max-w-md mx-4 shadow-2xl">
+            <div class="bg-yellow-50 px-6 py-4 border-b border-yellow-100 rounded-t-lg">
+                <h3 class="text-xl font-bold text-yellow-700">⚠️ Confirm Database Import</h3>
+            </div>
+            <div class="px-6 py-4">
+                <p class="text-gray-800 mb-3">
+                    <strong>You are about to import:</strong>
+                </p>
+                <p class="text-sm bg-gray-100 p-2 rounded mb-4" id="importFileName">filename.sql</p>
+                <div class="bg-yellow-100 p-3 rounded mb-4">
+                    <p class="text-sm text-yellow-800">
+                        <strong>Warning:</strong> This will replace ALL current data with the data from this backup file.
+                    </p>
+                </div>
+                <p class="text-sm text-gray-600">Current database will be overwritten. Make sure you have a backup if needed.</p>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-4 rounded-b-lg">
+                <button onclick="hideImportConfirmation()" 
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition duration-200">
+                    ❌ Cancel
+                </button>
+                <button onclick="confirmImport()" 
+                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-200 font-bold">
+                    ✅ Import Database
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-white rounded-lg p-8 flex flex-col items-center">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-            <p class="text-gray-700 font-medium">Processing database operation...</p>
+            <p class="text-gray-700 font-medium" id="loadingMessage">Processing database operation...</p>
         </div>
     </div>
 </div>
@@ -266,6 +343,106 @@
         }
     }
 
+    // Function to validate SQL file selection
+    function validateSQLFile(input) {
+        const file = input.files[0];
+        const importBtn = document.getElementById('importBtn');
+        
+        if (file) {
+            const fileSize = file.size;
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            
+            if (fileSize > maxSize) {
+                alert('File too large! Maximum size is 50MB.');
+                input.value = '';
+                importBtn.disabled = true;
+                importBtn.className = 'w-full px-4 py-2 bg-gray-400 text-white rounded-lg transition duration-200 font-medium cursor-not-allowed';
+                return;
+            }
+            
+            if (!file.name.toLowerCase().endsWith('.sql')) {
+                alert('Please select a .sql file only.');
+                input.value = '';
+                importBtn.disabled = true;
+                importBtn.className = 'w-full px-4 py-2 bg-gray-400 text-white rounded-lg transition duration-200 font-medium cursor-not-allowed';
+                return;
+            }
+            
+            // Enable import button
+            importBtn.disabled = false;
+            importBtn.className = 'w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 font-medium cursor-pointer';
+        } else {
+            // Disable import button
+            importBtn.disabled = true;
+            importBtn.className = 'w-full px-4 py-2 bg-gray-400 text-white rounded-lg transition duration-200 font-medium cursor-not-allowed';
+        }
+    }
+
+    // Function to show import confirmation modal
+    function importData() {
+        const fileInput = document.getElementById('sqlFile');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert('Please select a SQL file first.');
+            return;
+        }
+        
+        // Show confirmation modal with filename
+        document.getElementById('importFileName').textContent = file.name;
+        const modal = document.getElementById('importConfirmModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    // Function to hide import confirmation modal
+    function hideImportConfirmation() {
+        const modal = document.getElementById('importConfirmModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    // Function to confirm and execute import
+    async function confirmImport() {
+        try {
+            hideImportConfirmation();
+            showLoading('Importing database... This may take a few minutes.');
+            
+            const fileInput = document.getElementById('sqlFile');
+            const file = fileInput.files[0];
+            
+            const formData = new FormData();
+            formData.append('sql_file', file);
+            
+            const response = await fetch('/api/import-data', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Import failed');
+            }
+            
+            hideLoading();
+            
+            // Clear file input
+            fileInput.value = '';
+            validateSQLFile(fileInput);
+            
+            // Refresh stats to show imported data
+            await refreshStats();
+            
+            alert('✅ Database imported successfully! ' + result.message);
+            
+        } catch (error) {
+            console.error('Import error:', error);
+            hideLoading();
+            alert('❌ Import failed: ' + error.message);
+        }
+    }
+
     // Function to show reset confirmation modal with current stats
     function showResetConfirmation() {
         // Refresh stats to show current numbers in modal
@@ -284,8 +461,9 @@
     }
 
     // Function to show loading overlay
-    function showLoading() {
+    function showLoading(message = 'Processing database operation...') {
         const overlay = document.getElementById('loadingOverlay');
+        document.getElementById('loadingMessage').textContent = message;
         overlay.classList.remove('hidden');
         overlay.classList.add('flex');
     }
@@ -300,7 +478,7 @@
     // Function to reset database
     async function resetDatabase() {
         try {
-            showLoading();
+            showLoading('Resetting database... Please wait.');
             hideResetConfirmation();
             
             const response = await fetch('/api/reset-database', {
@@ -329,9 +507,60 @@
         }
     }
 
-    // Placeholder function for future data export feature
-    function exportData() {
-        alert('📊 Data export feature coming soon! This will allow you to backup your data before resetting.');
+    // Function to export SQL database dump to ZIP file
+    async function exportData() {
+        try {
+            // Show loading state
+            showLoading('Exporting database... Creating SQL backup.');
+            
+            // Call export API endpoint
+            const response = await fetch('/api/export-data', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Export failed: ${response.status}`);
+            }
+            
+            // Get the blob data
+            const blob = await response.blob();
+            
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            // Extract filename from response headers or create default
+            const contentDisposition = response.headers.get('content-disposition');
+            let filename = 'database_export.zip';
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename=(.+)/);
+                if (match) {
+                    filename = match[1].replace(/['"]/g, ''); // Remove quotes
+                }
+            }
+            
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            hideLoading();
+            
+            // Show success message
+            alert('✅ Database export completed successfully! SQL backup downloaded to your downloads folder.');
+            
+        } catch (error) {
+            console.error('Export error:', error);
+            hideLoading();
+            alert('❌ Export failed: ' + error.message + '. Please try again or check server logs.');
+        }
     }
 
     // Auto-refresh stats every 10 seconds (increased from 5 for less server load)
