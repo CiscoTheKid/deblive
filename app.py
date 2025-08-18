@@ -512,6 +512,108 @@ def lookup():
     
     return render_template('lookup.html', error="No results found")
 
+@app.route('/api/admin/search-users', methods=['POST'])
+@admin_required
+def admin_search_users():
+    """Search users for admin management"""
+    try:
+        data = request.get_json()
+        search_term = data.get('search_term', '').strip()
+        
+        if not search_term:
+            return jsonify({"success": False, "error": "Search term required"}), 400
+        
+        db.ensure_connection()
+        
+        # Search users in database using LIKE queries
+        db.cursor.execute("""
+            SELECT u.id as user_id, u.first_name, u.last_name, u.email,
+                   u.rental_status, u.created_at, u.package_type,
+                   qr.qr_code_number,
+                   (SELECT COUNT(*) FROM user_packages WHERE user_id = u.id) as package_count
+            FROM users u
+            LEFT JOIN qr_codes qr ON u.id = qr.user_id AND qr.is_active = TRUE
+            WHERE LOWER(u.first_name) LIKE LOWER(%s) 
+               OR LOWER(u.last_name) LIKE LOWER(%s)
+               OR LOWER(u.email) LIKE LOWER(%s)
+            ORDER BY u.last_name, u.first_name
+            LIMIT 50
+        """, (f"%{search_term}%", f"%{search_term}%", f"%{search_term}%"))
+        
+        users = db.cursor.fetchall() or []
+        
+        return jsonify({
+            "success": True,
+            "users": users,
+            "count": len(users)
+        })
+        
+    except Exception as e:
+        logger.error(f"Admin user search error: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/admin/delete-user/<int:user_id>', methods=['DELETE'])
+@admin_required
+def admin_delete_user(user_id):
+    """Delete user and all associated data"""
+    try:
+        db.ensure_connection()
+        
+        # Get user info before deletion for logging
+        db.cursor.execute("SELECT first_name, last_name, email FROM users WHERE id = %s", (user_id,))
+        user_info = db.cursor.fetchone()
+        
+        if not user_info:
+            return jsonify({"success": False, "error": "User not found"}), 404
+        
+        # Disable foreign key checks for easier deletion
+        db.cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+        
+        try:
+            # Delete in any order since foreign keys are disabled
+            # 1. Delete email logs
+            db.cursor.execute("DELETE FROM email_logs WHERE user_id = %s", (user_id,))
+            logs_deleted = db.cursor.rowcount
+            
+            # 2. Delete user packages
+            db.cursor.execute("DELETE FROM user_packages WHERE user_id = %s", (user_id,))
+            packages_deleted = db.cursor.rowcount
+            
+            # 3. Delete QR codes
+            db.cursor.execute("DELETE FROM qr_codes WHERE user_id = %s", (user_id,))
+            qr_deleted = db.cursor.rowcount
+            
+            # 4. Finally delete the user
+            db.cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+            user_deleted = db.cursor.rowcount
+            
+            # Re-enable foreign key checks
+            db.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+            
+            # Commit all changes
+            db.connection.commit()
+            
+            if user_deleted == 0:
+                return jsonify({"success": False, "error": "Failed to delete user"}), 500
+            
+            logger.info(f"Admin deleted user {user_id}: {user_info['first_name']} {user_info['last_name']} ({user_info['email']}) - {packages_deleted} packages, {qr_deleted} QR codes, {logs_deleted} logs deleted")
+            
+            return jsonify({
+                "success": True,
+                "message": f"User '{user_info['first_name']} {user_info['last_name']}' and all associated data deleted successfully"
+            })
+            
+        except Exception as delete_error:
+            # Re-enable foreign keys and rollback on error
+            db.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+            db.connection.rollback()
+            logger.error(f"Error during deletion: {str(delete_error)}")
+            raise delete_error
+            
+    except Exception as e:
+        logger.error(f"Admin user deletion error: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/email-client', methods=['GET', 'POST'])
 @admin_required
 def email_client():
@@ -566,20 +668,8 @@ def admin():
     """Admin dashboard"""
     return render_template('admin.html')
 
-# API endpoints
-@app.route('/api/lookup', methods=['POST'])
-@login_required
-def api_lookup():
-    """API endpoint for QR verification"""
-    data = request.get_json()
-    qr_code = data.get('qr_code')
-    if not qr_code:
-        return jsonify({"error": "No QR code provided"}), 400
-    
-    user_data = db.verify_qr_code(qr_code)
-    if user_data:
-        return jsonify({"success": True, "user": user_data})
-    return jsonify({"error": "Invalid QR code"}), 404
+
+
 
 @app.route('/api/package-action/<int:user_id>', methods=['POST'])
 @login_required

@@ -199,6 +199,83 @@ class DatabaseHandler:
             logger.error(f"Error searching by last name: {err}")
             return []
 
+    def search_all_users(self, search_term: str) -> List[Dict]:
+        """Search all users by name or email for admin management"""
+        self.ensure_connection()
+        try:
+            # Search by first name, last name, or email
+            self.cursor.execute("""
+                SELECT u.id as user_id, u.first_name, u.last_name, u.email,
+                    u.rental_status, u.created_at, u.package_type,
+                    qr.qr_code_number,
+                    (SELECT COUNT(*) FROM user_packages WHERE user_id = u.id) as package_count
+                FROM users u
+                LEFT JOIN qr_codes qr ON u.id = qr.user_id AND qr.is_active = TRUE
+                WHERE LOWER(u.first_name) LIKE LOWER(%s) 
+                OR LOWER(u.last_name) LIKE LOWER(%s)
+                OR LOWER(u.email) LIKE LOWER(%s)
+                ORDER BY u.last_name, u.first_name
+                LIMIT 50
+            """, (f"%{search_term}%", f"%{search_term}%", f"%{search_term}%"))
+            
+            return self.cursor.fetchall() or []
+            
+        except Exception as err:
+            logger.error(f"Error searching all users: {err}")
+            return []
+        
+    def delete_user_completely(self, user_id: int) -> Tuple[bool, str]:
+        """Delete user and all associated data"""
+        self.ensure_connection()
+        try:
+            # Start transaction
+            self.connection.start_transaction()
+            
+            # Get user info for confirmation
+            self.cursor.execute("SELECT first_name, last_name, email FROM users WHERE id = %s", (user_id,))
+            user = self.cursor.fetchone()
+            if not user:
+                return False, "User not found"
+            
+            # Delete in correct order to handle foreign key constraints
+            # 1. Delete email logs
+            self.cursor.execute("DELETE FROM email_logs WHERE user_id = %s", (user_id,))
+            logs_deleted = self.cursor.rowcount
+            
+            # 2. Delete rentals (if table exists)
+            try:
+                self.cursor.execute("DELETE FROM rentals WHERE user_id = %s", (user_id,))
+                rentals_deleted = self.cursor.rowcount
+            except:
+                rentals_deleted = 0  # Table might not exist
+            
+            # 3. Delete user packages
+            self.cursor.execute("DELETE FROM user_packages WHERE user_id = %s", (user_id,))
+            packages_deleted = self.cursor.rowcount
+            
+            # 4. Delete QR codes
+            self.cursor.execute("DELETE FROM qr_codes WHERE user_id = %s", (user_id,))
+            qr_deleted = self.cursor.rowcount
+            
+            # 5. Finally delete the user
+            self.cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+            user_deleted = self.cursor.rowcount
+            
+            if user_deleted == 0:
+                self.connection.rollback()
+                return False, "Failed to delete user"
+            
+            # Commit transaction
+            self.connection.commit()
+            
+            logger.info(f"User {user_id} completely deleted: {packages_deleted} packages, {qr_deleted} QR codes, {logs_deleted} logs")
+            
+            return True, f"User '{user['first_name']} {user['last_name']}' and all associated data deleted successfully"
+            
+        except Exception as err:
+            self.connection.rollback()
+            logger.error(f"Error deleting user {user_id}: {err}")
+            return False, f"Database error: {str(err)}"
     def add_user_packages(self, user_id: int, package_type: str, quantity: int) -> bool:
         """Add packages to user inventory"""
         self.ensure_connection()
