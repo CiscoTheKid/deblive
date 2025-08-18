@@ -217,6 +217,56 @@ class DatabaseHandler:
             logger.error(f"Failed to add packages: {err}")
             raise
 
+    def remove_user_packages(self, user_id: int, quantity: int) -> Tuple[bool, str]:
+        """Remove available packages from user inventory"""
+        self.ensure_connection()
+        try:
+            # Get available packages count
+            self.cursor.execute("""
+                SELECT COUNT(*) as available_count
+                FROM user_packages 
+                WHERE user_id = %s AND status = 'available'
+            """, (user_id,))
+            
+            result = self.cursor.fetchone()
+            available_count = result['available_count'] if result else 0
+            
+            # Check if we have enough available packages to remove
+            if available_count < quantity:
+                return False, f"Cannot remove {quantity} packages. Only {available_count} available packages found."
+            
+            # Get the package IDs to remove (only available ones)
+            self.cursor.execute("""
+                SELECT id FROM user_packages 
+                WHERE user_id = %s AND status = 'available'
+                ORDER BY id DESC
+                LIMIT %s
+            """, (user_id, quantity))
+            
+            packages_to_remove = self.cursor.fetchall()
+            
+            if len(packages_to_remove) != quantity:
+                return False, f"Could not find {quantity} available packages to remove."
+            
+            # Delete the packages
+            package_ids = [pkg['id'] for pkg in packages_to_remove]
+            format_strings = ','.join(['%s'] * len(package_ids))
+            
+            self.cursor.execute(f"""
+                DELETE FROM user_packages 
+                WHERE id IN ({format_strings})
+            """, package_ids)
+            
+            self.connection.commit()
+            
+            logger.info(f"Removed {quantity} packages for user {user_id}")
+            return True, f"Successfully removed {quantity} packages"
+            
+        except Exception as err:
+            self.connection.rollback()
+            logger.error(f"Failed to remove packages: {err}")
+            return False, f"Database error: {str(err)}"
+
     def get_user_packages(self, user_id: int) -> List[Dict]:
         """Get all packages for a user"""
         self.ensure_connection()
@@ -233,28 +283,34 @@ class DatabaseHandler:
             return []
 
     def get_user_package_summary(self, user_id: int) -> Dict:
-        """Get package summary for user"""
+        """Get package summary for user - always returns valid structure"""
         self.ensure_connection()
         try:
             # Get total packages
             self.cursor.execute("""
                 SELECT COUNT(*) as total,
-                       SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as available,
-                       SUM(CASE WHEN status = 'rented_out' THEN 1 ELSE 0 END) as rented
+                    SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as available,
+                    SUM(CASE WHEN status = 'rented_out' THEN 1 ELSE 0 END) as rented
                 FROM user_packages WHERE user_id = %s
             """, (user_id,))
             
             result = self.cursor.fetchone()
             
+            # Ensure we have valid numbers
+            total = int(result['total'] or 0)
+            available = int(result['available'] or 0)
+            rented = int(result['rented'] or 0)
+            
             return {
-                'total_packages': result['total'] or 0,
-                'available_packages': result['available'] or 0,
-                'rented_packages': result['rented'] or 0,
-                'has_packages': (result['total'] or 0) > 0,
-                'all_returned': (result['rented'] or 0) == 0
+                'total_packages': total,
+                'available_packages': available,
+                'rented_packages': rented,
+                'has_packages': total > 0,
+                'all_returned': rented == 0
             }
         except Exception as err:
-            logger.error(f"Error getting package summary: {err}")
+            logger.error(f"Error getting package summary for user {user_id}: {err}")
+            # Return safe defaults on error
             return {
                 'total_packages': 0,
                 'available_packages': 0,

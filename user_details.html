@@ -18,11 +18,13 @@
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
             <div class="flex justify-between items-start mb-4">
                 <h2 class="text-xl font-semibold text-gray-800">👤 Customer Information</h2>
-                <!-- Reset Button - Always Visible -->
+                <!-- Reset Button - Show only if user has packages -->
+                {% if package_summary and package_summary.has_packages %}
                 <button onclick="resetRental({{ user.user_id }})"
                         class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200 flex items-center">
                     🔄 Reset All Packages
                 </button>
+                {% endif %}
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
@@ -44,12 +46,12 @@
             </div>
         </div>
 
-        <!-- Package Summary Card - Always Show if User Has Packages -->
-        {% if package_summary and package_summary.has_packages %}
+        <!-- Package Summary Card - ALWAYS SHOW -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">📦 Package Summary & Bulk Actions</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">📦 Package Management</h2>
             
-            <!-- Package Count Summary -->
+            {% if package_summary and package_summary.has_packages %}
+            <!-- Package Count Summary - Show when packages exist -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-blue-50 p-4 rounded-lg text-center border-2 border-blue-200">
                     <div class="text-3xl font-bold text-blue-600">{{ package_summary.total_packages }}</div>
@@ -64,14 +66,30 @@
                     <div class="text-sm text-yellow-800 font-medium">Checked Out</div>
                 </div>
             </div>
+            {% else %}
+            <!-- No packages message -->
+            <div class="bg-gray-50 p-6 rounded-lg text-center mb-6">
+                <div class="text-gray-400 mb-2">
+                    <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1h-4"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-600 mb-2">No Packages Assigned</h3>
+                <p class="text-gray-500">Use the "Add Packages" button below to assign packages to this customer.</p>
+            </div>
+            {% endif %}
             
-            <!-- Status Indicator & Bulk Actions -->
+            <!-- Actions Section - ALWAYS SHOW -->
             <div class="bg-gray-50 rounded-lg p-4">
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <!-- Current Status -->
                     <div class="flex items-center">
                         <span class="text-sm font-medium text-gray-700 mr-3">Current Status:</span>
-                        {% if package_summary.rented_packages == 0 %}
+                        {% if not package_summary or not package_summary.has_packages %}
+                            <span class="px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800 flex items-center">
+                                📋 No Packages Assigned
+                            </span>
+                        {% elif package_summary.rented_packages == 0 %}
                             <span class="px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800 flex items-center">
                                 ✅ All Packages Available
                             </span>
@@ -86,36 +104,44 @@
                         {% endif %}
                     </div>
                     
-                    <!-- Bulk Action Buttons -->
+                    <!-- Action Buttons -->
                     <div class="flex flex-wrap gap-2">
-                        {% if package_summary.available_packages > 0 %}
-                            <button onclick="performPackageAction('checkout_one')" 
-                                    class="px-3 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 flex items-center">
-                                📤 Check Out 1
-                            </button>
-                            <button onclick="performPackageAction('checkout_all')" 
-                                    class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200 flex items-center font-medium">
-                                📤 Check Out All ({{ package_summary.available_packages }})
-                            </button>
+                        {% if package_summary and package_summary.has_packages %}
+                            {% if package_summary.available_packages > 0 %}
+                                <button onclick="performPackageAction('checkout_one')" 
+                                        class="px-3 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 flex items-center">
+                                    📤 Check Out 1
+                                </button>
+                                <button onclick="performPackageAction('checkout_all')" 
+                                        class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200 flex items-center font-medium">
+                                    📤 Check Out All ({{ package_summary.available_packages }})
+                                </button>
+                            {% endif %}
+                            
+                            {% if package_summary.rented_packages > 0 %}
+                                <button onclick="performPackageAction('checkin_one')" 
+                                        class="px-3 py-2 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 flex items-center">
+                                    📥 Check In 1
+                                </button>
+                                <button onclick="performPackageAction('checkin_all')" 
+                                        class="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 transition duration-200 flex items-center font-medium">
+                                    📥 Check In All ({{ package_summary.rented_packages }})
+                                </button>
+                            {% endif %}
                         {% endif %}
                         
-                        {% if package_summary.rented_packages > 0 %}
-                            <button onclick="performPackageAction('checkin_one')" 
-                                    class="px-3 py-2 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 flex items-center">
-                                📥 Check In 1
-                            </button>
-                            <button onclick="performPackageAction('checkin_all')" 
-                                    class="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 transition duration-200 flex items-center font-medium">
-                                📥 Check In All ({{ package_summary.rented_packages }})
-                            </button>
-                        {% endif %}
+                        <!-- Edit Quantity Button - ALWAYS SHOW -->
+                        <button onclick="openQuantityEditor()" 
+                                class="px-4 py-2 bg-purple-500 text-white text-sm rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 flex items-center font-medium">
+                            ✏️ {{ 'Edit Quantity' if package_summary and package_summary.has_packages else 'Add Packages' }}
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        {% endif %}
 
         <!-- Individual Package Inventory -->
+        {% if package_summary and package_summary.has_packages %}
         <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                 <div class="flex justify-between items-center">
@@ -171,20 +197,10 @@
                         </tbody>
                     </table>
                 </div>
-                {% else %}
-                <div class="text-center py-12">
-                    <div class="text-gray-400 mb-4">
-                        <svg class="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1h-4"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-500 mb-2">No Packages Found</h3>
-                    <p class="text-gray-400 mb-4">This user has no packages in their inventory.</p>
-                    <p class="text-sm text-gray-400">Packages will appear here after webhook registration or manual assignment.</p>
-                </div>
                 {% endif %}
             </div>
         </div>
+        {% endif %}
 
         <!-- Notes Section -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -209,6 +225,7 @@
                         >
                             💾 Save Notes
                         </button>
+                        
                     </div>
                     {% if user.notes_updated_at %}
                     <div class="text-sm text-gray-500 italic">
@@ -237,12 +254,77 @@
     </div>
 </div>
 
-<!-- COMPLETE JAVASCRIPT - MODERN PACKAGE-BASED SYSTEM ONLY -->
-<script>
-// ========================================
-// CONFIGURATION & GLOBAL VARIABLES
-// ========================================
+<!-- Quantity Editor Modal -->
+<div id="quantityEditorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">✏️ Edit Package Quantity</h3>
+            <button onclick="closeQuantityEditor()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        
+        <div class="space-y-4">
+            <!-- Current Status -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="text-sm text-gray-600 mb-2">Current Package Count</div>
+                <div class="text-2xl font-bold text-blue-600" id="currentPackageCount">
+                    {{ package_summary.total_packages if package_summary else 0 }}
+                </div>
+            </div>
+            
+            <!-- Action Selection -->
+            <div class="space-y-3">
+                <label class="block text-sm font-medium text-gray-700">Action</label>
+                <div class="flex space-x-4">
+                    <label class="flex items-center">
+                        <input type="radio" name="quantityAction" value="add" checked class="mr-2">
+                        <span class="text-green-600">➕ Add Packages</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="quantityAction" value="remove" class="mr-2">
+                        <span class="text-red-600">➖ Remove Packages</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Quantity Input -->
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Quantity</label>
+                <input type="number" id="quantityInput" min="1" max="50" value="1" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <div class="text-xs text-gray-500">Enter number of packages to add or remove (1-50)</div>
+            </div>
+            
+            <!-- Package Type (for adding) -->
+            <div class="space-y-2" id="packageTypeSection">
+                <label class="block text-sm font-medium text-gray-700">Package Type</label>
+                <input type="text" id="packageTypeInput" value="{{ user.package_type or 'Standard Package' }}" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </div>
+            
+            <!-- Warning for Remove -->
+            <div id="removeWarning" class="bg-red-50 border border-red-200 rounded-lg p-3 hidden">
+                <div class="text-sm text-red-800">
+                    ⚠️ <strong>Warning:</strong> Only available packages can be removed. Checked-out packages must be returned first.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Actions -->
+        <div class="flex justify-end space-x-3 mt-6">
+            <button onclick="closeQuantityEditor()" 
+                    class="px-4 py-2 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition duration-200">
+                Cancel
+            </button>
+            <button onclick="executeQuantityChange()" 
+                    class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200">
+                Apply Changes
+            </button>
+        </div>
+    </div>
+</div>
 
+<script>
+// Configuration & Global Variables
 const userId = {{ user.user_id }};
 const DEBUG_MODE = true;
 
@@ -252,14 +334,7 @@ function debugLog(message, data = null) {
     }
 }
 
-// ========================================
-// PACKAGE MANAGEMENT FUNCTIONS
-// ========================================
-
-/**
- * Perform bulk package actions
- * @param {string} action - 'checkout_one', 'checkin_one', 'checkout_all', 'checkin_all'
- */
+// Package Management Functions
 function performPackageAction(action) {
     debugLog(`🚀 Starting package action: ${action} for user ${userId}`);
     
@@ -271,10 +346,7 @@ function performPackageAction(action) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: action })
     })
-    .then(response => {
-        debugLog(`Response status: ${response.status}`);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
         debugLog('Package action response:', data);
         showLoading(false);
@@ -286,13 +358,6 @@ function performPackageAction(action) {
             }
             
             showNotification(message, 'success');
-            
-            if (data.changes) {
-                debugLog('Package changes:', data.changes);
-                console.table(data.changes);
-            }
-            
-            // Refresh page to show updated state
             setTimeout(() => window.location.reload(), 2000);
             
         } else {
@@ -308,23 +373,15 @@ function performPackageAction(action) {
     });
 }
 
-/**
- * Update individual package status
- * @param {number} packageId - Package ID
- * @param {string} newStatus - 'available' or 'rented_out'
- */
 function updateIndividualPackageStatus(packageId, newStatus) {
     debugLog(`📦 Updating package ${packageId} to status: ${newStatus}`);
     
     const button = document.getElementById(`action-btn-${packageId}`);
-    if (!button) {
-        debugLog(`❌ Could not find button for package ${packageId}`);
-        return;
-    }
+    if (!button) return;
     
     const originalText = button.textContent;
     button.disabled = true;
-    button.innerHTML = '<span class="animate-spin">⟳</span> Processing...';
+    button.innerHTML = '<span class="animate-spin">⏳</span> Processing...';
     
     fetch(`/api/update-package-status/${packageId}`, {
         method: 'POST',
@@ -346,8 +403,6 @@ function updateIndividualPackageStatus(packageId, newStatus) {
             }
             
             showNotification(message, 'success');
-            
-            // Refresh to update package summary
             setTimeout(() => window.location.reload(), 1500);
             
         } else {
@@ -364,18 +419,12 @@ function updateIndividualPackageStatus(packageId, newStatus) {
     });
 }
 
-/**
- * Update package row UI after status change
- */
 function updatePackageRowUI(packageId, newStatus) {
     const statusBadge = document.getElementById(`status-badge-${packageId}`);
     const activityTime = document.getElementById(`activity-time-${packageId}`);
     const actionBtn = document.getElementById(`action-btn-${packageId}`);
     
-    if (!statusBadge || !activityTime || !actionBtn) {
-        debugLog(`⚠️ Could not find UI elements for package ${packageId}`);
-        return;
-    }
+    if (!statusBadge || !activityTime || !actionBtn) return;
     
     if (newStatus === 'available') {
         statusBadge.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800';
@@ -391,7 +440,6 @@ function updatePackageRowUI(packageId, newStatus) {
         actionBtn.onclick = () => updateIndividualPackageStatus(packageId, 'available');
     }
     
-    // Update activity time
     activityTime.textContent = new Date().toLocaleDateString('en-US', {
         month: 'short', day: 'numeric', year: 'numeric',
         hour: 'numeric', minute: '2-digit', hour12: true
@@ -400,14 +448,112 @@ function updatePackageRowUI(packageId, newStatus) {
     actionBtn.disabled = false;
 }
 
-// ========================================
-// RESET FUNCTIONALITY
-// ========================================
+// Quantity Editor Functions
+function openQuantityEditor() {
+    debugLog('✏️ Opening quantity editor modal');
+    
+    const modal = document.getElementById('quantityEditorModal');
+    if (!modal) return;
+    
+    document.querySelector('input[name="quantityAction"][value="add"]').checked = true;
+    document.getElementById('quantityInput').value = 1;
+    toggleQuantityActionUI('add');
+    
+    modal.classList.remove('hidden');
+    document.getElementById('quantityInput').focus();
+}
 
-/**
- * Reset all packages to available status
- * @param {number} userId - User ID to reset
- */
+function closeQuantityEditor() {
+    debugLog('❌ Closing quantity editor modal');
+    
+    const modal = document.getElementById('quantityEditorModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+function toggleQuantityActionUI(action) {
+    const packageTypeSection = document.getElementById('packageTypeSection');
+    const removeWarning = document.getElementById('removeWarning');
+    
+    if (action === 'add') {
+        packageTypeSection.classList.remove('hidden');
+        removeWarning.classList.add('hidden');
+    } else {
+        packageTypeSection.classList.add('hidden');
+        removeWarning.classList.remove('hidden');
+    }
+}
+
+function executeQuantityChange() {
+    const action = document.querySelector('input[name="quantityAction"]:checked').value;
+    const quantity = parseInt(document.getElementById('quantityInput').value);
+    const packageType = document.getElementById('packageTypeInput').value.trim();
+    
+    // Validation
+    if (!quantity || quantity < 1 || quantity > 50) {
+        showNotification('❌ Please enter a valid quantity (1-50)', 'error');
+        return;
+    }
+    
+    if (action === 'add' && !packageType) {
+        showNotification('❌ Please enter a package type', 'error');
+        return;
+    }
+    
+    debugLog(`📦 Executing quantity change: ${action} ${quantity} packages`);
+    
+    closeQuantityEditor();
+    showLoading(true);
+    
+    const requestData = {
+        action: action,
+        quantity: quantity
+    };
+    
+    if (action === 'add') {
+        requestData.package_type = packageType;
+    }
+    
+    fetch(`/api/edit-package-quantity/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        showLoading(false);
+        debugLog('Quantity change response:', data);
+        
+        if (data.success) {
+            const actionText = action === 'add' ? 'added' : 'removed';
+            let message = `✅ Successfully ${actionText} ${quantity} packages`;
+            
+            if (data.new_total !== undefined) {
+                message += ` (Total: ${data.previous_total} → ${data.new_total})`;
+            }
+            
+            showNotification(message, 'success');
+            
+            const countDisplay = document.getElementById('currentPackageCount');
+            if (countDisplay && data.new_total !== undefined) {
+                countDisplay.textContent = data.new_total;
+            }
+            
+            setTimeout(() => window.location.reload(), 2000);
+            
+        } else {
+            showNotification('❌ Error: ' + (data.error || 'Unknown error'), 'error');
+        }
+    })
+    .catch(error => {
+        showLoading(false);
+        console.error('Quantity change error:', error);
+        showNotification('❌ Network error occurred. Please try again.', 'error');
+    });
+}
+
+// Reset Function
 function resetRental(userId) {
     const confirmMessage = `🔄 RESET ALL PACKAGES\n\nThis will:\n✅ Mark ALL packages as available\n✅ Cancel any active rentals\n✅ Set user status to "Not Active"\n\n⚠️ This action cannot be undone.\n\nAre you sure you want to continue?`;
     
@@ -432,14 +578,8 @@ function resetRental(userId) {
         if (data.success) {
             let message = data.message || 'Reset completed successfully';
             
-            if (data.details) {
-                debugLog('Reset details:', data.details);
-                console.table(data.details);
-            }
-            
             showNotification('✅ ' + message, 'success');
             
-            // Force hard refresh
             setTimeout(() => {
                 window.location.replace(window.location.href);
             }, 2000);
@@ -457,14 +597,7 @@ function resetRental(userId) {
     });
 }
 
-// ========================================
-// NOTES FUNCTIONALITY
-// ========================================
-
-/**
- * Save user notes
- * @param {number} userId - User ID
- */
+// Notes Function
 function saveNotes(userId) {
     debugLog('💾 Saving notes for user', userId);
     
@@ -497,10 +630,7 @@ function saveNotes(userId) {
     });
 }
 
-// ========================================
-// UI UTILITY FUNCTIONS
-// ========================================
-
+// UI Utility Functions
 function disableActionButtons(disable) {
     const buttons = document.querySelectorAll('button[onclick*="performPackageAction"], button[onclick*="updateIndividualPackageStatus"]');
     buttons.forEach(button => {
@@ -539,7 +669,6 @@ function showLoading(show) {
 }
 
 function showNotification(message, type = 'success') {
-    // Remove existing notifications
     document.querySelectorAll('.notification-toast').forEach(n => n.remove());
     
     const notification = document.createElement('div');
@@ -566,43 +695,38 @@ function showNotification(message, type = 'success') {
     }, 5000);
 }
 
-// ========================================
-// INITIALIZATION & KEYBOARD SHORTCUTS
-// ========================================
-
+// Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
     debugLog('📱 User details interface initialized');
     
-    // Keyboard shortcuts for power users
+    const actionRadios = document.querySelectorAll('input[name="quantityAction"]');
+    actionRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            toggleQuantityActionUI(this.value);
+        });
+    });
+    
     document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-            switch(e.key) {
-                case 'C':
-                    e.preventDefault();
-                    const checkoutAllBtn = document.querySelector('button[onclick*="checkout_all"]');
-                    if (checkoutAllBtn && !checkoutAllBtn.disabled) checkoutAllBtn.click();
-                    break;
-                case 'I':
-                    e.preventDefault();
-                    const checkinAllBtn = document.querySelector('button[onclick*="checkin_all"]');
-                    if (checkinAllBtn && !checkinAllBtn.disabled) checkinAllBtn.click();
-                    break;
-                case 'R':
-                    e.preventDefault();
-                    resetRental(userId);
-                    break;
+        const modal = document.getElementById('quantityEditorModal');
+        const isModalOpen = modal && !modal.classList.contains('hidden');
+        
+        if (isModalOpen) {
+            if (e.key === 'Escape') {
+                closeQuantityEditor();
+            } else if (e.key === 'Enter' && e.ctrlKey) {
+                executeQuantityChange();
             }
         }
     });
     
-    debugLog('⌨️ Keyboard shortcuts active: Ctrl+Shift+C (checkout all), Ctrl+Shift+I (checkin all), Ctrl+Shift+R (reset)');
+    document.getElementById('quantityEditorModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeQuantityEditor();
+        }
+    });
+    
+    debugLog('🚀 Package management system ready');
 });
-
-// Expose debug functions globally
-window.debugLog = debugLog;
-window.userId = userId;
-
-debugLog('🚀 Modern package management system ready');
 </script>
 
 {% endblock %}

@@ -290,6 +290,59 @@ Note: This is a complete database backup including structure and data.
         logger.error(f"Database export error: {str(e)}")
         return jsonify({"error": f"Database export failed: {str(e)}"}), 500
 
+@app.route('/api/edit-package-quantity/<int:user_id>', methods=['POST'])
+@login_required
+def edit_package_quantity(user_id):
+    """Manually adjust package quantity for a user"""
+    try:
+        data = request.get_json()
+        action = data.get('action')  # 'add' or 'remove'
+        quantity = int(data.get('quantity', 1))
+        package_type = data.get('package_type', 'Standard Package')
+        
+        # Validate inputs
+        if action not in ['add', 'remove']:
+            return jsonify({"error": "Invalid action. Use 'add' or 'remove'"}), 400
+        
+        if quantity <= 0:
+            return jsonify({"error": "Quantity must be greater than 0"}), 400
+        
+        # Get current package summary
+        current_summary = db.get_user_package_summary(user_id)
+        
+        if action == 'add':
+            # Add new packages
+            success = db.add_user_packages(user_id, package_type, quantity)
+            if success:
+                message = f"Added {quantity} packages successfully"
+            else:
+                return jsonify({"error": "Failed to add packages"}), 500
+                
+        elif action == 'remove':
+            # Remove packages (only available ones)
+            success, message = db.remove_user_packages(user_id, quantity)
+            if not success:
+                return jsonify({"error": message}), 400
+        
+        # Get updated summary
+        updated_summary = db.get_user_package_summary(user_id)
+        
+        logger.info(f"Package quantity edited for user {user_id}: {action} {quantity} packages")
+        
+        return jsonify({
+            "success": True,
+            "message": message,
+            "package_summary": updated_summary,
+            "previous_total": current_summary['total_packages'],
+            "new_total": updated_summary['total_packages']
+        })
+        
+    except ValueError as e:
+        return jsonify({"error": "Invalid quantity value"}), 400
+    except Exception as e:
+        logger.error(f"Error editing package quantity: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/import-data', methods=['POST'])
 @admin_required
 def import_data():
@@ -394,7 +447,16 @@ def lookup():
             user_data = db.verify_qr_code(qr_code)
             if user_data:
                 packages = db.get_user_packages(user_data['user_id'])
+                # Ensure package_summary always exists
                 package_summary = db.get_user_package_summary(user_data['user_id'])
+                if not package_summary:
+                    package_summary = {
+                        'total_packages': 0,
+                        'available_packages': 0,
+                        'rented_packages': 0,
+                        'has_packages': False,
+                        'all_returned': True
+                    }
                 return render_template('user_details.html', 
                                      user=user_data, 
                                      packages=packages,
@@ -413,7 +475,16 @@ def lookup():
         user_data = db.verify_qr_code(search_term)
         if user_data:
             packages = db.get_user_packages(user_data['user_id'])
+            # Ensure package_summary always exists
             package_summary = db.get_user_package_summary(user_data['user_id'])
+            if not package_summary:
+                package_summary = {
+                    'total_packages': 0,
+                    'available_packages': 0,
+                    'rented_packages': 0,
+                    'has_packages': False,
+                    'all_returned': True
+                }
             return render_template('user_details.html', 
                                  user=user_data, 
                                  packages=packages,
@@ -422,13 +493,21 @@ def lookup():
         users = db.search_by_first_name(search_term)
         if users:
             for user in users:
-                user['package_summary'] = db.get_user_package_summary(user['user_id'])
+                summary = db.get_user_package_summary(user['user_id'])
+                user['package_summary'] = summary if summary else {
+                    'total_packages': 0, 'available_packages': 0, 'rented_packages': 0,
+                    'has_packages': False, 'all_returned': True
+                }
             return render_template('search_results.html', users=users)
     elif search_type == 'last_name':
         users = db.search_by_last_name(search_term)
         if users:
             for user in users:
-                user['package_summary'] = db.get_user_package_summary(user['user_id'])
+                summary = db.get_user_package_summary(user['user_id'])
+                user['package_summary'] = summary if summary else {
+                    'total_packages': 0, 'available_packages': 0, 'rented_packages': 0,
+                    'has_packages': False, 'all_returned': True
+                }
             return render_template('search_results.html', users=users)
     
     return render_template('lookup.html', error="No results found")
