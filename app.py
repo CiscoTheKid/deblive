@@ -110,7 +110,75 @@ def extract_user_data_from_webhook(raw_request):
     
     return user_data
 
-# Main webhook handler
+def extract_user_data_from_new_form(raw_request, form_data):
+    """Extract user data from the new JotForm structure with payment validation"""
+    user_data = {
+        'first_name': '',
+        'last_name': '',
+        'email': '',
+        'city': 'Washington DC',  # Default city from form title
+        'package_type': 'Standard Package',  # Default package type
+        'quantity': 1,  # Default quantity
+        'phone': '',
+        'pickup_person': '',
+        'group_leader': '',
+        'transaction_id': '',
+        'paid_status': '0'
+    }
+    
+    # Extract data using the field mappings from captured webhook
+    if 'q5_email' in raw_request:
+        user_data['email'] = str(raw_request['q5_email']).strip()
+    
+    # Phone number (handle object format)
+    if 'q6_phoneNumber' in raw_request:
+        phone_data = raw_request['q6_phoneNumber']
+        if isinstance(phone_data, dict):
+            user_data['phone'] = phone_data.get('full', '').strip()
+        else:
+            user_data['phone'] = str(phone_data).strip()
+    
+    # Pickup person name
+    if 'q30_nameOf' in raw_request:
+        user_data['pickup_person'] = str(raw_request['q30_nameOf']).strip()
+    
+    # First and last names
+    if 'q34_first_name' in raw_request:
+        user_data['first_name'] = str(raw_request['q34_first_name']).strip()
+    if 'q35_last_name' in raw_request:
+        user_data['last_name'] = str(raw_request['q35_last_name']).strip()
+    
+    # Group leader name
+    if 'q42_pleaseEnter' in raw_request:
+        user_data['group_leader'] = str(raw_request['q42_pleaseEnter']).strip()
+    
+    # Payment status - this is our validation field
+    if 'q43_paid' in raw_request:
+        user_data['paid_status'] = str(raw_request['q43_paid']).strip()
+    
+    # Transaction ID
+    if 'q44_transaction' in raw_request:
+        user_data['transaction_id'] = str(raw_request['q44_transaction']).strip()
+    
+    # Extract city from form title if available
+    if form_data and 'formTitle' in form_data:
+        form_title = form_data['formTitle']
+        if 'Washington DC' in form_title:
+            user_data['city'] = 'Washington DC'
+        elif 'Boston' in form_title:
+            user_data['city'] = 'Boston'
+        elif 'New York' in form_title:
+            user_data['city'] = 'New York'
+    
+    # Set package type based on city
+    if user_data['city'] == 'Washington DC':
+        user_data['package_type'] = 'DC Package'
+    else:
+        user_data['package_type'] = 'Standard Package'
+    
+    return user_data
+
+# Main webhook handler (original)
 @app.route('/api/jotform-webhook', methods=['POST'])
 def jotform_webhook():
     """Process JotForm webhook submissions"""
@@ -174,6 +242,110 @@ def jotform_webhook():
     except Exception as e:
         logger.error(f"Webhook error: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
+
+# Payment-validated webhook handler
+@app.route('/api/jotform-webhook-paid', methods=['POST'])
+def jotform_webhook_paid():
+    """JotForm webhook that only processes submissions when payment is confirmed (q43_paid = "1")"""
+    try:
+        logger.info("Processing JotForm webhook with payment validation")
+        
+        # Parse incoming data - handle multipart form data from JotForm
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            form_data = request.form.to_dict()
+            
+            if 'rawRequest' not in form_data:
+                logger.error("No rawRequest found in webhook data")
+                return jsonify({"error": "Invalid webhook data - missing rawRequest"}), 400
+            
+            try:
+                raw_request = json.loads(form_data['rawRequest'])
+            except json.JSONDecodeError as e:
+                logger.error(f"Could not parse rawRequest JSON: {e}")
+                return jsonify({"error": "Invalid rawRequest JSON format"}), 400
+        else:
+            form_data = request.json
+            if not form_data or 'rawRequest' not in form_data:
+                return jsonify({"error": "Invalid webhook data"}), 400
+            raw_request = form_data['rawRequest']
+        
+        # PAYMENT VALIDATION - Only process if paid status is confirmed
+        paid_status = raw_request.get('q43_paid', '0')
+        is_paid = str(paid_status).lower() in ['1', 'true', 'yes']
+        
+        if not is_paid:
+            logger.info(f"Submission ignored - payment not confirmed. q43_paid = {paid_status}")
+            return jsonify({
+                "status": "ignored", 
+                "message": "Submission not processed - payment not confirmed",
+                "paid_status": paid_status
+            }), 200
+        
+        # Extract user data from the new form structure
+        user_data = extract_user_data_from_new_form(raw_request, form_data)
+        
+        # Validate required fields
+        if not all([user_data['first_name'], user_data['last_name'], user_data['email']]):
+            missing_fields = []
+            if not user_data['first_name']: missing_fields.append('first_name')
+            if not user_data['last_name']: missing_fields.append('last_name') 
+            if not user_data['email']: missing_fields.append('email')
+            
+            logger.error(f"Missing required fields: {missing_fields}")
+            return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+        
+        logger.info(f"Processing PAID submission for {user_data['email']} - {user_data['quantity']} {user_data['package_type']} packages")
+        
+        # Create/update user in database
+        db.ensure_connection()
+        user_id = db.create_user(
+            user_data['first_name'],
+            user_data['last_name'], 
+            user_data['email'],
+            user_data['city'],
+            user_data['package_type']
+        )
+        
+        # Add packages to user's inventory
+        db.add_user_packages(user_id, user_data['package_type'], user_data['quantity'])
+        
+        # Send QR code email to customer
+        email_sent = False
+        email_error = None
+        
+        try:
+            qr_sender.send_email(
+                user_data['email'],
+                user_data['first_name'], 
+                user_data['last_name'],
+                user_data['city'],
+                user_data['package_type'],
+                user_data['quantity']
+            )
+            email_sent = True
+            logger.info(f"QR code email sent successfully to {user_data['email']}")
+            
+        except Exception as email_error:
+            email_error_msg = str(email_error)
+            logger.error(f"Email failed but data saved: {email_error_msg}")
+            email_error = email_error_msg
+        
+        return jsonify({
+            "status": "success",
+            "message": f"Processed paid submission: Added {user_data['quantity']} packages for {user_data['email']}",
+            "user_id": user_id,
+            "email_sent": email_sent,
+            "email_error": email_error,
+            "transaction_id": user_data.get('transaction_id'),
+            "paid_status_confirmed": True
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Webhook processing error: {str(e)}")
+        return jsonify({
+            "status": "error", 
+            "message": f"Webhook processing failed: {str(e)}"
+        }), 500
 
 # Authentication routes
 @app.route('/login', methods=['GET', 'POST'])
@@ -614,6 +786,96 @@ def admin_delete_user(user_id):
         logger.error(f"Admin user deletion error: {str(e)}")
         return jsonify({"success": False, "error": str(e)}), 500
 
+@app.route('/api/verify-qr', methods=['POST'])
+@login_required
+def verify_qr_api():
+    """API endpoint to verify QR codes from the scanner"""
+    try:
+        # Get JSON data from request
+        data = request.get_json()
+        
+        # Validate request data
+        if not data or 'qr_code' not in data:
+            return jsonify({
+                "success": False,
+                "error": "Missing QR code in request"
+            }), 400
+        
+        # Extract QR code from request
+        qr_code = str(data['qr_code']).strip()
+        
+        # Validate QR code format (should be 4-digit number)
+        if not qr_code:
+            return jsonify({
+                "success": False,
+                "error": "QR code cannot be empty"
+            }), 400
+        
+        # Log the QR verification attempt
+        logger.info(f"API QR verification attempt: {qr_code}")
+        
+        # Ensure database connection is active
+        db.ensure_connection()
+        
+        # Verify QR code in database
+        user_data = db.verify_qr_code(qr_code)
+        
+        if not user_data:
+            logger.warning(f"Invalid QR code attempted: {qr_code}")
+            return jsonify({
+                "success": False,
+                "error": "Invalid QR code. Please check the code and try again."
+            }), 404
+        
+        # Get additional user information
+        packages = db.get_user_packages(user_data['user_id'])
+        package_summary = db.get_user_package_summary(user_data['user_id'])
+        
+        # Ensure package_summary has default values if None
+        if not package_summary:
+            package_summary = {
+                'total_packages': 0,
+                'available_packages': 0,
+                'rented_packages': 0,
+                'has_packages': False,
+                'all_returned': True
+            }
+        
+        # Format response data
+        response_data = {
+            "success": True,
+            "user": {
+                "user_id": user_data['user_id'],
+                "first_name": user_data['first_name'],
+                "last_name": user_data['last_name'],
+                "email": user_data['email'],
+                "city": user_data.get('city', ''),
+                "package_type": user_data.get('package_type', ''),
+                "rental_status": user_data['rental_status'],
+                "qr_code_number": user_data['qr_code_number'],
+                "notes": user_data.get('notes', ''),
+                "notes_updated_at": user_data.get('notes_updated_at')
+            },
+            "packages": packages,
+            "package_summary": package_summary,
+            "message": f"Found user: {user_data['first_name']} {user_data['last_name']}"
+        }
+        
+        # Log successful verification
+        logger.info(f"QR code verified successfully: {qr_code} -> User {user_data['user_id']} ({user_data['first_name']} {user_data['last_name']})")
+        
+        return jsonify(response_data)
+        
+    except Exception as e:
+        # Log the error for debugging
+        logger.error(f"QR verification API error: {str(e)}")
+        
+        # Return generic error message to client
+        return jsonify({
+            "success": False,
+            "error": "An error occurred while verifying the QR code. Please try again."
+        }), 500
+
 @app.route('/email-client', methods=['GET', 'POST'])
 @admin_required
 def email_client():
@@ -667,9 +929,6 @@ def email_logs():
 def admin():
     """Admin dashboard"""
     return render_template('admin.html')
-
-
-
 
 @app.route('/api/package-action/<int:user_id>', methods=['POST'])
 @login_required
@@ -869,7 +1128,71 @@ def filter_users(status):
     except Exception as e:
         logger.error(f"Error filtering users by status '{status}': {str(e)}")
         return jsonify({'error': 'Database error occurred'}), 500
+
+
+@app.route('/lookup-search-results', methods=['POST'])
+def lookup_search_results():
+    """Handle search requests and display results"""
+    search_type = request.form.get('search_type')
+    search_term = request.form.get('search_term', '').strip()
     
+    if not search_term:
+        return render_template('lookup-search-results.html', 
+                             error="Please enter a search term", 
+                             users=[], 
+                             search_term=search_term, 
+                             search_type=search_type)
+    
+    try:
+        db = DatabaseHandler()
+        users = []
+        
+        # Execute appropriate search based on type
+        if search_type == 'qr_code':
+            # For QR code, verify format and search
+            if len(search_term) == 4 and search_term.isdigit():
+                user = db.verify_qr_code(search_term)
+                if user:
+                    users = [user]
+            else:
+                return render_template('lookup-search-results.html',
+                                     error="QR code must be exactly 4 digits",
+                                     users=[],
+                                     search_term=search_term,
+                                     search_type=search_type)
+                                     
+        elif search_type == 'first_name':
+            users = db.search_by_first_name(search_term)
+            
+        elif search_type == 'last_name':
+            users = db.search_by_last_name(search_term)
+            
+        else:
+            return render_template('lookup-search-results.html',
+                                 error="Invalid search type",
+                                 users=[],
+                                 search_term=search_term,
+                                 search_type=search_type)
+        
+        # Enhance users with package summaries
+        for user in users:
+            user['package_summary'] = db.get_user_package_summary(user['user_id'])
+            
+        db.close()
+        
+        return render_template('lookup-search-results.html',
+                             users=users,
+                             search_term=search_term,
+                             search_type=search_type)
+                             
+    except Exception as e:
+        logger.error(f"Search error: {e}")
+        return render_template('lookup-search-results.html',
+                             error=f"Search failed: {str(e)}",
+                             users=[],
+                             search_term=search_term,
+                             search_type=search_type)
+
 @app.route('/api/stats')
 def get_stats():
     """Get database statistics"""

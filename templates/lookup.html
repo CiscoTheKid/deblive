@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+{% block title %}🔍 Customer Lookup{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+        <!-- Header Section -->
+        <div class="bg-white shadow-lg rounded-lg p-6 mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">🔍 Customer Lookup & Search</h1>
+            <p class="text-gray-600 mb-4">Find customers by QR code, name, or browse the complete database</p>
+            <a href="{{ url_for('home') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition duration-200 transform hover:scale-105 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.707 3.293a1 1 0 010 1.414L6.414 9H17a1 1 0 110 2H6.414l4.293 4.293a1 1 0 11-1.414 1.414l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                🏠 Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Error Display -->
+        {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg mb-6 shadow-md">
+            <div class="flex items-center">
+                <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="font-medium">{{ error }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Main Search Section -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            <div class="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                <h2 class="text-xl font-semibold">🔎 Customer Search</h2>
+                <p class="text-blue-100">Enter customer information to find records</p>
+            </div>
+            
+            <div class="p-6">
+                <!-- Search Form -->
+                <form method="POST" action="{{ url_for('lookup_search_results') }}" class="space-y-6">
+                    <!-- Search Type Selector -->
+                    <div>
+                        <label for="search_type" class="block text-sm font-medium text-gray-700 mb-2">
+                            🔎 Search Method
+                        </label>
+                        <select id="search_type" 
+                                name="search_type" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                onchange="updatePlaceholder()">
+                            <option value="qr_code">🔢 QR Code Number</option>
+                            <option value="first_name">👤 First Name</option>
+                            <option value="last_name">👥 Last Name</option>
+                        </select>
+                        <p class="mt-2 text-sm text-gray-500" id="search_help">
+                            Enter the 4-digit QR code to find a specific customer
+                        </p>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div>
+                        <label id="search_label" for="search_term" class="block text-sm font-medium text-gray-700 mb-2">
+                            Enter QR Code Number
+                        </label>
+                        <input type="text" 
+                               id="search_term" 
+                               name="search_term" 
+                               required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                               placeholder="Enter the 4-digit code"
+                               autocomplete="off">
+                        <p class="mt-2 text-sm text-gray-500" id="search_tips">
+                            💡 Tip: QR codes are 4 digits, names support partial matching
+                        </p>
+                    </div>
+                    
+                    <!-- Search Button -->
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 transition duration-200 transform hover:scale-105 font-semibold shadow-md">
+                        🔍 Search Customers
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Access Options -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- QR Scanner Option -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">📱</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">QR Code Scanner</h3>
+                    <p class="text-gray-600 mb-6">Use your device camera to scan QR codes directly</p>
+                    <a href="{{ url_for('scan') }}" 
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition duration-200 transform hover:scale-105 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                        📸 Open Scanner
+                    </a>
+                </div>
+            </div>
+
+            <!-- Database Browser Option -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Browse All Customers</h3>
+                    <p class="text-gray-600 mb-6">View and manage the complete customer database</p>
+                    <a href="{{ url_for('email_logs') }}" 
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition duration-200 transform hover:scale-105 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        👥 Browse Database
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="px-6 py-4 bg-gradient-to-r from-gray-500 to-gray-600 text-white">
+                <h2 class="text-xl font-semibold">❓ How to Search</h2>
+                <p class="text-gray-100">Choose the best search method for your needs</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-4xl mb-3">🔢</div>
+                        <h4 class="font-semibold text-blue-800 mb-2">QR Code</h4>
+                        <p class="text-sm text-blue-600">Enter the exact 4-digit code from the QR label for precise customer lookup.</p>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-4xl mb-3">👤</div>
+                        <h4 class="font-semibold text-green-800 mb-2">First Name</h4>
+                        <p class="text-sm text-green-600">Search by first name with partial matching. "John" will find "Johnny", "Johnson", etc.</p>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 rounded-lg">
+                        <div class="text-4xl mb-3">👥</div>
+                        <h4 class="font-semibold text-purple-800 mb-2">Last Name</h4>
+                        <p class="text-sm text-purple-600">Search by last name with partial matching. "Smith" will find "Smithson", etc.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Individual Customer Detail Display (when viewing specific QR code) -->
+{% if user %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+        <!-- Customer Detail Card -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- Header with gradient background matching the UI theme -->
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">👤 Customer Details</h2>
+                        <p class="text-blue-100">Complete information and package management</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-bold">{{ user.qr_code_number or 'No QR' }}</div>
+                        <div class="text-sm text-blue-100">QR Code</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-8">
+                <!-- Customer Information Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Personal Information -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                            <span class="text-2xl mr-2">📋</span>
+                            Personal Information
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
+                                <p class="text-xl font-semibold text-gray-900">{{ user.first_name }} {{ user.last_name }}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Email Address</label>
+                                <p class="text-lg text-gray-900">
+                                    <a href="mailto:{{ user.email }}" class="text-blue-600 hover:text-blue-800 transition duration-200">
+                                        {{ user.email }}
+                                    </a>
+                                </p>
+                            </div>
+                            
+                            {% if user.city %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">City</label>
+                                <p class="text-lg text-gray-900">📍 {{ user.city }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if user.package_type %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Package Type</label>
+                                <p class="text-lg text-gray-900">📦 {{ user.package_type }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Status and Activity -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                            <span class="text-2xl mr-2">📊</span>
+                            Status & Activity
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Current Status</label>
+                                {% if user.rental_status == 0 %}
+                                    <span class="inline-flex items-center px-4 py-2 rounded-lg text-lg font-semibold bg-gray-100 text-gray-800">
+                                        💤 Not Active
+                                    </span>
+                                {% elif user.rental_status == 1 %}
+                                    <span class="inline-flex items-center px-4 py-2 rounded-lg text-lg font-semibold bg-green-100 text-green-800">
+                                        ✅ Active Rental
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-4 py-2 rounded-lg text-lg font-semibold bg-blue-100 text-blue-800">
+                                        🔄 Returned
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">QR Code Number</label>
+                                <p class="text-2xl font-mono text-gray-900 bg-white px-4 py-2 rounded-lg border border-gray-200 inline-block">
+                                    {{ user.qr_code_number or 'Not assigned' }}
+                                </p>
+                            </div>
+                            
+                            {% if user.updated_at %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Last Updated</label>
+                                <p class="text-lg text-gray-700">{{ user.updated_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Package Information -->
+                {% if user.package_summary %}
+                <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-6 mb-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="text-2xl mr-2">📦</span>
+                        Package Summary
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center p-4 bg-white rounded-lg shadow">
+                            <div class="text-3xl font-bold text-blue-600">{{ user.package_summary.total_packages }}</div>
+                            <div class="text-sm text-gray-600">Total Packages</div>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-lg shadow">
+                            <div class="text-3xl font-bold text-green-600">{{ user.package_summary.available_packages }}</div>
+                            <div class="text-sm text-gray-600">Available</div>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-lg shadow">
+                            <div class="text-3xl font-bold text-yellow-600">{{ user.package_summary.rented_packages }}</div>
+                            <div class="text-sm text-gray-600">Currently Rented</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Notes Section -->
+                {% if user.notes %}
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+                    <h3 class="text-xl font-semibold text-yellow-800 mb-3 flex items-center">
+                        <span class="text-2xl mr-2">📝</span>
+                        Notes
+                    </h3>
+                    <p class="text-gray-800 whitespace-pre-wrap">{{ user.notes }}</p>
+                    {% if user.notes_updated_at %}
+                    <p class="text-sm text-yellow-600 mt-3">
+                        Last updated: {{ user.notes_updated_at.strftime('%B %d, %Y at %I:%M %p') }}
+                    </p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-4 justify-center pt-6 border-t border-gray-200">
+                    <a href="{{ url_for('lookup') }}" 
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 transition duration-200 transform hover:scale-105 shadow-md">
+                        🔍 New Search
+                    </a>
+                    
+                    {% if user.qr_code_number %}
+                    <a href="{{ url_for('scan', qr_code=user.qr_code_number) }}" 
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition duration-200 transform hover:scale-105 shadow-md">
+                        📱 Manage Packages
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('email_logs') }}" 
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition duration-200 transform hover:scale-105 shadow-md">
+                        👥 Browse All Customers
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+// ========================================
+// SEARCH FORM ENHANCEMENTS
+// ========================================
+
+/**
+ * Update placeholder text and help information based on search type selection
+ * This provides context-aware guidance for different search methods
+ */
+function updatePlaceholder() {
+    const searchType = document.getElementById('search_type').value;
+    const searchInput = document.getElementById('search_term');
+    const searchLabel = document.getElementById('search_label');
+    const searchHelp = document.getElementById('search_help');
+    const searchTips = document.getElementById('search_tips');
+    
+    // Clear previous value when changing search type
+    searchInput.value = '';
+    
+    switch(searchType) {
+        case 'qr_code':
+            searchInput.placeholder = 'Enter the 4-digit code (e.g., 1234)';
+            searchLabel.textContent = '🔢 Enter QR Code Number';
+            searchHelp.textContent = 'Enter the exact 4-digit QR code to find a specific customer';
+            searchTips.textContent = '💡 Tip: QR codes are exactly 4 digits and provide precise customer lookup';
+            searchInput.setAttribute('pattern', '[0-9]{4}');
+            searchInput.setAttribute('maxlength', '4');
+            break;
+            
+        case 'first_name':
+            searchInput.placeholder = 'Enter first name (e.g., John, Jane)';
+            searchLabel.textContent = '👤 Enter First Name';
+            searchHelp.textContent = 'Search by first name with partial matching support';
+            searchTips.textContent = '💡 Tip: Partial names work - "John" will find "Johnny", "Johnson", etc.';
+            searchInput.removeAttribute('pattern');
+            searchInput.removeAttribute('maxlength');
+            break;
+            
+        case 'last_name':
+            searchInput.placeholder = 'Enter last name (e.g., Smith, Johnson)';
+            searchLabel.textContent = '👥 Enter Last Name';
+            searchHelp.textContent = 'Search by last name with partial matching support';
+            searchTips.textContent = '💡 Tip: Partial names work - "Smith" will find "Smithson", "Smithfield", etc.';
+            searchInput.removeAttribute('pattern');
+            searchInput.removeAttribute('maxlength');
+            break;
+    }
+    
+    // Focus on input after changing type
+    searchInput.focus();
+}
+
+/**
+ * Handle form submission with validation and user feedback
+ */
+function handleFormSubmission() {
+    const form = document.querySelector('form');
+    const submitButton = form.querySelector('button[type="submit"]');
+    const searchTerm = document.getElementById('search_term').value.trim();
+    const searchType = document.getElementById('search_type').value;
+    
+    // Basic validation
+    if (!searchTerm) {
+        alert('Please enter a search term');
+        return false;
+    }
+    
+    // QR code specific validation
+    if (searchType === 'qr_code') {
+        if (!/^\d{4}$/.test(searchTerm)) {
+            alert('QR codes must be exactly 4 digits');
+            return false;
+        }
+    }
+    
+    // Show loading state
+    submitButton.innerHTML = `
+        <div class="flex items-center justify-center">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+            🔍 Searching...
+        </div>
+    `;
+    submitButton.disabled = true;
+    
+    return true;
+}
+
+/**
+ * Auto-format QR code input to ensure 4 digits
+ */
+function formatQRCodeInput() {
+    const searchInput = document.getElementById('search_term');
+    const searchType = document.getElementById('search_type').value;
+    
+    if (searchType === 'qr_code') {
+        // Remove non-digits and limit to 4 characters
+        let value = searchInput.value.replace(/\D/g, '').slice(0, 4);
+        searchInput.value = value;
+    }
+}
+
+// ========================================
+// KEYBOARD SHORTCUTS & ENHANCEMENTS
+// ========================================
+
+/**
+ * Handle keyboard shortcuts for power users
+ */
+document.addEventListener('keydown', function(e) {
+    // Alt + number keys to switch search types
+    if (e.altKey) {
+        switch(e.key) {
+            case '1':
+                e.preventDefault();
+                document.getElementById('search_type').value = 'qr_code';
+                updatePlaceholder();
+                break;
+            case '2':
+                e.preventDefault();
+                document.getElementById('search_type').value = 'first_name';
+                updatePlaceholder();
+                break;
+            case '3':
+                e.preventDefault();
+                document.getElementById('search_type').value = 'last_name';
+                updatePlaceholder();
+                break;
+        }
+    }
+    
+    // Focus search input with Ctrl+F
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        document.getElementById('search_term').focus();
+    }
+});
+
+// ========================================
+// INITIALIZATION
+// ========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔍 Customer lookup interface initialized');
+    
+    // Set up form submission handler
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', handleFormSubmission);
+    }
+    
+    // Set up input formatting for QR codes
+    const searchInput = document.getElementById('search_term');
+    if (searchInput) {
+        searchInput.addEventListener('input', formatQRCodeInput);
+        
+        // Auto-focus on search input
+        searchInput.focus();
+    }
+    
+    // Set up search type change handler
+    const searchTypeSelect = document.getElementById('search_type');
+    if (searchTypeSelect) {
+        searchTypeSelect.addEventListener('change', updatePlaceholder);
+    }
+    
+    // Initialize with current search type
+    updatePlaceholder();
+    
+    console.log('⌨️ Keyboard shortcuts: Alt+1 (QR), Alt+2 (First Name), Alt+3 (Last Name), Ctrl+F (Focus Search)');
+});
+
+console.log('🚀 Enhanced customer lookup system ready');
+</script>
+
+{% endblock %}

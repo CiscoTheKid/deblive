@@ -82,7 +82,7 @@ class QREmailSender:
         <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <h2 style="color: #2c3e50;">Your QR Code for DÃ®ner en Blanc</h2>
+                    <h2 style="color: #2c3e50;">Your QR Code for Dinner en Blanc</h2>
                     <p>Dear {first_name} {last_name},</p>
                     <p>Thank you for your order! Your QR code is attached.</p>
                     <p>Confirmation number: <strong>{qr_code_number}</strong></p>
@@ -90,7 +90,7 @@ class QREmailSender:
                     <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="color: #2c3e50;">Order Details:</h3>
                         <ul>
-                            <li>Event: {city_display} DÃ®ner en Blanc</li>
+                            <li>Event: {city_display} Dinner en Blanc</li>
                             <li>Package: {quantity} x {package_display} {package_str}</li>
                             <li>Pickup Code: {qr_code_number}</li>
                         </ul>

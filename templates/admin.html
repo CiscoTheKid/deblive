@@ -1,0 +1,830 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel - Database Management{% endblock %}
+{% block content %}
+<div class="container mx-auto p-4">
+    <!-- Header Section -->
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Admin Panel</h1>
+                <p class="text-gray-600">Database Management & Inventory Overview</p>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="refreshStats()" class="px-4 py-2 bg-green-400 text-white rounded hover:bg-green-700 transition duration-200">
+                    🔄 Refresh Status
+                </button>
+                <a href="/">
+                    <button class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+                        🏠 Home
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div class="text-sm text-gray-500">
+            Last Updated: <span id="lastUpdated">-</span>
+        </div>
+    </div>
+
+    <!-- Enhanced Stats Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <!-- Total Users Card -->
+        <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition duration-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-gray-700 font-medium">Total Users</h3>
+                    <p class="text-xs text-gray-500 mt-1">Registered customers</p>
+                </div>
+                <span id="totalUsers" class="text-2xl font-bold text-blue-600">-</span>
+            </div>
+        </div>
+
+        <!-- Total QR Codes Card -->
+        <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition duration-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-gray-700 font-medium">Total QR Codes</h3>
+                    <p class="text-xs text-gray-500 mt-1">Generated codes</p>
+                </div>
+                <span id="totalQRCodes" class="text-2xl font-bold text-green-600">-</span>
+            </div>
+        </div>
+
+        <!-- Active Rentals Card -->
+        <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition duration-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-gray-700 font-medium">Active Rentals</h3>
+                    <p class="text-xs text-gray-500 mt-1">Currently rented</p>
+                </div>
+                <span id="activeRentals" class="text-2xl font-bold text-purple-600">-</span>
+            </div>
+        </div>
+
+        <!-- Total Packages Card -->
+        <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition duration-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-gray-700 font-medium">Total Packages</h3>
+                    <p class="text-xs text-gray-500 mt-1">Total inventory items</p>
+                </div>
+                <span id="totalPackages" class="text-2xl font-bold text-orange-600">-</span>
+            </div>
+        </div>
+
+        <!-- Available Packages Card -->
+        <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition duration-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-gray-700 font-medium">Available Packages</h3>
+                    <p class="text-xs text-gray-500 mt-1">Ready for rental</p>
+                </div>
+                <span id="availablePackages" class="text-2xl font-bold text-teal-600">-</span>
+            </div>
+        </div>
+
+        <!-- Rented Packages Card -->
+        <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition duration-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-gray-700 font-medium">Rented Packages</h3>
+                    <p class="text-xs text-gray-500 mt-1">Currently out</p>
+                </div>
+                <span id="rentedPackages" class="text-2xl font-bold text-red-600">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Package Inventory Summary -->
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">📦 Inventory Overview</h2>
+        <div class="bg-gray-50 rounded-lg p-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-teal-600" id="availablePercentage">-%</div>
+                    <div class="text-sm text-gray-600">Available</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-red-600" id="rentedPercentage">-%</div>
+                    <div class="text-sm text-gray-600">Rented Out</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-600" id="utilization">-%</div>
+                    <div class="text-sm text-gray-600">Utilization Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Management Section -->
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800">👤 User Management</h2>
+        </div>
+        
+        <div class="p-6">
+            <!-- User Search Section -->
+            <div class="bg-red-50 rounded-lg p-4 border-l-4 border-red-400">
+                <h3 class="font-semibold text-red-800 mb-2">🗑️ Remove User</h3>
+                <p class="text-sm text-red-700 mb-4">
+                    Search for a user and permanently remove them from the system. This will delete all associated data.
+                </p>
+                
+                <!-- Search Form -->
+                <div class="space-y-4">
+                    <div class="flex gap-4">
+                        <input type="text" 
+                               id="userSearchInput" 
+                               placeholder="Enter name or email..." 
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <button onclick="searchUsers()" 
+                                class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200">
+                            🔍 Search Users
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Search Results -->
+                <div id="userSearchResults" class="mt-4 hidden">
+                    <div class="bg-white rounded-lg border border-red-200 overflow-hidden">
+                        <div class="px-4 py-2 bg-red-100 font-medium text-red-800">Search Results</div>
+                        <div id="userResultsList" class="divide-y divide-gray-200">
+                            <!-- Results will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- No Results Message -->
+                <div id="noUserResults" class="mt-4 hidden">
+                    <div class="bg-gray-100 rounded-lg p-4 text-center text-gray-600">
+                        No users found matching your search.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Database Management Section -->
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800">🗄️ Database Management</h2>
+        </div>
+        
+        <div class="p-6">
+            <!-- Database Backup & Restore Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Export Section -->
+                <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-400">
+                    <h3 class="font-semibold text-blue-800 mb-2">💾 Export Database</h3>
+                    <p class="text-sm text-blue-700 mb-4">
+                        Download a complete SQL backup of your database. This includes all tables, data, and structure.
+                    </p>
+                    <button onclick="exportData()" 
+                            class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200 font-medium">
+                        📥 Export SQL Database
+                    </button>
+                </div>
+
+                <!-- Import Section -->
+                <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-400">
+                    <h3 class="font-semibold text-green-800 mb-2">📤 Import Database</h3>
+                    <p class="text-sm text-green-700 mb-4">
+                        Upload and restore a SQL database backup. This will replace current data.
+                    </p>
+                    <form id="importForm" enctype="multipart/form-data" class="space-y-3">
+                        <div class="border-2 border-dashed border-green-300 rounded-lg p-4 text-center">
+                            <input type="file" 
+                                   id="sqlFile" 
+                                   name="sql_file" 
+                                   accept=".sql" 
+                                   class="w-full text-sm text-gray-500
+                                          file:mr-4 file:py-2 file:px-4
+                                          file:rounded-full file:border-0
+                                          file:text-sm file:font-semibold
+                                          file:bg-green-50 file:text-green-700
+                                          hover:file:bg-green-100"
+                                   onchange="validateSQLFile(this)">
+                            <p class="text-xs text-gray-500 mt-2">Only .sql files allowed (max 50MB)</p>
+                        </div>
+                        <button type="button" 
+                                onclick="importData()" 
+                                id="importBtn"
+                                disabled
+                                class="w-full px-4 py-2 bg-gray-400 text-white rounded-lg transition duration-200 font-medium cursor-not-allowed">
+                            📤 Import SQL Database
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Warning Section -->
+            <div class="bg-orange-50 rounded-lg p-4 mb-6 border-l-4 border-orange-400">
+                <div class="flex items-center text-orange-800">
+                    <span class="font-medium">⚠️ Warning: Database Operations</span>
+                </div>
+                <p class="mt-2 text-sm text-orange-700">
+                    Database operations are powerful and irreversible:
+                </p>
+                <ul class="mt-2 text-sm text-orange-700 list-disc list-inside">
+                    <li><strong>Import:</strong> Will replace ALL current data with uploaded backup</li>
+                    <li><strong>Reset:</strong> Will permanently delete ALL data (users, packages, QR codes, logs)</li>
+                    <li><strong>Remove User:</strong> Will permanently delete user and all their data</li>
+                    <li><strong>Export:</strong> Creates a complete backup for restoration</li>
+                </ul>
+                <p class="mt-2 text-sm text-orange-700 font-semibold">
+                    Always export a backup before making changes!
+                </p>
+            </div>
+
+            <!-- Reset Database Section -->
+            <div class="bg-red-50 rounded-lg p-4 border-l-4 border-red-400">
+                <h3 class="font-semibold text-red-800 mb-2">🗑️ Reset Database</h3>
+                <p class="text-sm text-red-700 mb-4">
+                    Permanently delete all data and start fresh. This cannot be undone!
+                </p>
+                <button onclick="showResetConfirmation()" 
+                        class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 font-medium">
+                    🗑️ Reset All Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Deletion Confirmation Modal -->
+    <div id="userDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg max-w-md mx-4 shadow-2xl">
+            <div class="bg-red-50 px-6 py-4 border-b border-red-100 rounded-t-lg">
+                <h3 class="text-xl font-bold text-red-700">⚠️ Confirm User Deletion</h3>
+            </div>
+            <div class="px-6 py-4">
+                <p class="text-gray-800 mb-3">
+                    <strong>You are about to permanently delete:</strong>
+                </p>
+                <div class="bg-gray-50 p-3 rounded mb-4">
+                    <div class="font-medium" id="deleteUserName">User Name</div>
+                    <div class="text-sm text-gray-600" id="deleteUserEmail">user@example.com</div>
+                    <div class="text-sm text-gray-600" id="deleteUserQR">QR: 1234</div>
+                </div>
+                <div class="bg-red-100 p-3 rounded mb-4">
+                    <p class="text-sm text-red-800">
+                        <strong>This will also delete:</strong>
+                    </p>
+                    <ul class="text-sm text-red-700 list-disc list-inside mt-2">
+                        <li>All packages assigned to this user</li>
+                        <li>QR codes and rental history</li>
+                        <li>Email logs and notes</li>
+                    </ul>
+                </div>
+                <p class="font-bold text-red-600">This action CANNOT be undone!</p>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-4 rounded-b-lg">
+                <button onclick="hideUserDeleteModal()" 
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition duration-200">
+                    ❌ Cancel
+                </button>
+                <button onclick="confirmUserDelete()" 
+                        id="confirmDeleteBtn"
+                        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200 font-bold">
+                    ✅ Delete User
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg max-w-md mx-4 shadow-2xl">
+            <div class="bg-red-50 px-6 py-4 border-b border-red-100 rounded-t-lg">
+                <h3 class="text-xl font-bold text-red-700">⚠️ FINAL WARNING: Database Reset</h3>
+            </div>
+            <div class="px-6 py-4">
+                <p class="text-gray-800 mb-3">
+                    <strong>This will permanently delete:</strong>
+                </p>
+                <ul class="list-disc list-inside text-sm text-gray-700 mb-4 space-y-1">
+                    <li>All <span id="modalTotalUsers">-</span> user accounts</li>
+                    <li>All <span id="modalTotalPackages">-</span> package inventory items</li>
+                    <li>All <span id="modalTotalQRCodes">-</span> QR codes</li>
+                    <li>All rental history and email logs</li>
+                </ul>
+                <p class="mt-3 font-bold text-red-600">This action CANNOT be undone!</p>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-4 rounded-b-lg">
+                <button onclick="hideResetConfirmation()" 
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition duration-200">
+                    ❌ Cancel - Keep Data Safe
+                </button>
+                <button onclick="resetDatabase()" 
+                        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200 font-bold">
+                    ✅ Delete Everything
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Confirmation Modal -->
+    <div id="importConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg max-w-md mx-4 shadow-2xl">
+            <div class="bg-yellow-50 px-6 py-4 border-b border-yellow-100 rounded-t-lg">
+                <h3 class="text-xl font-bold text-yellow-700">⚠️ Confirm Database Import</h3>
+            </div>
+            <div class="px-6 py-4">
+                <p class="text-gray-800 mb-3">
+                    <strong>You are about to import:</strong>
+                </p>
+                <p class="text-sm bg-gray-100 p-2 rounded mb-4" id="importFileName">filename.sql</p>
+                <div class="bg-yellow-100 p-3 rounded mb-4">
+                    <p class="text-sm text-yellow-800">
+                        <strong>Warning:</strong> This will replace ALL current data with the data from this backup file.
+                    </p>
+                </div>
+                <p class="text-sm text-gray-600">Current database will be overwritten. Make sure you have a backup if needed.</p>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-4 rounded-b-lg">
+                <button onclick="hideImportConfirmation()" 
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition duration-200">
+                    ❌ Cancel
+                </button>
+                <button onclick="confirmImport()" 
+                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-200 font-bold">
+                    ✅ Import Database
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+            <p class="text-gray-700 font-medium" id="loadingMessage">Processing database operation...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentDeleteUserId = null;
+
+    // Function to format date and time
+    function formatDateTime(date) {
+        return new Date(date).toLocaleString();
+    }
+
+    // Function to calculate and display percentages
+    function updateInventoryPercentages(stats) {
+        const total = stats.total_packages || 0;
+        const available = stats.available_packages || 0;
+        const rented = stats.rented_packages || 0;
+
+        if (total > 0) {
+            const availablePercent = Math.round((available / total) * 100);
+            const rentedPercent = Math.round((rented / total) * 100);
+            const utilization = Math.round((rented / total) * 100);
+
+            document.getElementById('availablePercentage').textContent = availablePercent + '%';
+            document.getElementById('rentedPercentage').textContent = rentedPercent + '%';
+            document.getElementById('utilization').textContent = utilization + '%';
+        } else {
+            document.getElementById('availablePercentage').textContent = '0%';
+            document.getElementById('rentedPercentage').textContent = '0%';
+            document.getElementById('utilization').textContent = '0%';
+        }
+    }
+
+    // Function to update all statistics
+    async function refreshStats() {
+        try {
+            const response = await fetch('/api/stats');
+            const data = await response.json();
+            
+            // Update basic stats
+            document.getElementById('totalUsers').textContent = data.total_users || 0;
+            document.getElementById('totalQRCodes').textContent = data.total_qr_codes || 0;
+            document.getElementById('activeRentals').textContent = data.active_rentals || 0;
+            
+            // Update package inventory stats
+            document.getElementById('totalPackages').textContent = data.total_packages || 0;
+            document.getElementById('availablePackages').textContent = data.available_packages || 0;
+            document.getElementById('rentedPackages').textContent = data.rented_packages || 0;
+            
+            // Update percentages and ratios
+            updateInventoryPercentages(data);
+            
+            // Update modal stats
+            document.getElementById('modalTotalUsers').textContent = data.total_users || 0;
+            document.getElementById('modalTotalPackages').textContent = data.total_packages || 0;
+            document.getElementById('modalTotalQRCodes').textContent = data.total_qr_codes || 0;
+            
+            // Update timestamp
+            document.getElementById('lastUpdated').textContent = formatDateTime(new Date());
+            
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+            
+            // Show error state
+            const errorElements = [
+                'totalUsers', 'totalQRCodes', 'activeRentals', 
+                'totalPackages', 'availablePackages', 'rentedPackages'
+            ];
+            errorElements.forEach(id => {
+                document.getElementById(id).textContent = 'Error';
+            });
+            
+            alert('Failed to fetch statistics. Please check your connection and try again.');
+        }
+    }
+
+    // User Management Functions
+    async function searchUsers() {
+        const searchTerm = document.getElementById('userSearchInput').value.trim();
+        
+        if (!searchTerm) {
+            alert('Please enter a search term');
+            return;
+        }
+
+        try {
+            showLoading('Searching users...');
+            
+            const response = await fetch('/api/admin/search-users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ search_term: searchTerm })
+            });
+
+            const data = await response.json();
+            hideLoading();
+
+            if (data.success && data.users.length > 0) {
+                displayUserResults(data.users);
+            } else {
+                showNoResults();
+            }
+
+        } catch (error) {
+            hideLoading();
+            console.error('Search error:', error);
+            alert('Search failed. Please try again.');
+        }
+    }
+
+    function displayUserResults(users) {
+        const resultsContainer = document.getElementById('userSearchResults');
+        const resultsList = document.getElementById('userResultsList');
+        const noResults = document.getElementById('noUserResults');
+        
+        // Hide no results, show results container
+        noResults.classList.add('hidden');
+        resultsContainer.classList.remove('hidden');
+        
+        // Clear previous results
+        resultsList.innerHTML = '';
+        
+        // Add each user to results
+        users.forEach(user => {
+            const userRow = document.createElement('div');
+            userRow.className = 'px-4 py-3 flex justify-between items-center hover:bg-gray-50';
+            
+            // Create elements safely to avoid quote issues
+            const userInfo = document.createElement('div');
+            userInfo.className = 'flex-1';
+            userInfo.innerHTML = `
+                <div class="font-medium text-gray-900">${escapeHtml(user.first_name)} ${escapeHtml(user.last_name)}</div>
+                <div class="text-sm text-gray-600">${escapeHtml(user.email)}</div>
+                <div class="text-xs text-gray-500">ID: ${user.user_id} | QR: ${user.qr_code_number || 'None'} | Packages: ${user.package_count || 0}</div>
+            `;
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition duration-200';
+            deleteBtn.textContent = '🗑️ Delete';
+            deleteBtn.onclick = function() {
+                console.log('Delete button clicked for user ID:', user.user_id); // Debug log
+                showUserDeleteModal(
+                    user.user_id, 
+                    user.first_name, 
+                    user.last_name, 
+                    user.email, 
+                    user.qr_code_number || 'None'
+                );
+            };
+            
+            userRow.appendChild(userInfo);
+            userRow.appendChild(deleteBtn);
+            resultsList.appendChild(userRow);
+        });
+    }
+
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function showNoResults() {
+        const resultsContainer = document.getElementById('userSearchResults');
+        const noResults = document.getElementById('noUserResults');
+        
+        resultsContainer.classList.add('hidden');
+        noResults.classList.remove('hidden');
+    }
+
+    function showUserDeleteModal(userId, firstName, lastName, email, qrCode) {
+        console.log('showUserDeleteModal called with:', { userId, firstName, lastName, email, qrCode }); // Debug log
+        
+        if (!userId || userId === 'undefined' || userId === 'null') {
+            alert('Error: Invalid user ID. Please try searching again.');
+            return;
+        }
+        
+        currentDeleteUserId = parseInt(userId); // Ensure it's a number
+        console.log('currentDeleteUserId set to:', currentDeleteUserId); // Debug log
+        
+        document.getElementById('deleteUserName').textContent = `${firstName} ${lastName}`;
+        document.getElementById('deleteUserEmail').textContent = email;
+        document.getElementById('deleteUserQR').textContent = `QR: ${qrCode}`;
+        
+        const modal = document.getElementById('userDeleteModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function hideUserDeleteModal() {
+        const modal = document.getElementById('userDeleteModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        currentDeleteUserId = null;
+    }
+
+    async function confirmUserDelete() {
+        console.log('confirmUserDelete called with currentDeleteUserId:', currentDeleteUserId); // Debug log
+        
+        if (!currentDeleteUserId || isNaN(currentDeleteUserId)) {
+            alert('Error: No user selected for deletion.');
+            return;
+        }
+
+        // Save the user ID before hiding modal (which resets it to null)
+        const userIdToDelete = currentDeleteUserId;
+        console.log('Saved userIdToDelete:', userIdToDelete); // Debug log
+
+        try {
+            showLoading('Deleting user and all associated data...');
+            hideUserDeleteModal(); // This sets currentDeleteUserId to null, but we saved it
+
+            const url = `/api/admin/delete-user/${userIdToDelete}`;
+            console.log('Making DELETE request to:', url); // Debug log
+
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            console.log('Response status:', response.status); // Debug log
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log('Response data:', data); // Debug log
+            
+            hideLoading();
+
+            if (data.success) {
+                alert('✅ User deleted successfully!');
+                
+                // Refresh stats and clear search results
+                await refreshStats();
+                document.getElementById('userSearchInput').value = '';
+                document.getElementById('userSearchResults').classList.add('hidden');
+                document.getElementById('noUserResults').classList.add('hidden');
+                
+            } else {
+                alert('❌ Failed to delete user: ' + (data.error || 'Unknown error'));
+            }
+
+        } catch (error) {
+            hideLoading();
+            console.error('Delete error:', error);
+            alert('❌ Delete failed: ' + error.message);
+        }
+    }
+
+    // Existing functions (abbreviated for space)
+    function validateSQLFile(input) {
+        const file = input.files[0];
+        const importBtn = document.getElementById('importBtn');
+        
+        if (file) {
+            const fileSize = file.size;
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            
+            if (fileSize > maxSize) {
+                alert('File too large! Maximum size is 50MB.');
+                input.value = '';
+                importBtn.disabled = true;
+                importBtn.className = 'w-full px-4 py-2 bg-gray-400 text-white rounded-lg transition duration-200 font-medium cursor-not-allowed';
+                return;
+            }
+            
+            if (!file.name.toLowerCase().endsWith('.sql')) {
+                alert('Please select a .sql file only.');
+                input.value = '';
+                importBtn.disabled = true;
+                importBtn.className = 'w-full px-4 py-2 bg-gray-400 text-white rounded-lg transition duration-200 font-medium cursor-not-allowed';
+                return;
+            }
+            
+            // Enable import button
+            importBtn.disabled = false;
+            importBtn.className = 'w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 font-medium cursor-pointer';
+        } else {
+            // Disable import button
+            importBtn.disabled = true;
+            importBtn.className = 'w-full px-4 py-2 bg-gray-400 text-white rounded-lg transition duration-200 font-medium cursor-not-allowed';
+        }
+    }
+
+    function importData() {
+        const fileInput = document.getElementById('sqlFile');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert('Please select a SQL file first.');
+            return;
+        }
+        
+        document.getElementById('importFileName').textContent = file.name;
+        const modal = document.getElementById('importConfirmModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function hideImportConfirmation() {
+        const modal = document.getElementById('importConfirmModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    async function confirmImport() {
+        try {
+            hideImportConfirmation();
+            showLoading('Importing database... This may take a few minutes.');
+            
+            const fileInput = document.getElementById('sqlFile');
+            const file = fileInput.files[0];
+            
+            const formData = new FormData();
+            formData.append('sql_file', file);
+            
+            const response = await fetch('/api/import-data', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Import failed');
+            }
+            
+            hideLoading();
+            
+            fileInput.value = '';
+            validateSQLFile(fileInput);
+            
+            await refreshStats();
+            
+            alert('✅ Database imported successfully! ' + result.message);
+            
+        } catch (error) {
+            console.error('Import error:', error);
+            hideLoading();
+            alert('❌ Import failed: ' + error.message);
+        }
+    }
+
+    function showResetConfirmation() {
+        refreshStats().then(() => {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+    }
+
+    function hideResetConfirmation() {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function showLoading(message = 'Processing database operation...') {
+        const overlay = document.getElementById('loadingOverlay');
+        document.getElementById('loadingMessage').textContent = message;
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+    }
+
+    function hideLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+    }
+
+    async function resetDatabase() {
+        try {
+            showLoading('Resetting database... Please wait.');
+            hideResetConfirmation();
+            
+            const response = await fetch('/api/reset-database', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            await refreshStats();
+            
+            hideLoading();
+            alert('✅ Database reset successful! All data has been cleared.');
+            
+        } catch (error) {
+            console.error('Error resetting database:', error);
+            hideLoading();
+            alert('❌ Failed to reset database. Please try again or check the server logs.');
+        }
+    }
+
+    async function exportData() {
+        try {
+            showLoading('Exporting database... Creating SQL backup.');
+            
+            const response = await fetch('/api/export-data', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Export failed: ${response.status}`);
+            }
+            
+            const blob = await response.blob();
+            
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            const contentDisposition = response.headers.get('content-disposition');
+            let filename = 'database_export.zip';
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename=(.+)/);
+                if (match) {
+                    filename = match[1].replace(/['"]/g, '');
+                }
+            }
+            
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            hideLoading();
+            
+            alert('✅ Database export completed successfully! SQL backup downloaded to your downloads folder.');
+            
+        } catch (error) {
+            console.error('Export error:', error);
+            hideLoading();
+            alert('❌ Export failed: ' + error.message + '. Please try again or check server logs.');
+        }
+    }
+
+    // Auto-refresh stats every 10 seconds
+    setInterval(refreshStats, 10000);
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', function() {
+        refreshStats();
+        
+        // Add Enter key support for user search
+        document.getElementById('userSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchUsers();
+            }
+        });
+    });
+</script>
+{% endblock %}

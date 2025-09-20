@@ -1,0 +1,1828 @@
+2025-08-13 16:21:57,511 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:21:57,546 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:21:58,010 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:21:58,555 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:21:58,587 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:21:58,841 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:28:24,567 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:28:24,637 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:28:24,909 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:28:24,909 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 16:28:24,910 - qr_email_sender - DEBUG - Created/Updated user ID: 1
+2025-08-13 16:28:24,910 - qr_email_sender - ERROR - Failed to send email to khanetskyy@gmail.com: cannot unpack non-iterable NoneType object
+2025-08-13 16:28:24,912 - qr_email_sender - INFO - Database connection closed
+2025-08-13 16:33:08,857 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:33:08,894 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:33:09,191 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:33:28,363 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:33:28,405 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:33:28,754 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:33:28,754 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 16:33:28,755 - qr_email_sender - DEBUG - Ensured user exists with ID: 1
+2025-08-13 16:33:28,755 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-13 16:33:28,769 - qr_email_sender - INFO - Successfully created new QR code 1 for user 1.
+2025-08-13 16:33:28,772 - qr_email_sender - DEBUG - Stored QR code with ID: 1
+2025-08-13 16:33:28,772 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-13 16:33:30,017 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-13 16:33:30,023 - qr_email_sender - INFO - Database connection closed
+2025-08-13 16:33:56,364 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:33:56,406 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:33:56,686 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:33:56,686 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 16:33:56,687 - qr_email_sender - DEBUG - Ensured user exists with ID: 1
+2025-08-13 16:33:56,687 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-13 16:33:56,692 - qr_email_sender - INFO - Successfully updated QR code 1 for user 1.
+2025-08-13 16:33:56,695 - qr_email_sender - DEBUG - Stored QR code with ID: 1
+2025-08-13 16:33:56,696 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-13 16:33:57,775 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-13 16:33:57,782 - qr_email_sender - INFO - Database connection closed
+2025-08-13 16:50:04,007 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:50:04,038 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:50:04,315 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:50:12,240 - qr_email_sender - INFO - Database connection closed
+2025-08-13 16:50:16,001 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:50:16,041 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:50:16,285 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:50:16,859 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:50:16,892 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:50:17,139 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:50:34,420 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:50:34,458 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:50:34,730 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:50:34,730 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 16:50:34,734 - qr_email_sender - DEBUG - Ensured user exists with ID: 1
+2025-08-13 16:50:34,734 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-13 16:50:34,749 - qr_email_sender - INFO - Successfully updated QR code 1 for user 1.
+2025-08-13 16:50:34,752 - qr_email_sender - DEBUG - Stored QR code with ID: 1
+2025-08-13 16:50:34,752 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-13 16:50:35,999 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-13 16:50:36,006 - qr_email_sender - INFO - Database connection closed
+2025-08-13 16:51:14,481 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 16:51:14,516 - qr_email_sender - INFO - Database connection established
+2025-08-13 16:51:15,783 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 16:51:15,783 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 16:51:15,787 - qr_email_sender - DEBUG - Ensured user exists with ID: 1
+2025-08-13 16:51:15,787 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-13 16:51:15,795 - qr_email_sender - INFO - Successfully updated QR code 1 for user 1.
+2025-08-13 16:51:15,799 - qr_email_sender - DEBUG - Stored QR code with ID: 1
+2025-08-13 16:51:15,799 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-13 16:51:16,912 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-13 16:51:16,918 - qr_email_sender - INFO - Database connection closed
+2025-08-13 16:52:50,261 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:15:39,757 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:15:39,796 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:15:40,145 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:15:40,650 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:15:40,682 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:15:41,044 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:17:10,522 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:17:14,247 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:17:14,287 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:17:14,759 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:17:15,283 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:17:15,334 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:17:15,571 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:21:40,418 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:21:40,458 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:21:41,691 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:21:41,691 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 17:21:41,695 - qr_email_sender - DEBUG - Ensured user exists with ID: 1
+2025-08-13 17:21:41,695 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-13 17:21:41,710 - qr_email_sender - INFO - Successfully updated QR code 1 for user 1.
+2025-08-13 17:21:41,714 - qr_email_sender - DEBUG - Stored QR code with ID: 1
+2025-08-13 17:21:41,714 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-13 17:21:43,892 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-13 17:21:43,898 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:25:48,250 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:25:48,301 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:25:48,549 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:25:57,531 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:26:01,620 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:26:01,657 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:26:01,909 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:26:02,428 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:26:02,460 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:26:03,425 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:47:45,473 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:47:45,505 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:47:45,857 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:48:04,771 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:48:04,810 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:48:05,182 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:48:05,183 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 17:48:05,188 - qr_email_sender - DEBUG - Ensured user exists with ID: 1
+2025-08-13 17:48:05,188 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-13 17:48:05,212 - qr_email_sender - INFO - Successfully updated QR code 1 for user 1.
+2025-08-13 17:48:05,216 - qr_email_sender - DEBUG - Stored QR code with ID: 1
+2025-08-13 17:48:05,216 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-13 17:48:06,466 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-13 17:48:06,471 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:52:43,240 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:52:47,027 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:52:47,070 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:52:47,308 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:52:47,381 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:52:51,261 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:52:51,293 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:52:51,541 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:52:51,601 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:52:57,038 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:52:57,078 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:52:57,344 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:52:57,415 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:01,273 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:01,313 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:01,549 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:01,619 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:05,223 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:05,254 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:05,512 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:05,576 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:09,220 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:09,258 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:09,524 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:09,598 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:13,247 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:13,278 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:13,522 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:13,594 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:17,240 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:17,272 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:17,520 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:17,613 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:21,231 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:21,262 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:21,506 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:21,580 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:25,232 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:25,264 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:25,495 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:25,560 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:29,267 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:29,299 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:29,560 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:29,629 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:33,251 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:33,291 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:33,558 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:33,627 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:37,194 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:37,225 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:37,462 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:37,513 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:41,206 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:41,289 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:41,524 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:41,599 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:45,236 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:45,267 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:45,502 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:45,572 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:49,243 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:49,273 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:49,519 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:49,587 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:53,260 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:53,297 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:53,568 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:53,632 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:53:57,276 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:53:57,307 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:53:57,591 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:53:57,674 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:01,774 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:01,826 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:02,057 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:02,132 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:06,007 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:06,040 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:06,308 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:06,392 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:10,236 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:10,278 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:10,521 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:10,607 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:14,250 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:14,289 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:14,539 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:14,600 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:18,235 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:18,268 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:18,539 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:18,612 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:22,275 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:22,309 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:22,591 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:22,647 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:26,443 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:26,481 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:26,735 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:26,789 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:30,527 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:30,593 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:30,845 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:30,912 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:34,748 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:34,779 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:35,037 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:35,098 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:38,762 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:38,812 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:39,060 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:39,115 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:42,743 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:42,791 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:43,037 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:43,109 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:47,002 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:47,035 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:47,285 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:47,367 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:51,005 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:51,038 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:51,312 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:51,374 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:54,975 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:55,016 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:55,269 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:55,332 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:54:58,968 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:54:58,999 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:54:59,225 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:54:59,279 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:03,020 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:03,051 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:03,420 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:03,480 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:07,195 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:07,243 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:07,517 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:07,597 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:11,221 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:11,261 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:11,529 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:11,598 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:15,216 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:15,258 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:15,511 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:15,561 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:19,214 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:19,246 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:19,494 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:19,552 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:23,287 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:23,318 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:23,584 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:23,669 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:27,491 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:27,535 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:27,783 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:27,837 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:31,488 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:31,526 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:31,785 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:31,870 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:35,488 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:35,524 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:50,801 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:50,872 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:54,487 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:54,525 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:54,771 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:54,825 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:55:58,447 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:55:58,486 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:55:58,733 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:55:58,793 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:02,574 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:02,628 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:02,867 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:02,953 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:06,799 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:06,847 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:07,173 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:07,227 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:11,072 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:11,109 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:11,354 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:11,425 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:15,264 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:15,303 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:15,533 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:15,590 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:19,254 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:19,295 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:19,547 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:19,624 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:23,476 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:23,515 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:23,759 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:23,831 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:27,532 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:27,575 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:27,820 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:27,882 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:31,736 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:31,767 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:31,995 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:32,057 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:35,743 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:35,775 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:36,041 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:36,128 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:39,797 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:39,834 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:40,068 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:40,145 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:43,977 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:44,017 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:44,251 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:44,301 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:47,951 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:47,984 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:48,249 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:48,310 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:52,000 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:52,041 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:52,351 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:52,411 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:56:56,226 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:56:56,265 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:56:56,524 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:56:56,607 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:00,226 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:00,268 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:00,504 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:00,588 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:04,263 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:04,298 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:04,553 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:04,616 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:08,208 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:08,240 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:08,487 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:08,559 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:12,255 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:12,291 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:12,536 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:12,593 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:16,252 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:16,291 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:16,544 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:16,606 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:20,258 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:20,288 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:20,521 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:20,578 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:24,296 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:24,341 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:24,582 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:24,642 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:28,488 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:28,544 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:28,769 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:28,831 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:32,504 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:32,548 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:32,785 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:32,860 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:36,464 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:36,494 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:36,730 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:36,789 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:40,481 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:40,512 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:40,743 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:40,806 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:44,492 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:44,535 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:44,794 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:44,852 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:48,474 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:48,506 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:48,751 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:48,825 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:52,512 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:52,546 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:52,789 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:52,852 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:57:56,473 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:57:56,514 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:57:56,733 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:57:56,802 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:00,478 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:00,518 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:00,777 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:00,850 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:04,575 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:04,615 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:04,855 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:04,925 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:08,790 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:08,825 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:09,082 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:09,150 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:12,985 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:13,022 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:13,282 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:13,350 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:17,018 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:17,056 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:17,425 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:17,491 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:21,194 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:21,233 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:21,483 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:21,538 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:25,240 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:25,272 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:25,550 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:25,627 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:29,261 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:29,295 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:29,518 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:29,593 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:33,219 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:33,250 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:48,504 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:48,553 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:52,248 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:52,280 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:52,545 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:52,616 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:58:56,242 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:58:56,272 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:58:56,535 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:58:56,620 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:00,466 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:00,499 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:00,780 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:00,857 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:04,577 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:04,618 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:04,854 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:04,927 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:08,757 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:08,800 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:09,041 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:09,099 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:12,720 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:12,751 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:12,971 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:13,044 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:16,750 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:16,790 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:17,013 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:17,074 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:20,757 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:20,789 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:21,026 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:21,096 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:24,720 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:24,752 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:25,008 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:25,085 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:28,790 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:28,830 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:29,092 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:29,166 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:33,031 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:33,064 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:33,305 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:33,387 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:37,224 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:37,260 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:37,491 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:37,562 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:41,246 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:41,285 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:41,545 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:41,600 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:45,214 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:45,254 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:45,508 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:45,575 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:49,266 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:49,299 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:49,569 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:49,634 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:53,509 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:53,549 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:53,790 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:53,872 - qr_email_sender - INFO - Database connection closed
+2025-08-13 17:59:57,507 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 17:59:57,538 - qr_email_sender - INFO - Database connection established
+2025-08-13 17:59:57,768 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 17:59:57,821 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:01,716 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:01,760 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:02,026 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:02,130 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:06,008 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:06,046 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:06,309 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:06,376 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:10,267 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:10,315 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:10,581 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:10,676 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:14,593 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:14,634 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:14,934 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:15,006 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:18,762 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:18,794 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:19,068 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:19,143 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:22,982 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:23,015 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:23,283 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:23,362 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:26,991 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:27,024 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:27,407 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:27,474 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:31,272 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:31,314 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:31,809 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:31,899 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:35,802 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:35,835 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:37,129 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:37,215 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:40,966 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:40,997 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:41,242 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:41,316 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:44,950 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:44,998 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:45,250 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:45,335 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:49,054 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:49,091 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:49,360 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:49,434 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:53,361 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:53,406 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:53,678 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:53,744 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:00:57,457 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:00:57,489 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:00:58,146 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:00:58,206 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:02,037 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:02,075 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:02,335 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:02,411 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:06,228 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:06,261 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:06,555 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:06,615 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:10,228 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:10,268 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:11,528 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:11,596 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:15,250 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:15,315 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:15,685 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:15,747 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:19,470 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:19,504 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:19,747 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:19,821 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:23,473 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:23,511 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:24,129 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:24,184 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:27,991 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:28,031 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:28,275 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:28,338 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:32,009 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:32,047 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:32,285 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:32,357 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:35,969 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:36,001 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:36,254 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:36,309 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:39,948 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:39,988 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:40,257 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:40,322 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:43,965 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:44,004 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:44,269 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:44,339 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:47,964 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:47,994 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:48,253 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:48,298 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:51,987 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:52,018 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:52,282 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:52,372 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:01:55,993 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:01:56,060 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:01:56,325 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:01:56,415 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:00,272 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:00,313 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:00,563 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:00,642 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:04,517 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:04,561 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:04,813 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:04,884 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:08,791 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:08,833 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:09,080 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:09,149 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:12,995 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:13,034 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:13,567 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:13,638 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:17,511 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:17,551 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:17,780 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:17,837 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:21,485 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:21,525 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:21,852 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:21,912 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:25,761 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:25,801 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:26,074 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:26,133 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:29,986 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:30,023 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:30,287 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:30,358 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:34,030 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:34,068 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:34,326 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:34,403 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:38,261 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:38,300 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:38,585 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:38,644 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:42,550 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:42,588 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:42,866 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:42,922 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:46,715 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:46,762 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:47,043 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:47,092 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:50,752 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:50,786 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:51,022 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:51,091 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:54,724 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:54,757 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:55,080 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:55,150 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:02:58,988 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:02:59,022 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:02:59,278 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:02:59,340 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:02,994 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:03,027 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:03,259 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:03,314 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:06,955 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:06,992 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:22,240 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:22,326 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:25,961 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:25,991 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:26,238 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:26,294 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:30,003 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:30,040 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:30,307 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:30,359 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:33,996 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:34,028 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:34,318 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:34,377 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:37,967 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:37,997 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:38,243 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:38,296 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:41,987 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:42,019 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:42,264 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:42,341 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:46,011 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:46,054 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:46,320 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:46,385 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:50,228 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:50,259 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:50,506 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:50,554 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:54,236 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:54,289 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:54,539 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:54,602 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:03:58,213 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:03:58,244 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:03:58,490 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:03:58,544 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:02,263 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:02,297 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:02,544 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:02,617 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:06,478 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:06,510 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:06,779 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:06,837 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:10,525 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:10,558 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:10,802 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:10,872 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:14,738 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:14,769 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:15,016 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:15,089 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:18,702 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:18,746 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:19,021 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:19,089 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:22,744 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:22,776 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:23,025 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:23,099 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:26,744 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:26,776 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:27,013 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:27,082 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:30,723 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:30,753 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:31,003 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:31,078 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:34,701 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:34,732 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:34,954 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:35,017 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:38,752 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:38,784 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:39,048 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:39,117 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:42,721 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:42,752 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:43,004 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:43,066 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:46,785 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:46,820 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:47,081 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:47,133 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:50,724 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:50,762 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:51,013 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:51,084 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:54,709 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:54,748 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:55,012 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:55,090 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:04:58,762 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:04:58,793 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:04:59,054 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:04:59,110 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:02,752 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:02,797 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:03,057 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:03,117 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:06,707 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:06,744 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:06,991 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:07,061 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:10,729 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:10,762 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:11,011 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:11,083 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:14,772 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:14,812 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:15,067 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:15,123 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:18,721 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:18,752 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:18,976 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:19,034 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:22,753 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:22,794 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:23,035 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:23,102 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:26,724 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:26,756 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:27,002 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:27,050 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:30,716 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:30,749 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:30,989 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:31,074 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:34,795 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:34,832 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:35,073 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:35,152 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:38,986 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:39,018 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:39,265 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:39,337 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:42,987 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:43,018 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:43,272 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:43,364 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:46,955 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:47,014 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:47,277 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:47,351 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:51,033 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:51,112 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:51,375 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:51,443 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:55,238 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:55,276 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:55,604 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:55,661 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:05:59,470 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:05:59,510 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:05:59,822 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:05:59,874 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:03,628 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:03,668 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:03,911 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:03,988 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:07,700 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:07,736 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:07,983 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:08,040 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:11,745 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:11,777 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:12,051 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:12,135 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:16,105 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:16,145 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:16,403 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:16,479 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:20,218 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:20,261 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:20,506 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:20,565 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:24,235 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:24,270 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:24,495 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:24,542 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:28,224 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:28,256 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:28,515 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:28,583 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:32,275 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:32,324 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:32,590 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:32,657 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:36,508 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:36,541 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:36,809 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:36,878 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:40,732 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:40,764 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:41,048 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:41,101 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:44,734 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:44,768 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:45,016 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:45,067 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:48,760 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:48,793 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:49,028 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:49,098 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:52,728 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:52,759 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:52,994 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:53,047 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:06:56,732 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:06:56,770 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:06:57,040 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:06:57,097 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:00,741 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:00,786 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:01,038 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:01,100 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:04,775 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:04,813 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:05,063 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:05,136 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:08,982 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:09,015 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:09,244 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:09,304 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:12,985 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:13,016 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:13,269 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:13,328 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:16,974 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:17,008 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:17,274 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:17,329 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:20,996 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:21,033 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:21,315 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:21,376 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:25,009 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:25,039 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:25,278 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:25,345 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:28,949 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:28,982 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:29,216 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:29,274 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:32,992 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:33,028 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:33,265 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:33,317 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:36,970 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:37,003 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:37,237 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:37,301 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:40,963 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:40,994 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:41,267 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:41,339 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:45,005 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:45,039 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:45,281 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:45,343 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:48,991 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:49,026 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:49,261 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:49,316 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:52,958 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:52,996 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:53,253 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:53,303 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:07:56,971 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:07:57,001 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:07:57,235 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:07:57,290 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:01,008 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:01,049 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:01,328 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:01,382 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:05,228 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:05,268 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:05,505 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:05,576 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:09,261 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:09,298 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:09,555 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:09,625 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:13,456 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:13,497 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:13,740 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:13,808 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:17,464 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:17,496 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:17,755 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:17,837 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:21,497 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:21,529 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:21,779 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:21,844 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:25,463 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:25,493 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:25,752 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:25,823 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:29,473 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:29,505 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:29,763 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:29,826 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:33,531 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:33,582 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:33,835 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:33,923 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:37,738 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:37,786 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:38,024 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:38,093 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:41,695 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:41,733 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:42,035 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:42,083 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:45,697 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:45,728 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:45,971 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:46,028 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:49,756 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:49,798 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:50,053 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:50,133 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:53,734 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:53,766 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:54,029 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:54,086 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:08:57,717 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:08:57,750 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:08:58,018 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:08:58,087 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:01,732 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:01,775 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:02,024 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:02,119 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:05,969 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:06,000 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:06,235 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:06,294 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:09,958 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:09,989 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:10,237 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:10,295 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:13,966 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:14,000 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:14,251 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:14,311 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:18,009 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:18,043 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:18,282 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:18,352 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:21,972 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:22,038 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:22,299 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:22,379 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:25,970 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:26,002 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:26,265 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:26,318 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:29,987 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:30,020 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:30,281 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:30,349 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:33,961 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:33,991 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:34,250 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:34,313 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:37,993 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:38,027 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:38,275 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:38,323 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:41,996 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:42,027 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:42,269 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:42,345 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:46,023 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:46,053 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:55,183 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:55,233 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:09:58,951 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:09:58,982 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:09:59,235 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:09:59,280 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:03,040 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:03,072 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:03,338 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:03,415 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:07,225 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:07,256 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:07,518 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:07,587 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:11,238 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:11,278 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:11,522 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:11,595 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:15,211 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:15,251 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:15,478 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:15,552 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:19,268 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:19,309 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:19,583 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:19,669 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:23,488 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:23,526 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:23,787 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:23,850 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:27,512 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:27,545 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:27,812 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:27,876 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:31,751 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:31,787 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:32,061 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:32,134 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:36,010 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:36,049 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:36,335 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:36,402 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:40,252 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:40,283 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:40,557 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:40,627 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:44,300 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:44,332 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:44,601 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:44,665 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:48,609 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:48,640 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:48,915 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:48,983 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:52,721 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:52,766 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:53,008 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:53,085 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:10:56,731 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:10:56,771 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:10:57,031 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:10:57,104 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:00,788 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:00,827 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:01,048 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:01,148 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:04,970 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:05,009 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:05,259 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:05,321 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:08,980 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:09,023 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:09,278 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:09,362 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:12,966 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:13,010 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:13,266 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:13,324 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:16,992 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:17,033 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:17,311 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:17,364 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:20,993 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:21,031 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:21,333 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:21,406 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:25,210 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:25,249 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:25,507 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:25,571 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:29,215 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:29,274 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:29,514 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:29,564 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:33,233 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:33,273 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:33,524 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:33,594 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:37,238 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:37,269 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:37,497 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:37,571 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:41,248 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:41,317 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:41,566 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:41,646 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:45,494 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:45,527 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:45,752 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:45,813 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:49,472 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:49,504 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:49,772 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:49,845 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:53,489 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:53,523 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:53,748 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:53,817 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:11:57,455 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:11:57,486 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:11:57,703 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:11:57,758 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:01,551 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:01,590 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:01,840 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:01,921 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:05,757 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:05,798 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:06,060 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:06,157 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:09,978 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:10,047 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:10,300 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:10,376 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:14,253 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:14,287 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:14,558 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:14,623 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:18,266 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:18,321 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:18,564 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:18,634 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:22,488 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:22,520 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:22,764 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:22,818 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:26,455 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:26,493 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:26,746 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:26,798 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:30,496 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:30,541 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:30,777 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:30,833 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:34,592 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:34,622 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:34,886 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:34,958 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:38,728 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:38,762 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:39,026 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:39,092 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:42,728 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:42,761 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:43,019 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:43,085 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:46,726 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:46,765 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:46,988 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:47,076 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:50,714 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:50,751 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:50,986 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:51,056 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:54,741 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:54,793 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:55,032 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:55,107 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:12:58,742 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:12:58,772 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:12:59,031 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:12:59,083 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:02,834 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:02,874 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:03,112 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:03,175 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:07,015 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:07,053 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:07,299 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:07,370 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:10,984 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:11,030 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:11,281 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:11,348 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:15,050 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:15,089 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:15,342 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:15,399 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:19,217 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:19,269 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:19,508 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:19,566 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:23,262 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:23,295 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:23,542 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:23,615 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:27,251 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:27,322 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:27,547 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:27,603 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:31,226 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:31,263 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:31,531 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:31,585 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:35,223 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:35,255 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:35,508 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:35,564 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:39,226 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:39,290 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:39,558 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:39,625 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:43,522 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:43,554 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:43,814 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:43,874 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:47,483 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:47,514 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:47,798 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:47,855 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:51,510 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:51,541 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:51,797 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:51,851 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:55,450 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:55,487 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:55,736 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:55,790 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:13:59,457 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:13:59,493 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:13:59,740 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:13:59,798 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:03,503 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:03,545 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:03,819 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:03,881 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:07,735 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:07,766 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:08,001 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:08,070 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:11,776 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:11,816 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:12,038 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:12,113 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:15,732 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:15,765 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:16,057 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:16,112 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:19,716 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:19,794 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:20,033 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:20,107 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:23,749 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:23,784 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:24,029 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:24,098 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:27,713 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:27,755 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:28,031 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:28,083 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:31,722 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:31,758 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:32,011 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:32,070 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:35,756 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:35,795 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:36,051 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:36,131 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:39,781 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:39,840 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:40,079 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:40,135 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:44,085 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:44,124 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:44,389 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:44,450 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:48,229 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:48,264 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:48,521 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:48,580 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:52,247 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:52,280 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:52,539 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:52,602 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:14:56,207 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:14:56,239 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:14:56,504 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:14:56,578 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:00,253 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:00,284 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:00,513 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:00,584 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:04,258 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:04,288 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:04,581 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:04,668 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:08,546 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:08,592 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:08,837 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:08,904 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:12,720 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:12,750 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:12,995 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:13,080 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:16,722 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:16,754 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:17,035 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:17,129 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:20,745 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:20,779 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:21,030 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:21,100 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:24,804 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:24,839 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:25,090 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:25,162 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:29,005 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:29,037 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:29,330 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:29,394 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:33,222 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:33,261 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:33,494 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:33,543 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:37,224 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:37,256 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:37,487 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:37,544 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:41,267 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:41,320 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:41,610 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:41,691 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:45,490 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:45,530 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:45,811 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:45,881 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:49,725 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:49,769 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:50,003 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:50,065 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:53,720 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:53,750 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:54,009 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:54,071 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:15:57,760 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:15:57,792 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:15:58,027 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:15:58,074 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:16:01,810 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:16:01,844 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:16:02,089 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:16:02,167 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:16:05,951 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:16:05,983 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:16:06,252 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:16:06,304 - qr_email_sender - INFO - Database connection closed
+2025-08-13 18:16:10,034 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:16:10,066 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:16:10,322 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 18:16:10,882 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 18:16:10,932 - qr_email_sender - INFO - Database connection established
+2025-08-13 18:16:11,192 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 20:47:13,950 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 20:47:13,991 - qr_email_sender - INFO - Database connection established
+2025-08-13 20:47:14,337 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:20:12,235 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:20:12,275 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:20:12,629 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:43:17,378 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:43:17,423 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:43:17,710 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:43:27,465 - qr_email_sender - INFO - Database connection closed
+2025-08-13 23:43:28,032 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:43:28,074 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:43:28,306 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:43:28,833 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:43:28,874 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:43:29,123 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:43:42,391 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:43:42,429 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:43:42,651 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:43:42,651 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 23:43:42,653 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-13 23:43:42,667 - qr_email_sender - INFO - Successfully created new QR code 1 for user 1.
+2025-08-13 23:43:42,670 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-13 23:43:44,240 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-13 23:43:44,245 - qr_email_sender - INFO - Database connection closed
+2025-08-13 23:56:15,274 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:56:15,313 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:56:15,664 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:56:21,335 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:56:21,374 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:56:21,618 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:56:27,593 - qr_email_sender - INFO - Database connection closed
+2025-08-13 23:56:28,171 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:56:28,211 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:56:28,563 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:56:29,073 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:56:29,113 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:56:29,357 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:57:45,393 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:57:45,435 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:57:45,672 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:57:45,673 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 23:57:45,674 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-13 23:57:45,689 - qr_email_sender - INFO - Successfully created new QR code 1 for user 1.
+2025-08-13 23:57:45,692 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-13 23:57:47,650 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-13 23:57:47,657 - qr_email_sender - INFO - Database connection closed
+2025-08-13 23:58:15,384 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-13 23:58:15,415 - qr_email_sender - INFO - Database connection established
+2025-08-13 23:58:15,652 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-13 23:58:15,652 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-13 23:58:15,653 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-13 23:58:15,658 - qr_email_sender - INFO - Successfully updated QR code 1 for user 1.
+2025-08-13 23:58:15,660 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-13 23:58:16,759 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-13 23:58:16,766 - qr_email_sender - INFO - Database connection closed
+2025-08-14 15:30:33,449 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 15:30:33,488 - qr_email_sender - INFO - Database connection established
+2025-08-14 15:30:33,839 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 15:30:33,839 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-14 15:30:33,840 - qr_email_sender - DEBUG - Generating QR code for user 1 (Oleksandr Khanetskyy)
+2025-08-14 15:30:33,848 - qr_email_sender - INFO - Successfully updated QR code 1 for user 1.
+2025-08-14 15:30:33,851 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-14 15:30:35,316 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-14 15:30:35,322 - qr_email_sender - INFO - Database connection closed
+2025-08-14 15:37:44,046 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 15:37:44,110 - qr_email_sender - INFO - Database connection established
+2025-08-14 15:37:44,382 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 15:37:44,382 - qr_email_sender - INFO - Starting email send process for akhanetskyy@rentalstoremember.com
+2025-08-14 15:37:44,384 - qr_email_sender - DEBUG - Generating QR code for user 2 (Oleksandr Khanetskyy)
+2025-08-14 15:37:44,388 - qr_email_sender - INFO - Successfully created new QR code 2 for user 2.
+2025-08-14 15:37:44,391 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-14 15:37:45,693 - qr_email_sender - INFO - Successfully sent email to akhanetskyy@rentalstoremember.com
+2025-08-14 15:37:45,698 - qr_email_sender - INFO - Database connection closed
+2025-08-14 17:31:08,682 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 17:31:08,716 - qr_email_sender - INFO - Database connection established
+2025-08-14 17:31:09,096 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:21:34,976 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:21:35,015 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:21:35,381 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:21:37,077 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:21:37,111 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:21:37,489 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:21:37,538 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:21:37,631 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:21:41,481 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:21:41,513 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:21:41,778 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:21:41,837 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:21:45,578 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:21:45,611 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:21:45,861 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:21:45,916 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:21:49,728 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:21:49,758 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:21:49,997 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:21:50,066 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:21:53,717 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:21:53,748 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:21:53,993 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:21:54,063 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:21:57,776 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:21:57,815 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:21:58,105 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:21:58,160 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:01,824 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:01,863 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:02,855 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:02,924 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:06,738 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:06,770 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:07,015 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:07,081 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:10,740 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:10,773 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:11,025 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:11,077 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:14,737 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:14,788 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:15,032 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:15,091 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:18,744 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:18,793 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:19,060 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:19,131 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:23,014 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:23,054 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:23,319 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:23,394 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:27,228 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:27,258 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:27,520 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:27,575 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:31,256 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:31,296 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:31,538 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:31,594 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:35,221 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:35,254 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:35,519 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:35,583 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:39,218 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:39,259 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:39,501 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:39,576 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:43,230 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:43,279 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:43,513 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:43,566 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:47,243 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:47,312 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:47,639 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:47,698 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:51,457 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:51,494 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:51,724 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:51,785 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:55,526 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:55,560 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:22:55,809 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:22:55,881 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:22:59,720 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:22:59,760 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:00,040 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:00,100 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:03,717 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:03,757 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:04,027 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:04,073 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:07,769 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:07,799 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:08,040 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:08,110 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:11,691 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:11,734 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:11,972 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:12,028 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:15,715 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:15,759 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:15,997 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:16,049 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:19,752 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:19,784 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:20,036 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:20,098 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:23,778 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:23,817 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:24,088 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:24,142 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:28,011 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:28,043 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:28,286 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:28,367 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:32,007 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:32,051 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:32,315 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:32,404 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:36,089 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:36,127 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:36,372 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:36,438 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:40,282 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:40,313 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:40,550 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:40,607 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:44,218 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:44,271 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:44,530 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:44,585 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:48,215 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:48,252 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:48,508 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:48,570 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:52,253 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:52,294 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:52,539 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:52,585 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:23:56,242 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:23:56,280 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:23:56,541 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:23:56,608 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:24:00,266 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:24:00,297 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:24:00,540 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:24:00,603 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:24:04,324 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:24:04,370 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:24:04,590 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:24:04,667 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:24:08,496 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:24:08,530 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:24:08,769 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:24:08,822 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:24:12,511 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:24:12,543 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:24:12,799 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:24:12,874 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:24:16,780 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:24:16,824 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:24:17,074 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:24:17,718 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:24:17,767 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:24:18,006 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:24:38,988 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:24:39,600 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:24:39,673 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:24:39,926 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:24:40,507 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:24:40,550 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:24:40,828 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:34:09,186 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:34:09,217 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:34:09,507 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:34:14,805 - qr_email_sender - INFO - Database connection closed
+2025-08-14 18:34:15,369 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:34:15,406 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:34:15,670 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 18:34:16,313 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 18:34:16,351 - qr_email_sender - INFO - Database connection established
+2025-08-14 18:34:16,587 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:16:32,627 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:16:32,663 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:16:33,032 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:16:37,256 - qr_email_sender - INFO - Database connection closed
+2025-08-14 19:16:37,826 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:16:37,866 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:16:38,105 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:16:38,645 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:16:38,679 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:16:39,067 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:43:52,546 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:43:52,603 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:43:52,885 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:43:52,886 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-14 19:43:52,887 - qr_email_sender - DEBUG - Generating QR code for user 1 (Alex Khanetskyy)
+2025-08-14 19:43:52,902 - qr_email_sender - INFO - Successfully created new QR code 1 for user 1.
+2025-08-14 19:43:52,906 - qr_email_sender - DEBUG - Creating email content for Alex Khanetskyy
+2025-08-14 19:43:54,158 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-14 19:43:54,167 - qr_email_sender - INFO - Database connection closed
+2025-08-14 19:44:00,474 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:44:00,509 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:44:00,766 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:44:00,767 - qr_email_sender - INFO - Starting email send process for akhanetskyy@rentalstoremember.com
+2025-08-14 19:44:00,768 - qr_email_sender - DEBUG - Generating QR code for user 2 (Oleksandr Khanetskyy)
+2025-08-14 19:44:00,773 - qr_email_sender - INFO - Successfully created new QR code 2 for user 2.
+2025-08-14 19:44:00,777 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-14 19:44:01,910 - qr_email_sender - INFO - Successfully sent email to akhanetskyy@rentalstoremember.com
+2025-08-14 19:44:01,917 - qr_email_sender - INFO - Database connection closed
+2025-08-14 19:52:47,477 - qr_email_sender - INFO - Database connection closed
+2025-08-14 19:52:57,805 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:52:57,870 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:52:58,209 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:52:58,764 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:52:58,796 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:52:59,046 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:53:06,396 - qr_email_sender - INFO - Database connection closed
+2025-08-14 19:53:06,996 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:53:07,037 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:53:07,366 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:53:07,897 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:53:07,929 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:53:08,174 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:55:03,545 - qr_email_sender - INFO - Database connection closed
+2025-08-14 19:55:04,140 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:55:04,175 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:55:04,453 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:55:05,020 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:55:05,062 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:55:05,302 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:57:51,591 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:57:51,624 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:57:51,852 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:57:53,597 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:57:53,630 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:57:53,882 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:58:04,250 - qr_email_sender - INFO - Database connection closed
+2025-08-14 19:58:06,741 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:58:06,790 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:58:07,040 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:58:07,589 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:58:07,622 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:58:07,883 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:58:08,948 - qr_email_sender - INFO - Database connection closed
+2025-08-14 19:58:09,575 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:58:09,612 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:58:09,842 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:58:10,406 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:58:10,446 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:58:10,695 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:58:30,437 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:58:30,478 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:58:30,726 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:58:30,727 - qr_email_sender - INFO - Starting email send process for khanetskyy@gmail.com
+2025-08-14 19:58:30,728 - qr_email_sender - DEBUG - Generating QR code for user 1 (Alex Khanetskyy)
+2025-08-14 19:58:30,742 - qr_email_sender - INFO - Successfully created new QR code 1 for user 1.
+2025-08-14 19:58:30,746 - qr_email_sender - DEBUG - Creating email content for Alex Khanetskyy
+2025-08-14 19:58:31,859 - qr_email_sender - INFO - Successfully sent email to khanetskyy@gmail.com
+2025-08-14 19:58:31,865 - qr_email_sender - INFO - Database connection closed
+2025-08-14 19:58:34,544 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 19:58:34,578 - qr_email_sender - INFO - Database connection established
+2025-08-14 19:58:34,816 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 19:58:34,817 - qr_email_sender - INFO - Starting email send process for akhanetskyy@rentalstoremember.com
+2025-08-14 19:58:34,818 - qr_email_sender - DEBUG - Generating QR code for user 2 (Oleksandr Khanetskyy)
+2025-08-14 19:58:34,826 - qr_email_sender - INFO - Successfully created new QR code 2 for user 2.
+2025-08-14 19:58:34,831 - qr_email_sender - DEBUG - Creating email content for Oleksandr Khanetskyy
+2025-08-14 19:58:35,934 - qr_email_sender - INFO - Successfully sent email to akhanetskyy@rentalstoremember.com
+2025-08-14 19:58:35,941 - qr_email_sender - INFO - Database connection closed
+2025-08-14 20:03:17,275 - qr_email_sender - INFO - Database connection closed
+2025-08-14 20:03:21,001 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 20:03:21,030 - qr_email_sender - INFO - Database connection established
+2025-08-14 20:03:21,285 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 20:03:21,830 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 20:03:21,874 - qr_email_sender - INFO - Database connection established
+2025-08-14 20:03:22,103 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 20:06:18,434 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 20:06:18,486 - qr_email_sender - INFO - Database connection established
+2025-08-14 20:06:18,718 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 20:10:30,553 - qr_email_sender - INFO - Database connection closed
+2025-08-14 20:10:34,281 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 20:10:34,326 - qr_email_sender - INFO - Database connection established
+2025-08-14 20:10:34,583 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 20:10:35,146 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 20:10:35,179 - qr_email_sender - INFO - Database connection established
+2025-08-14 20:10:35,408 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 20:11:10,078 - qr_email_sender - INFO - Database connection closed
+2025-08-14 20:11:10,668 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 20:11:10,711 - qr_email_sender - INFO - Database connection established
+2025-08-14 20:11:10,981 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 20:11:11,599 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 20:11:11,638 - qr_email_sender - INFO - Database connection established
+2025-08-14 20:11:11,951 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 21:27:55,562 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 21:27:55,599 - qr_email_sender - INFO - Database connection established
+2025-08-14 21:27:55,842 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 21:27:58,314 - qr_email_sender - INFO - Database connection closed
+2025-08-14 21:27:58,858 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 21:27:58,910 - qr_email_sender - INFO - Database connection established
+2025-08-14 21:27:59,174 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 21:27:59,735 - qr_email_sender - INFO - Initializing QR Email Sender
+2025-08-14 21:27:59,768 - qr_email_sender - INFO - Database connection established
+2025-08-14 21:28:00,024 - qr_email_sender - INFO - SMTP connection test successful
+2025-08-14 21:50:47,693 - qr_email_sender - INFO - Database connection closed

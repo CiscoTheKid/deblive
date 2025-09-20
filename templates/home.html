@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto p-4">
+    <!-- Header -->
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-8 text-center">
+        <h1 class="text-3xl font-bold text-gray-800">
+            Dinner En Blanc Distribution System
+        </h1>
+        <p class="text-gray-600">Rental Package Control Panel</p>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Admin Only Section -->
+        {% if session.role == 'admin' %}
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Admin Panel</h2>
+            <p class="text-gray-600 mb-4">Database management and system reset</p>
+            <a href="{{ url_for('admin') }}" 
+               class="block w-full bg-red-500 text-white text-center py-3 rounded-lg hover:bg-red-600 transition duration-200">
+                Access Admin
+            </a>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Email Client</h2>
+            <p class="text-gray-600 mb-4">Send QR codes to customers</p>
+            <a href="{{ url_for('email_client') }}" 
+               class="block w-full bg-yellow-500 text-white text-center py-3 rounded-lg hover:bg-yellow-600 transition duration-200">
+                Send QR Codes
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Staff and Admin Accessible Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Scan QR Code</h2>
+            <p class="text-gray-600 mb-4">Scan customer QR codes</p>
+            <a href="{{ url_for('scan') }}" 
+               class="block w-full bg-blue-500 text-white text-center py-3 rounded-lg hover:bg-blue-600 transition duration-200">
+                Open Scanner
+            </a>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Manual Lookup</h2>
+            <p class="text-gray-600 mb-4">Look up customer details</p>
+            <a href="{{ url_for('lookup') }}" 
+               class="block w-full bg-purple-500 text-white text-center py-3 rounded-lg hover:bg-purple-600 transition duration-200">
+                Manual Lookup
+            </a>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Customer Database</h2>
+            <p class="text-gray-600 mb-4">View customer database</p>
+            <a href="{{ url_for('email_logs') }}" 
+               class="block w-full bg-green-500 text-white text-center py-3 rounded-lg hover:bg-green-600 transition duration-200">
+                View Database
+            </a>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="bg-blue-50 rounded-lg shadow-lg p-6 mt-8">
+        <h2 class="text-xl font-bold text-blue-800 mb-4">Quick Help</h2>
+        <ul class="list-disc pl-5 text-blue-700">
+            <li>Use the scanner for quick check in and out of packages</li>
+            <li>Manual lookup is available if QR code is unavailable</li>
+            <li>Customer Database shows all clients and their rental status</li>
+            {% if session.role == 'admin' %}
+            <li>Use the Send QR Codes button to send out emails to clients</li>
+            <li>Access Admin Panel for database management</li>
+            {% endif %}
+            <li>Contact IT support if you encounter any issues</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

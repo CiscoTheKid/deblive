@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}QR Code Email Client{% endblock %}
+{% block content %}
+
+<div class="container mx-auto p-4">
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-8 flex flex-col items-center text-center">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Email QR Codes to Clients</h1>
+        <p class="text-gray-600 mb-4">Build the Dinner En Blanc Database</p>
+        <a href="/" class="block w-48">
+            <button class="w-1/2 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+                Home
+            </button>
+        </a>
+    </div>
+</div>
+
+    {# Improved Flash Message Handling #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                    <p class="font-medium">{{ message }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if not results %}
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Upload CSV File</h2>
+        <p class="text-gray-600 mb-4">Please upload a CSV file containing the following columns: First Name, Last Name, Email (case sensitive)</p>
+        
+        <form id="emailForm" action="{{ url_for('email_client') }}" method="post" enctype="multipart/form-data" class="space-y-4">
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <input type="file" name="csv_file" accept=".csv" class="w-full" required>
+            </div>
+            <button type="submit" class="w-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+                Send Out Emails
+            </button>
+        </form>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-lg flex flex-col items-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mb-4"></div>
+                <p class="text-gray-700">Processing emails, be patient and do not leave this screen</p>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('emailForm').onsubmit = function() {
+                document.getElementById('loadingSpinner').classList.remove('hidden');
+                return true;
+            };
+        </script>
+    </div>
+{% endif %}
+    {% if results %}
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Processing Summary</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-700">Total Processed</h3>
+                    <p class="text-2xl font-bold">{{ summary.total }}</p>
+                </div>
+                <div class="bg-green-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-green-700">Successful</h3>
+                    <p class="text-2xl font-bold text-green-700">{{ summary.successful }}</p>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-red-700">Failed</h3>
+                    <p class="text-2xl font-bold text-red-700">{{ summary.failed }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Detailed Results</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Result</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for result in results %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ result.email }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if result.success %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Success
+                                        </span>
+                                    {% else %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            Failed
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ result.result }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="{{ url_for('email_client') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition duration-200">
+                Process Another File
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

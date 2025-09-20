@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Prevent caching to ensure latest version -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>QR Code Scanner - Rentals To Remember</title>
+    
+    <!-- Add Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Add the HTML5 QR Scanner library - using stable version 2.3.8 -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <style>
+        /* Custom styles for the QR scanner component */
+        #reader {
+            width: 100% !important;
+            border: none !important;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Style the scan region container */
+        #reader__scan_region {
+            min-height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* Style the scanner control buttons */
+        #reader__dashboard_section_csr button {
+            background-color: #3B82F6 !important;
+            color: white !important;
+            padding: 8px 16px !important;
+            border-radius: 6px !important;
+            margin: 4px !important;
+            border: none !important;
+            font-weight: 500 !important;
+        }
+        
+        #reader__dashboard_section_csr button:hover {
+            background-color: #2563EB !important;
+        }
+        
+        /* Style the camera selection dropdown */
+        #reader__camera_selection {
+            padding: 8px 12px !important;
+            margin: 8px 0 !important;
+            border-radius: 6px !important;
+            border: 1px solid #D1D5DB !important;
+            background-color: white !important;
+        }
+        
+        /* Style the file selection area */
+        #reader__filescan_input {
+            padding: 12px !important;
+            margin: 8px 0 !important;
+            border: 2px dashed #D1D5DB !important;
+            border-radius: 8px !important;
+            background-color: #F9FAFB !important;
+        }
+        
+        /* Hide certain scanner elements that aren't needed */
+        #reader__header_message {
+            display: none !important;
+        }
+        
+        /* Custom loading spinner */
+        .scanner-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            #reader {
+                max-width: 100% !important;
+            }
+            
+            #reader__scan_region {
+                min-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Main container -->
+    <div class="container mx-auto px-4 py-6 max-w-4xl">
+        
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">QR Code Scanner</h1>
+            <p class="text-gray-600">Scan QR codes to look up customer rentals</p>
+        </div>
+
+        <!-- Error Message Display -->
+        <div id="error-message" class="hidden bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-md mb-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <span class="font-medium">Error:</span>
+                    <span id="error-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Message Display -->
+        <div id="status-message" class="hidden bg-blue-50 border-l-4 border-blue-400 text-blue-700 p-4 rounded-md mb-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <span id="status-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scanner Container -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Camera Scanner</h2>
+            
+            <!-- QR Scanner will be inserted here -->
+            <div class="relative">
+                <div id="reader" class="w-full"></div>
+                
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" class="hidden absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-lg">
+                    <div class="text-center">
+                        <div class="scanner-spinner mx-auto mb-4"></div>
+                        <p class="text-gray-600">Initializing camera...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manual Entry Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div id="manualEntry">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Manual Code Entry</h2>
+                <p class="text-gray-600 mb-4">If camera scanning isn't working, you can enter the QR code manually below:</p>
+                <!-- Form will be inserted here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold text-blue-800 mb-2">How to Use:</h3>
+            <ul class="text-blue-700 space-y-2">
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-2">1.</span>
+                    Point your camera at the QR code until it's clearly visible in the scanning area
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-2">2.</span>
+                    Wait for the scanner to automatically detect and process the code
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-2">3.</span>
+                    If scanning fails, use the manual entry option below the camera view
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-2">4.</span>
+                    You'll be automatically redirected to the customer's rental details
+                </li>
+            </ul>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex justify-center space-x-4">
+            <a href="/" class="inline-flex items-center px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition duration-200">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Back to Home
+            </a>
+            <a href="/lookup" class="inline-flex items-center px-6 py-3 bg-gray-500 text-white font-medium rounded-lg hover:bg-gray-600 transition duration-200">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                Manual Lookup
+            </a>
+        </div>
+    </div>
+
+    <!-- JavaScript Error Handling -->
+    <script>
+        console.log('QR Scanner page loaded successfully');
+        
+        // Global error handler for debugging
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('JavaScript Error:', {
+                message: msg,
+                source: url,
+                line: lineNo,
+                column: columnNo,
+                error: error
+            });
+            
+            // Show user-friendly error message
+            const errorElement = document.getElementById('error-message');
+            if (errorElement) {
+                errorElement.textContent = 'A JavaScript error occurred. Please refresh the page and try again.';
+                errorElement.classList.remove('hidden');
+            }
+            
+            return false;
+        };
+        
+        // Check if required libraries are loaded
+        setTimeout(() => {
+            if (typeof Html5QrcodeScanner === 'undefined') {
+                console.error('HTML5 QR Scanner library failed to load');
+                const errorElement = document.getElementById('error-message');
+                if (errorElement) {
+                    errorElement.textContent = 'Scanner library failed to load. Please check your internet connection and refresh the page.';
+                    errorElement.classList.remove('hidden');
+                }
+            }
+        }, 3000);
+    </script>
+
+    <!-- Load QR scanner script -->
+    <script src="{{ url_for('static', filename='js/qr-scanner.js') }}?v={{ range(1000, 9999) | random }}"></script>
+</body>
+</html>
