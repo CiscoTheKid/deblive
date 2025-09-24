@@ -68,50 +68,11 @@ def login_required(f):
     return decorated_function
 
 # Helper function to extract user data from webhook
-def extract_user_data_from_webhook(raw_request):
-    """Extract user data from JotForm webhook with flexible field mapping"""
-    user_data = {
-        'first_name': '',
-        'last_name': '',
-        'email': '',
-        'city': '',
-        'package_type': 'Not specified',
-        'quantity': 1,
-        'phone': ''
-    }
-    
-    # Try to find each field using the mapping
-    for field_name, field_keys in FORM_FIELD_MAPPINGS['default'].items():
-        for key in field_keys:
-            if key in raw_request:
-                value = raw_request[key]
-                
-                # Handle name fields that might be objects
-                if field_name in ['first_name', 'last_name'] and isinstance(value, dict):
-                    if field_name == 'first_name':
-                        user_data[field_name] = value.get('first', '').strip()
-                    else:
-                        user_data[field_name] = value.get('last', '').strip()
-                # Handle package/product fields
-                elif field_name in ['package_type', 'package_products']:
-                    if isinstance(value, dict) and 'products' in value:
-                        products = value['products']
-                        if products:
-                            user_data['package_type'] = products[0].get('productName', 'Unknown')
-                            user_data['quantity'] = int(products[0].get('quantity', 1))
-                    elif isinstance(value, list) and value:
-                        user_data['package_type'] = value[0]
-                    elif isinstance(value, str):
-                        user_data['package_type'] = value
-                # Handle regular string fields
-                else:
-                    user_data[field_name] = str(value).strip()
-                break  # Found the field, move to next
-    
-    return user_data
-
 def extract_user_data_from_new_form(raw_request, form_data):
-    """Extract user data from the new JotForm structure with payment validation"""
+    """
+    Extract user data from the new JotForm structure with payment validation
+    Now properly extracts real package names and quantities from q17_package_type
+    """
     user_data = {
         'first_name': '',
         'last_name': '',
@@ -126,7 +87,7 @@ def extract_user_data_from_new_form(raw_request, form_data):
         'paid_status': '0'
     }
     
-    # Extract data using the field mappings from captured webhook
+    # Extract basic user data using the field mappings from captured webhook
     if 'q5_email' in raw_request:
         user_data['email'] = str(raw_request['q5_email']).strip()
     
@@ -138,6 +99,10 @@ def extract_user_data_from_new_form(raw_request, form_data):
         else:
             user_data['phone'] = str(phone_data).strip()
     
+    # Group leader name from q8_city field (this seems to contain group leader info)
+    if 'q8_city' in raw_request:
+        user_data['group_leader'] = str(raw_request['q8_city']).strip()
+    
     # Pickup person name
     if 'q30_nameOf' in raw_request:
         user_data['pickup_person'] = str(raw_request['q30_nameOf']).strip()
@@ -148,17 +113,13 @@ def extract_user_data_from_new_form(raw_request, form_data):
     if 'q35_last_name' in raw_request:
         user_data['last_name'] = str(raw_request['q35_last_name']).strip()
     
-    # Group leader name
-    if 'q42_pleaseEnter' in raw_request:
-        user_data['group_leader'] = str(raw_request['q42_pleaseEnter']).strip()
+    # Questions/concerns
+    if 'q25_questionsConcerns' in raw_request:
+        user_data['questions'] = str(raw_request['q25_questionsConcerns']).strip()
     
     # Payment status - this is our validation field
     if 'q43_paid' in raw_request:
         user_data['paid_status'] = str(raw_request['q43_paid']).strip()
-    
-    # Transaction ID
-    if 'q44_transaction' in raw_request:
-        user_data['transaction_id'] = str(raw_request['q44_transaction']).strip()
     
     # Extract city from form title if available
     if form_data and 'formTitle' in form_data:
@@ -169,12 +130,65 @@ def extract_user_data_from_new_form(raw_request, form_data):
             user_data['city'] = 'Boston'
         elif 'New York' in form_title:
             user_data['city'] = 'New York'
+        elif 'Philadelphia' in form_title:
+            user_data['city'] = 'Philadelphia'
+        elif 'Baltimore' in form_title:
+            user_data['city'] = 'Baltimore'
     
-    # Set package type based on city
-    if user_data['city'] == 'Washington DC':
-        user_data['package_type'] = 'DC Package'
-    else:
-        user_data['package_type'] = 'Standard Package'
+    # EXTRACT REAL PACKAGE DATA from q17_package_type field
+    if 'q17_package_type' in raw_request:
+        package_data = raw_request['q17_package_type']
+        
+        try:
+            # Method 1: Try to get from products array (most reliable)
+            if isinstance(package_data, dict) and 'products' in package_data:
+                products = package_data['products']
+                if products and len(products) > 0:
+                    first_product = products[0]
+                    if 'productName' in first_product:
+                        user_data['package_type'] = first_product['productName']
+                    if 'quantity' in first_product:
+                        user_data['quantity'] = int(first_product['quantity'])
+                    
+                    logger.info(f"Extracted package from products array: {user_data['package_type']} x{user_data['quantity']}")
+            
+            # Method 2: Fallback to numbered object structure
+            elif isinstance(package_data, dict) and '1' in package_data:
+                package_info = package_data['1']
+                if 'name' in package_info:
+                    user_data['package_type'] = package_info['name']
+                if 'quantity' in package_info:
+                    user_data['quantity'] = int(package_info['quantity'])
+                    
+                logger.info(f"Extracted package from numbered structure: {user_data['package_type']} x{user_data['quantity']}")
+            
+            # Method 3: Check if it's a direct products list
+            elif isinstance(package_data, list) and len(package_data) > 0:
+                first_item = package_data[0]
+                if isinstance(first_item, dict):
+                    if 'productName' in first_item:
+                        user_data['package_type'] = first_item['productName']
+                    if 'quantity' in first_item:
+                        user_data['quantity'] = int(first_item['quantity'])
+                        
+                logger.info(f"Extracted package from direct list: {user_data['package_type']} x{user_data['quantity']}")
+            
+        except (KeyError, ValueError, TypeError) as e:
+            logger.warning(f"Error extracting package data: {e}, using defaults")
+            # Keep default values if extraction fails
+    
+    # If no package extracted, set city-based default (fallback)
+    if user_data['package_type'] == 'Standard Package':
+        if user_data['city'] == 'Washington DC':
+            user_data['package_type'] = 'DC Package'
+        elif user_data['city'] == 'Boston':
+            user_data['package_type'] = 'Boston Package'
+        else:
+            user_data['package_type'] = 'Standard Package'
+    
+    logger.info(f"Final extracted user data: {user_data['first_name']} {user_data['last_name']} ({user_data['email']}) - "
+                f"City: {user_data['city']}, Package: {user_data['package_type']}, Quantity: {user_data['quantity']}, "
+                f"Paid: {user_data['paid_status']}")
     
     return user_data
 
@@ -1128,6 +1142,197 @@ def filter_users(status):
     except Exception as e:
         logger.error(f"Error filtering users by status '{status}': {str(e)}")
         return jsonify({'error': 'Database error occurred'}), 500
+
+@app.route('/webhook-capture', methods=['POST'])
+def webhook_capture():
+    """
+    Simple webhook endpoint to capture all incoming JotForm data to a text file
+    This endpoint logs all form data and JSON data to help identify field names
+    """
+    import json
+    from datetime import datetime
+    import os
+    
+    try:
+        # Get current timestamp for logging
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Create logs directory if it doesn't exist
+        logs_dir = os.path.join(app.static_folder, 'webhook_logs')
+        os.makedirs(logs_dir, exist_ok=True)
+        
+        # Create log file path with date
+        log_filename = f"webhook_capture_{datetime.now().strftime('%Y%m%d')}.txt"
+        log_filepath = os.path.join(logs_dir, log_filename)
+        
+        # Initialize data storage for logging
+        captured_data = {
+            'timestamp': timestamp,
+            'content_type': request.content_type,
+            'method': request.method,
+            'form_data': {},
+            'json_data': {},
+            'headers': {},
+            'args': {},
+            'raw_request_extracted': {}
+        }
+        
+        # Capture request headers (useful for debugging)
+        captured_data['headers'] = dict(request.headers)
+        
+        # Capture URL arguments (GET parameters)
+        captured_data['args'] = request.args.to_dict()
+        
+        # Handle different content types
+        logger.info(f"Webhook capture - Content Type: {request.content_type}")
+        
+        # Case 1: Handle multipart form data (typical JotForm webhook format)
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            # Convert form data to dictionary
+            captured_data['form_data'] = request.form.to_dict()
+            
+            # JotForm often sends rawRequest as a JSON string in form data
+            if 'rawRequest' in captured_data['form_data']:
+                try:
+                    # Try to parse rawRequest as JSON
+                    raw_request_str = captured_data['form_data']['rawRequest']
+                    captured_data['raw_request_extracted'] = json.loads(raw_request_str)
+                    logger.info("Successfully parsed rawRequest from form data")
+                except json.JSONDecodeError as e:
+                    logger.warning(f"Could not parse rawRequest as JSON: {e}")
+                    captured_data['raw_request_extracted'] = {"error": f"JSON parse failed: {str(e)}"}
+        
+        # Case 2: Handle JSON content type
+        elif request.content_type and 'application/json' in request.content_type:
+            try:
+                captured_data['json_data'] = request.get_json()
+                logger.info("Successfully captured JSON data")
+            except Exception as e:
+                logger.warning(f"Could not parse JSON data: {e}")
+                captured_data['json_data'] = {"error": f"JSON parse failed: {str(e)}"}
+        
+        # Case 3: Handle URL encoded form data
+        elif request.content_type and 'application/x-www-form-urlencoded' in request.content_type:
+            captured_data['form_data'] = request.form.to_dict()
+            logger.info("Successfully captured form data")
+        
+        # Case 4: Unknown content type - try to capture what we can
+        else:
+            logger.warning(f"Unknown content type: {request.content_type}")
+            # Try to get form data anyway
+            try:
+                captured_data['form_data'] = request.form.to_dict()
+            except:
+                pass
+            # Try to get JSON data anyway
+            try:
+                captured_data['json_data'] = request.get_json()
+            except:
+                pass
+        
+        # Write captured data to log file
+        with open(log_filepath, 'a', encoding='utf-8') as log_file:
+            log_file.write("=" * 80 + "\n")
+            log_file.write(f"WEBHOOK CAPTURE - {timestamp}\n")
+            log_file.write("=" * 80 + "\n")
+            
+            # Write all captured data in a readable format
+            for key, value in captured_data.items():
+                log_file.write(f"\n--- {key.upper().replace('_', ' ')} ---\n")
+                if isinstance(value, dict):
+                    # Pretty print dictionaries
+                    log_file.write(json.dumps(value, indent=2, ensure_ascii=False))
+                else:
+                    log_file.write(str(value))
+                log_file.write("\n")
+            
+            log_file.write("\n" + "=" * 80 + "\n\n")
+        
+        # Count total fields captured for logging
+        total_fields = 0
+        if captured_data['form_data']:
+            total_fields += len(captured_data['form_data'])
+        if captured_data['json_data']:
+            total_fields += len(captured_data['json_data']) if isinstance(captured_data['json_data'], dict) else 0
+        if captured_data['raw_request_extracted']:
+            total_fields += len(captured_data['raw_request_extracted']) if isinstance(captured_data['raw_request_extracted'], dict) else 0
+        
+        # Log success message
+        logger.info(f"Webhook data captured successfully. Total fields: {total_fields}. Logged to: {log_filename}")
+        
+        # Return success response (JotForm expects this)
+        return jsonify({
+            "status": "success",
+            "message": "Webhook data captured successfully",
+            "timestamp": timestamp,
+            "log_file": log_filename,
+            "fields_captured": total_fields
+        }), 200
+        
+    except Exception as e:
+        # Log any errors that occur during capture
+        error_msg = f"Webhook capture error: {str(e)}"
+        logger.error(error_msg)
+        
+        try:
+            # Try to log the error to file as well
+            error_log_path = os.path.join(app.static_folder, 'webhook_logs', 'capture_errors.txt')
+            with open(error_log_path, 'a', encoding='utf-8') as error_file:
+                error_file.write(f"{timestamp} - ERROR: {error_msg}\n")
+        except:
+            pass  # Don't let error logging break the response
+        
+        # Return error response
+        return jsonify({
+            "status": "error",
+            "message": "Failed to capture webhook data",
+            "error": str(e),
+            "timestamp": timestamp
+        }), 500
+
+
+# Optional: Add a route to view captured webhook data
+@app.route('/api/view-webhook-logs')
+@admin_required  # Only allow admin access
+def view_webhook_logs():
+    """
+    Admin endpoint to view captured webhook logs
+    Returns a list of available log files and their contents
+    """
+    try:
+        logs_dir = os.path.join(app.static_folder, 'webhook_logs')
+        
+        if not os.path.exists(logs_dir):
+            return jsonify({"error": "No webhook logs directory found"}), 404
+        
+        # Get list of log files
+        log_files = []
+        for filename in os.listdir(logs_dir):
+            if filename.startswith('webhook_capture_') and filename.endswith('.txt'):
+                filepath = os.path.join(logs_dir, filename)
+                file_size = os.path.getsize(filepath)
+                modified_time = datetime.fromtimestamp(os.path.getmtime(filepath))
+                
+                log_files.append({
+                    'filename': filename,
+                    'size_bytes': file_size,
+                    'modified': modified_time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'download_url': f'/api/download-webhook-log/{filename}'
+                })
+        
+        # Sort by modification time (newest first)
+        log_files.sort(key=lambda x: x['modified'], reverse=True)
+        
+        return jsonify({
+            "success": True,
+            "log_files": log_files,
+            "total_files": len(log_files)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error viewing webhook logs: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 
 
 @app.route('/lookup-search-results', methods=['POST'])
