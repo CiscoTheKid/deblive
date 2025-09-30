@@ -30,6 +30,15 @@
                 Send QR Codes
             </a>
         </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📊 Export Data</h2>
+            <p class="text-gray-600 mb-4">Export to CSV for JotForm comparison</p>
+            <a href="{{ url_for('export_csv_page') }}" 
+               class="block w-full bg-indigo-500 text-white text-center py-3 rounded-lg hover:bg-indigo-600 transition duration-200">
+                Export to CSV
+            </a>
+        </div>
         {% endif %}
 
         <!-- Staff and Admin Accessible Section -->
@@ -59,6 +68,41 @@
                 View Database
             </a>
         </div>
+
+        <!-- Export Data for Regular Users (Optional - remove if admin-only) -->
+        {% if session.role == 'user' %}
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">📊 Export Data</h2>
+            <p class="text-gray-600 mb-4">Export customer data to CSV</p>
+            <a href="{{ url_for('export_csv_page') }}" 
+               class="block w-full bg-indigo-500 text-white text-center py-3 rounded-lg hover:bg-indigo-600 transition duration-200">
+                Export to CSV
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Stats Section (Optional Enhancement) -->
+    <div class="bg-gray-50 rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Quick Stats</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="text-center">
+                <span class="block text-2xl font-bold text-blue-600" id="totalUsers">-</span>
+                <span class="text-gray-600 text-sm">Total Users</span>
+            </div>
+            <div class="text-center">
+                <span class="block text-2xl font-bold text-green-600" id="activeRentals">-</span>
+                <span class="text-gray-600 text-sm">Active Rentals</span>
+            </div>
+            <div class="text-center">
+                <span class="block text-2xl font-bold text-purple-600" id="totalPackages">-</span>
+                <span class="text-gray-600 text-sm">Total Packages</span>
+            </div>
+            <div class="text-center">
+                <span class="block text-2xl font-bold text-orange-600" id="returnedToday">-</span>
+                <span class="text-gray-600 text-sm">Returned Today</span>
+            </div>
+        </div>
     </div>
 
     <!-- Help Section -->
@@ -70,10 +114,36 @@
             <li>Customer Database shows all clients and their rental status</li>
             {% if session.role == 'admin' %}
             <li>Use the Send QR Codes button to send out emails to clients</li>
+            <li>Export Data allows you to download CSV files for comparison with JotForm submissions</li>
             <li>Access Admin Panel for database management</li>
             {% endif %}
             <li>Contact IT support if you encounter any issues</li>
         </ul>
     </div>
 </div>
+
+<!-- Optional: Add JavaScript to load quick stats -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load quick statistics
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            // Update stats if elements exist
+            if (document.getElementById('totalUsers')) {
+                document.getElementById('totalUsers').textContent = data.total_users || 0;
+            }
+            if (document.getElementById('activeRentals')) {
+                document.getElementById('activeRentals').textContent = data.active_rentals || 0;
+            }
+            if (document.getElementById('totalPackages')) {
+                document.getElementById('totalPackages').textContent = data.total_packages || 0;
+            }
+            // Note: You'd need to add a query for "returned today" in the API
+        })
+        .catch(error => {
+            console.error('Error loading statistics:', error);
+        });
+});
+</script>
 {% endblock %}

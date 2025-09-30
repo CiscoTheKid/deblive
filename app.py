@@ -9,6 +9,9 @@ from ssl_config import SSLConfig
 import pandas as pd
 from functools import wraps
 import json
+import csv
+import io
+from flask import Response
 from rental_email_handler import RentalEmailHandler
 
 # Initialize Flask app and components
@@ -737,6 +740,339 @@ def admin_search_users():
     except Exception as e:
         logger.error(f"Admin user search error: {str(e)}")
         return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/export-csv')
+@login_required
+def export_csv_page():
+    """
+    Render the CSV export page
+    This page allows users to export data to CSV for comparison with JotForm
+    """
+    return render_template('export_csv.html')
+
+
+@app.route('/api/export-csv-data', methods=['POST'])
+@login_required
+def export_csv_data():
+    """
+    API endpoint to export user and package data to CSV
+    Supports preview, export, and statistics actions
+    """
+    try:
+        # Get request data
+        data = request.get_json()
+        action = data.get('action', 'preview')  # preview, export, or stats
+        filters = data.get('filters', {})
+        
+        # Ensure database connection
+        db.ensure_connection()
+        
+        # Handle statistics request
+        if action == 'stats':
+            # Get database statistics
+            stats = {
+                'total_users': 0,
+                'total_packages': 0,
+                'active_rentals': 0,
+                'returned_rentals': 0
+            }
+            
+            # Count total users
+            db.cursor.execute("SELECT COUNT(*) as count FROM users")
+            result = db.cursor.fetchone()
+            stats['total_users'] = result['count'] if result else 0
+            
+            # Count total packages
+            db.cursor.execute("SELECT COUNT(*) as count FROM user_packages")
+            result = db.cursor.fetchone()
+            stats['total_packages'] = result['count'] if result else 0
+            
+            # Count active rentals (status = 1)
+            db.cursor.execute("SELECT COUNT(*) as count FROM users WHERE rental_status = 1")
+            result = db.cursor.fetchone()
+            stats['active_rentals'] = result['count'] if result else 0
+            
+            # Count returned rentals (status = 2)
+            db.cursor.execute("SELECT COUNT(*) as count FROM users WHERE rental_status = 2")
+            result = db.cursor.fetchone()
+            stats['returned_rentals'] = result['count'] if result else 0
+            
+            return jsonify({'success': True, 'stats': stats})
+        
+        # Build the base SQL query with all possible fields
+        base_query = """
+            SELECT 
+                u.id,
+                u.first_name,
+                u.last_name,
+                u.email,
+                u.city,
+                u.package_type,
+                u.rental_status,
+                u.notes,
+                u.created_at,
+                u.updated_at,
+                u.notes_updated_at,
+                qr.qr_code_number,
+                COALESCE(pkg_counts.total_packages, 0) as package_quantity,
+                COALESCE(pkg_counts.available_packages, 0) as available_packages,
+                COALESCE(pkg_counts.rented_packages, 0) as rented_packages
+            FROM users u
+            LEFT JOIN qr_codes qr ON u.id = qr.user_id AND qr.is_active = TRUE
+            LEFT JOIN (
+                SELECT 
+                    user_id,
+                    COUNT(*) as total_packages,
+                    SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as available_packages,
+                    SUM(CASE WHEN status = 'rented_out' THEN 1 ELSE 0 END) as rented_packages
+                FROM user_packages
+                GROUP BY user_id
+            ) pkg_counts ON u.id = pkg_counts.user_id
+            WHERE 1=1
+        """
+        
+        # Apply filters
+        query_params = []
+        
+        # Status filter
+        if filters.get('status') and filters['status'] != 'all':
+            base_query += " AND u.rental_status = %s"
+            query_params.append(int(filters['status']))
+        
+        # City filter
+        if filters.get('city'):
+            cities = [city.strip() for city in filters['city'].split(',')]
+            placeholders = ','.join(['%s'] * len(cities))
+            base_query += f" AND u.city IN ({placeholders})"
+            query_params.extend(cities)
+        
+        # Date range filter
+        if filters.get('dateFrom'):
+            base_query += " AND u.created_at >= %s"
+            query_params.append(filters['dateFrom'] + ' 00:00:00')
+        
+        if filters.get('dateTo'):
+            base_query += " AND u.created_at <= %s"
+            query_params.append(filters['dateTo'] + ' 23:59:59')
+        
+        # Add ordering
+        base_query += " ORDER BY u.last_name, u.first_name"
+        
+        # Execute query
+        if query_params:
+            db.cursor.execute(base_query, query_params)
+        else:
+            db.cursor.execute(base_query)
+        
+        # Fetch all results
+        results = db.cursor.fetchall()
+        
+        # Get selected fields (or use defaults)
+        selected_fields = filters.get('fields', [
+            'id', 'first_name', 'last_name', 'email', 'city',
+            'package_type', 'package_quantity', 'qr_code_number', 'rental_status'
+        ])
+        
+        # Filter results to only include selected fields
+        filtered_results = []
+        for row in results:
+            filtered_row = {}
+            for field in selected_fields:
+                if field in row:
+                    # Format datetime fields
+                    if field in ['created_at', 'updated_at', 'notes_updated_at'] and row[field]:
+                        filtered_row[field] = row[field].strftime('%Y-%m-%d %H:%M:%S')
+                    else:
+                        filtered_row[field] = row[field]
+            filtered_results.append(filtered_row)
+        
+        # Handle preview action
+        if action == 'preview':
+            return jsonify({
+                'success': True,
+                'headers': selected_fields,
+                'data': filtered_results
+            })
+        
+        # Handle export action
+        elif action == 'export':
+            # Determine export format
+            export_format = filters.get('format', 'csv')
+            
+            # Create CSV/TSV output
+            output = io.StringIO()
+            
+            # Set delimiter based on format
+            if export_format == 'tsv':
+                delimiter = '\t'
+                mimetype = 'text/tab-separated-values'
+                extension = 'tsv'
+            else:
+                delimiter = ','
+                mimetype = 'text/csv'
+                extension = 'csv'
+            
+            # Handle Excel compatibility
+            if export_format == 'csv-excel':
+                # Add UTF-8 BOM for Excel
+                output.write('\ufeff')
+            
+            # Create CSV writer
+            writer = csv.DictWriter(
+                output,
+                fieldnames=selected_fields,
+                delimiter=delimiter,
+                quoting=csv.QUOTE_MINIMAL
+            )
+            
+            # Write headers with proper formatting
+            header_names = {}
+            for field in selected_fields:
+                # Convert field names to readable format
+                readable_name = field.replace('_', ' ').title()
+                header_names[field] = readable_name
+            
+            writer.writerow(header_names)
+            
+            # Write data rows
+            for row in filtered_results:
+                # Convert None values to empty strings
+                clean_row = {k: (v if v is not None else '') for k, v in row.items()}
+                writer.writerow(clean_row)
+            
+            # Get the CSV string
+            output.seek(0)
+            csv_data = output.getvalue()
+            
+            # Create response
+            response = Response(
+                csv_data,
+                mimetype=mimetype,
+                headers={
+                    'Content-Disposition': f'attachment; filename=dinerenblanc_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.{extension}',
+                    'Content-Type': f'{mimetype}; charset=utf-8'
+                }
+            )
+            
+            return response
+        
+        else:
+            return jsonify({'error': 'Invalid action specified'}), 400
+            
+    except Exception as e:
+        logger.error(f"CSV export error: {str(e)}")
+        return jsonify({'error': f'Export failed: {str(e)}'}), 500
+
+
+@app.route('/api/export-comparison-csv', methods=['GET'])
+@login_required
+def export_comparison_csv():
+    """
+    Export a comprehensive CSV specifically formatted for comparison with JotForm data
+    This includes all relevant fields in a format matching JotForm's export structure
+    """
+    try:
+        # Ensure database connection
+        db.ensure_connection()
+        
+        # Query to get all user data with package information
+        # This matches the structure that would come from JotForm
+        query = """
+            SELECT 
+                u.id as 'User ID',
+                u.first_name as 'First Name',
+                u.last_name as 'Last Name',
+                u.email as 'Email',
+                u.city as 'City',
+                u.package_type as 'Package Type',
+                COALESCE(pkg_counts.total_packages, 0) as 'Quantity',
+                qr.qr_code_number as 'QR Code',
+                CASE 
+                    WHEN u.rental_status = 0 THEN 'Not Active'
+                    WHEN u.rental_status = 1 THEN 'Active'
+                    WHEN u.rental_status = 2 THEN 'Returned'
+                    ELSE 'Unknown'
+                END as 'Rental Status',
+                COALESCE(pkg_counts.available_packages, 0) as 'Available Packages',
+                COALESCE(pkg_counts.rented_packages, 0) as 'Rented Packages',
+                DATE_FORMAT(u.created_at, '%Y-%m-%d %H:%i:%s') as 'Submission Date',
+                DATE_FORMAT(u.updated_at, '%Y-%m-%d %H:%i:%s') as 'Last Updated',
+                u.notes as 'Notes'
+            FROM users u
+            LEFT JOIN qr_codes qr ON u.id = qr.user_id AND qr.is_active = TRUE
+            LEFT JOIN (
+                SELECT 
+                    user_id,
+                    COUNT(*) as total_packages,
+                    SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as available_packages,
+                    SUM(CASE WHEN status = 'rented_out' THEN 1 ELSE 0 END) as rented_packages
+                FROM user_packages
+                GROUP BY user_id
+            ) pkg_counts ON u.id = pkg_counts.user_id
+            ORDER BY u.created_at DESC, u.last_name, u.first_name
+        """
+        
+        # Execute query
+        db.cursor.execute(query)
+        results = db.cursor.fetchall()
+        
+        # Create CSV output with UTF-8 BOM for Excel compatibility
+        output = io.StringIO()
+        output.write('\ufeff')  # UTF-8 BOM
+        
+        if results:
+            # Get field names from the first result
+            fieldnames = list(results[0].keys())
+            
+            # Create CSV writer
+            writer = csv.DictWriter(
+                output,
+                fieldnames=fieldnames,
+                delimiter=',',
+                quoting=csv.QUOTE_MINIMAL
+            )
+            
+            # Write headers
+            writer.writeheader()
+            
+            # Write data rows
+            for row in results:
+                # Convert None values to empty strings
+                clean_row = {k: (v if v is not None else '') for k, v in row.items()}
+                writer.writerow(clean_row)
+        else:
+            # If no results, still create headers
+            fieldnames = [
+                'User ID', 'First Name', 'Last Name', 'Email', 'City',
+                'Package Type', 'Quantity', 'QR Code', 'Rental Status',
+                'Available Packages', 'Rented Packages', 'Submission Date',
+                'Last Updated', 'Notes'
+            ]
+            writer = csv.DictWriter(output, fieldnames=fieldnames)
+            writer.writeheader()
+        
+        # Get the CSV string
+        output.seek(0)
+        csv_data = output.getvalue()
+        
+        # Create response
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        response = Response(
+            csv_data,
+            mimetype='text/csv',
+            headers={
+                'Content-Disposition': f'attachment; filename=dinerenblanc_comparison_{timestamp}.csv',
+                'Content-Type': 'text/csv; charset=utf-8'
+            }
+        )
+        
+        logger.info(f"Exported comparison CSV with {len(results)} records")
+        return response
+        
+    except Exception as e:
+        logger.error(f"Comparison CSV export error: {str(e)}")
+        return jsonify({'error': f'Export failed: {str(e)}'}), 500
+
 
 @app.route('/api/admin/delete-user/<int:user_id>', methods=['DELETE'])
 @admin_required
